@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ShopAGG App Store\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-23 10:25+0000\n"
-"PO-Revision-Date: 2026-03-23 10:26+0000\n"
+"PO-Revision-Date: 2026-03-23 10:34+0000\n"
 "Last-Translator: \n"
 "Language-Team: 简体中文\n"
 "Language: zh_CN\n"
@@ -45,7 +45,7 @@ msgstr "API 令牌无效或过期。请重新连接。"
 
 #: shopagg-app-store.php:74
 msgid "App Store"
-msgstr "应用程序商店"
+msgstr "应用商店"
 
 #: includes/class-market.php:143
 msgid "Back to Store"
@@ -171,7 +171,7 @@ msgstr "购物袋"
 #: shopagg-app-store.php:73 includes/class-market.php:35
 #: includes/class-auth.php:111
 msgid "ShopAGG App Store"
-msgstr "购物袋应用商店"
+msgstr "ShopAGG 应用商店"
 
 #: includes/class-auth.php:134
 msgid "ShopAGG Dashboard"

@@ -10,6 +10,7 @@
             this.bindLogout();
             this.bindInstall();
             this.bindPurchase();
+            this.bindDeleteConfirm();
         },
 
         /**
@@ -82,8 +83,9 @@
                 var $btn = $(this);
                 var resourceId = $btn.data('resource-id');
                 var $msg = $('#detail-message');
+                var isDetailPage = $btn.closest('.shopagg-detail-actions').length > 0;
 
-                if (!confirm('Are you sure you want to install this resource?')) {
+                if (isDetailPage && !confirm('Are you sure you want to install this resource?')) {
                     return;
                 }
 
@@ -130,8 +132,9 @@
                 var $btn = $(this);
                 var resourceId = $btn.data('resource-id');
                 var $msg = $('#detail-message');
+                var isDetailPage = $btn.closest('.shopagg-detail-actions').length > 0;
 
-                if (!confirm('Are you sure you want to purchase this resource?')) {
+                if (isDetailPage && !confirm('Are you sure you want to purchase this resource?')) {
                     return;
                 }
 
@@ -162,6 +165,24 @@
                         $btn.prop('disabled', false).text('Purchase');
                     }
                 });
+            });
+        },
+
+        /**
+         * Confirm delete only on detail page action area.
+         */
+        bindDeleteConfirm: function () {
+            $(document).on('click', '.shopagg-delete-link', function (e) {
+                var $link = $(this);
+                var isDetailPage = $link.closest('.shopagg-detail-actions').length > 0;
+
+                if (!isDetailPage) {
+                    return;
+                }
+
+                if (!confirm('Are you sure you want to delete this resource?')) {
+                    e.preventDefault();
+                }
             });
         }
     };

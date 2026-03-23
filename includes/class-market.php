@@ -127,12 +127,18 @@ class ShopAGG_App_Store_Market {
         $is_free = (float) $resource['price'] === 0.0;
         $price_label = $is_free ? __('Free', 'shopagg-app-store') : '$' . number_format((float) $resource['price'], 2);
 
-        // Check if already installed
+        $is_plugin = $resource['type'] === 'plugin';
+        $plugin_file = null;
         $is_installed = false;
-        if ($resource['type'] === 'plugin') {
-            $is_installed = $this->is_plugin_installed($resource['slug']);
+        $is_active = false;
+
+        if ($is_plugin) {
+            $plugin_file = $this->get_plugin_file($resource['slug']);
+            $is_installed = ! empty($plugin_file);
+            $is_active = $is_installed ? $this->is_plugin_active($plugin_file) : false;
         } else {
             $is_installed = $this->is_theme_installed($resource['slug']);
+            $is_active = $is_installed ? $this->is_theme_active($resource['slug']) : false;
         }
 
         $cover = ! empty($resource['cover_image']) ? $resource['cover_image'] : SHOPAGG_APP_STORE_PLUGIN_URL . 'assets/images/placeholder.png';
@@ -163,27 +169,39 @@ class ShopAGG_App_Store_Market {
                     </div>
 
                     <div class="shopagg-detail-actions">
-                        <?php if ($is_installed) : ?>
-                            <button class="button button-secondary" disabled>
-                                <?php esc_html_e('Already Installed', 'shopagg-app-store'); ?>
-                            </button>
-                        <?php elseif ($is_free) : ?>
+                        <?php if (! $is_installed && ($is_free || $has_license)) : ?>
                             <button class="button button-primary shopagg-install-btn"
                                     data-resource-id="<?php echo esc_attr($resource['id']); ?>"
                                     data-type="<?php echo esc_attr($resource['type']); ?>">
                                 <?php esc_html_e('Install', 'shopagg-app-store'); ?>
                             </button>
-                        <?php elseif ($has_license) : ?>
-                            <button class="button button-primary shopagg-install-btn"
-                                    data-resource-id="<?php echo esc_attr($resource['id']); ?>"
-                                    data-type="<?php echo esc_attr($resource['type']); ?>">
-                                <?php esc_html_e('Install', 'shopagg-app-store'); ?>
-                            </button>
-                        <?php else : ?>
+                        <?php elseif (! $is_installed) : ?>
                             <button class="button button-primary shopagg-purchase-btn"
                                     data-resource-id="<?php echo esc_attr($resource['id']); ?>">
                                 <?php printf(esc_html__('Purchase %s', 'shopagg-app-store'), esc_html($price_label)); ?>
                             </button>
+                        <?php elseif ($is_plugin && $is_active) : ?>
+                            <a class="button button-secondary" href="<?php echo esc_url($this->get_plugin_deactivate_url($plugin_file)); ?>">
+                                <?php esc_html_e('Deactivate', 'shopagg-app-store'); ?>
+                            </a>
+                        <?php elseif ($is_plugin && ! $is_active) : ?>
+                            <a class="button button-primary" href="<?php echo esc_url($this->get_plugin_activate_url($plugin_file)); ?>">
+                                <?php esc_html_e('Activate', 'shopagg-app-store'); ?>
+                            </a>
+                            <a class="button-link-delete shopagg-delete-link" href="<?php echo esc_url($this->get_plugin_delete_url($plugin_file)); ?>">
+                                <?php esc_html_e('Delete', 'shopagg-app-store'); ?>
+                            </a>
+                        <?php elseif (! $is_plugin && $is_active) : ?>
+                            <button class="button button-secondary" disabled>
+                                <?php esc_html_e('Current Theme', 'shopagg-app-store'); ?>
+                            </button>
+                        <?php else : ?>
+                            <a class="button button-primary" href="<?php echo esc_url($this->get_theme_activate_url($resource['slug'])); ?>">
+                                <?php esc_html_e('Activate', 'shopagg-app-store'); ?>
+                            </a>
+                            <a class="button-link-delete shopagg-delete-link" href="<?php echo esc_url($this->get_theme_delete_url($resource['slug'])); ?>">
+                                <?php esc_html_e('Delete', 'shopagg-app-store'); ?>
+                            </a>
                         <?php endif; ?>
                     </div>
 
@@ -198,16 +216,37 @@ class ShopAGG_App_Store_Market {
      * Check if a plugin is installed.
      */
     private function is_plugin_installed($slug) {
+        return ! empty($this->get_plugin_file($slug));
+    }
+
+    /**
+     * Find plugin file by slug.
+     */
+    private function get_plugin_file($slug) {
         if (! function_exists('get_plugins')) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
+
         $plugins = get_plugins();
+
         foreach ($plugins as $path => $plugin) {
             if (strpos($path, $slug . '/') === 0) {
-                return true;
+                return $path;
             }
         }
-        return false;
+
+        return null;
+    }
+
+    /**
+     * Check if a plugin is active.
+     */
+    private function is_plugin_active($plugin_file) {
+        if (! function_exists('is_plugin_active')) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        return is_plugin_active($plugin_file);
     }
 
     /**
@@ -216,6 +255,65 @@ class ShopAGG_App_Store_Market {
     private function is_theme_installed($slug) {
         $theme = wp_get_theme($slug);
         return $theme->exists();
+    }
+
+    /**
+     * Check if a theme is active.
+     */
+    private function is_theme_active($slug) {
+        return get_option('stylesheet') === $slug;
+    }
+
+    /**
+     * Build plugin activate URL.
+     */
+    private function get_plugin_activate_url($plugin_file) {
+        return wp_nonce_url(
+            admin_url('plugins.php?action=activate&plugin=' . rawurlencode($plugin_file)),
+            'activate-plugin_' . $plugin_file
+        );
+    }
+
+    /**
+     * Build plugin deactivate URL.
+     */
+    private function get_plugin_deactivate_url($plugin_file) {
+        return wp_nonce_url(
+            admin_url('plugins.php?action=deactivate&plugin=' . rawurlencode($plugin_file)),
+            'deactivate-plugin_' . $plugin_file
+        );
+    }
+
+    /**
+     * Build plugin delete URL.
+     */
+    private function get_plugin_delete_url($plugin_file) {
+        $url = add_query_arg([
+            'action'  => 'delete-selected',
+            'checked' => [$plugin_file],
+        ], admin_url('plugins.php'));
+
+        return wp_nonce_url($url, 'bulk-plugins');
+    }
+
+    /**
+     * Build theme activate URL.
+     */
+    private function get_theme_activate_url($slug) {
+        return wp_nonce_url(
+            admin_url('themes.php?action=activate&stylesheet=' . rawurlencode($slug)),
+            'switch-theme_' . $slug
+        );
+    }
+
+    /**
+     * Build theme delete URL.
+     */
+    private function get_theme_delete_url($slug) {
+        return wp_nonce_url(
+            admin_url('themes.php?action=delete&stylesheet=' . rawurlencode($slug)),
+            'delete-theme_' . $slug
+        );
     }
 
     /**
