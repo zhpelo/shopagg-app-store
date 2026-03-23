@@ -107,6 +107,17 @@ class ShopAGG_App_Store_Market {
                 <div class="shopagg-resource-price <?php echo $is_free ? 'free' : 'paid'; ?>">
                     <?php echo esc_html($price_label); ?>
                 </div>
+                <div class="shopagg-resource-actions">
+                    <?php if ($is_free) : ?>
+                        <a class="button button-primary shopagg-card-btn" href="<?php echo esc_url($detail_url); ?>">
+                            <?php esc_html_e('Free Download', 'shopagg-app-store'); ?>
+                        </a>
+                    <?php else : ?>
+                        <a class="button button-primary shopagg-card-btn shopagg-card-purchase-btn" href="<?php echo esc_url($detail_url); ?>">
+                            <?php printf(esc_html__('Purchase %s', 'shopagg-app-store'), esc_html($price_label)); ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
         <?php
@@ -127,6 +138,7 @@ class ShopAGG_App_Store_Market {
         $resource = $result['resource'];
         $has_license = $result['has_license'];
         $is_free = (float) $resource['price'] === 0.0;
+
         $price_label = $is_free ? __('Free', 'shopagg-app-store') : '$' . number_format((float) $resource['price'], 2);
 
         $is_plugin = $resource['type'] === 'plugin';

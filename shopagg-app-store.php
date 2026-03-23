@@ -110,18 +110,21 @@ function shopagg_app_store_admin_enqueue($hook) {
         return;
     }
 
+    $css_file = SHOPAGG_APP_STORE_PLUGIN_DIR . 'assets/css/style.css';
+    $js_file  = SHOPAGG_APP_STORE_PLUGIN_DIR . 'assets/js/app.js';
+
     wp_enqueue_style(
         'shopagg-app-store-css',
         SHOPAGG_APP_STORE_PLUGIN_URL . 'assets/css/style.css',
         [],
-        SHOPAGG_APP_STORE_VERSION
+        filemtime($css_file)
     );
 
     wp_enqueue_script(
         'shopagg-app-store-js',
         SHOPAGG_APP_STORE_PLUGIN_URL . 'assets/js/app.js',
         ['jquery'],
-        SHOPAGG_APP_STORE_VERSION,
+        filemtime($js_file),
         true
     );
 

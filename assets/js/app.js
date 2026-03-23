@@ -149,6 +149,7 @@
                     success: function (response) {
                         if (response.success) {
                             $btn.prop('disabled', false).text('Purchase');
+                            alert('order_id: ' + response.data.order_id + '\namount: ' + response.data.amount);
                             self.showPaymentModal(response.data.order_id, response.data.amount);
                         } else {
                             $msg.addClass('error').text(response.data.message);
@@ -196,7 +197,9 @@
                 '</div>' +
             '</div>';
 
+            console.log('Appending modal to body');
             $('body').append(modalHtml);
+            console.log('Modal appended:', $('#shopagg-payment-modal').length, $('#shopagg-payment-modal').css('display'), $('#shopagg-payment-modal').css('z-index'));
 
             var $modal = $('#shopagg-payment-modal');
             var pollTimer = null;

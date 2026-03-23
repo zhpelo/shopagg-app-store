@@ -142,6 +142,19 @@
     color: #d63638;
 }
 
+/* Card Action Buttons */
+.shopagg-resource-actions {
+    margin-top: 12px;
+}
+
+.shopagg-card-btn {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 /* Detail Page */
 .shopagg-detail {
     display: flex;
