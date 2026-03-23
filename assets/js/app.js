@@ -12,6 +12,7 @@
             this.bindLogout();
             this.bindInstall();
             this.bindPurchase();
+            this.bindInlinePayment();
             this.bindDeleteConfirm();
         },
 
@@ -38,11 +39,195 @@
             $btn.prop('disabled', !!disabled);
         },
 
+        escapeHtml: function (value) {
+            return $('<div/>').text(value || '').html();
+        },
+
         clearPolling: function () {
             if (this.pollTimer) {
                 clearInterval(this.pollTimer);
                 this.pollTimer = null;
             }
+        },
+
+        renderInlinePaymentPanel: function ($msg, options) {
+            if (!$msg || !$msg.length) {
+                return;
+            }
+
+            $('#shopagg-inline-payment-panel').remove();
+
+            var resourceName = options.resourceName || 'this resource';
+            var introText = options.existingOrder
+                ? '检测到该资源已有未支付订单，请继续完成付款。'
+                : '订单已创建，请选择支付方式完成付款。';
+
+            var $panel = $('<div/>', {
+                id: 'shopagg-inline-payment-panel',
+                'class': 'shopagg-inline-payment-panel'
+            });
+
+            $panel.append($('<p/>', {
+                'class': 'shopagg-inline-payment-title',
+                text: resourceName
+            }));
+
+            $panel.append($('<p/>', {
+                'class': 'shopagg-inline-payment-desc',
+                text: introText
+            }));
+
+            $panel.append(
+                $('<p/>', {
+                    'class': 'shopagg-inline-payment-amount',
+                    html: 'Amount: <strong>¥' + this.escapeHtml(options.amount) + '</strong>'
+                })
+            );
+
+            var $actions = $('<div/>', {
+                'class': 'shopagg-inline-payment-methods'
+            });
+
+            $actions.append($('<button/>', {
+                type: 'button',
+                'class': 'button button-primary shopagg-inline-pay-method-btn',
+                'data-method': 'alipay',
+                'data-order-id': options.orderId,
+                'data-resource-id': options.resourceId,
+                'data-resource-name': resourceName,
+                text: 'Alipay'
+            }));
+
+            $actions.append($('<button/>', {
+                type: 'button',
+                'class': 'button button-primary shopagg-inline-pay-method-btn',
+                'data-method': 'wechat',
+                'data-order-id': options.orderId,
+                'data-resource-id': options.resourceId,
+                'data-resource-name': resourceName,
+                text: 'WeChat Pay'
+            }));
+
+            $panel.append($actions);
+            $panel.append($('<div/>', {
+                'class': 'shopagg-inline-payment-qr'
+            }).hide());
+            $panel.append($('<div/>', {
+                'class': 'shopagg-inline-payment-install'
+            }).hide());
+            $panel.append($('<p/>', {
+                'class': 'shopagg-inline-payment-status',
+                text: '请选择支付方式。'
+            }));
+
+            $msg.after($panel);
+        },
+
+        bindInlinePayment: function () {
+            var self = this;
+
+            $(document).on('click', '.shopagg-inline-pay-method-btn', function (e) {
+                e.preventDefault();
+
+                var $btn = $(this);
+                var $panel = $btn.closest('.shopagg-inline-payment-panel');
+                var method = $btn.data('method');
+                var orderId = $btn.data('order-id');
+                var resourceId = $btn.data('resource-id');
+                var resourceName = $btn.data('resource-name') || 'this resource';
+
+                $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', true);
+                $panel.find('.shopagg-inline-payment-install').hide().empty();
+                $panel.find('.shopagg-inline-payment-qr').hide().empty();
+                $panel.find('.shopagg-inline-payment-status').text('正在发起支付...');
+
+                $.ajax({
+                    url: shopaggAppStore.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'shopagg_app_store_pay',
+                        nonce: shopaggAppStore.nonce,
+                        order_id: orderId,
+                        payment_method: method
+                    },
+                    success: function (response) {
+                        if (!response.success) {
+                            $panel.find('.shopagg-inline-payment-status').text(response.data.message || 'Payment failed.');
+                            $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', false);
+                            return;
+                        }
+
+                        if (method === 'alipay' && response.data.form_html) {
+                            var payWin = window.open('', '_blank', 'width=800,height=600');
+                            if (payWin) {
+                                payWin.document.write(response.data.form_html);
+                                payWin.document.close();
+                                $panel.find('.shopagg-inline-payment-status').text('请在新窗口中完成支付宝支付。');
+                            } else {
+                                $panel.find('.shopagg-inline-payment-status').text('浏览器拦截了新窗口，请允许弹窗后重试。');
+                                $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', false);
+                                return;
+                            }
+                        } else if (method === 'wechat' && response.data.code_url) {
+                            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(response.data.code_url);
+                            $panel.find('.shopagg-inline-payment-qr')
+                                .html('<img src="' + qrUrl + '" alt="WeChat Pay QR Code" width="200" height="200" />')
+                                .show();
+                            $panel.find('.shopagg-inline-payment-status').text('请使用微信扫码完成支付。');
+                        } else {
+                            $panel.find('.shopagg-inline-payment-status').text('Unknown payment response.');
+                            $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', false);
+                            return;
+                        }
+
+                        self.clearPolling();
+                        self.pollTimer = setInterval(function () {
+                            self.checkOrderStatus(orderId, function (status) {
+                                if (status.paid) {
+                                    self.clearPolling();
+                                    self.renderInlineInstallActions($panel, {
+                                        resourceId: status.resource_id || resourceId,
+                                        resourceName: status.resource_name || resourceName
+                                    });
+                                }
+                            });
+                        }, 3000);
+                    },
+                    error: function () {
+                        $panel.find('.shopagg-inline-payment-status').text('Network error. Please try again.');
+                        $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', false);
+                    }
+                });
+            });
+
+            $(document).on('click', '.shopagg-inline-install-btn', function (e) {
+                e.preventDefault();
+
+                var $btn = $(this);
+                var resourceId = $btn.data('resource-id');
+                var $panel = $btn.closest('.shopagg-inline-payment-panel');
+
+                $btn.prop('disabled', true).text('Installing...');
+                self.installPurchasedResource(resourceId, $panel, $btn, true);
+            });
+
+            $(document).on('click', '.shopagg-inline-refresh-btn', function () {
+                window.location.reload();
+            });
+        },
+
+        renderInlineInstallActions: function ($panel, payload) {
+            var resourceName = payload.resourceName || 'this resource';
+            var resourceId = payload.resourceId;
+
+            $panel.find('.shopagg-inline-payment-qr').hide().empty();
+            $panel.find('.shopagg-inline-payment-status').html('<span style="color:green;font-size:16px;">&#10004; 支付成功，现可安装 ' + this.escapeHtml(resourceName) + '</span>');
+            $panel.find('.shopagg-inline-payment-install')
+                .html(
+                    '<button type="button" class="button button-primary shopagg-inline-install-btn" data-resource-id="' + this.escapeHtml(resourceId) + '">Install Now</button>' +
+                    '<button type="button" class="button shopagg-inline-refresh-btn">Refresh Page</button>'
+                )
+                .show();
         },
 
         /**
@@ -190,7 +375,8 @@
                                 return;
                             }
 
-                            self.showPaymentModal({
+                            self.showMessage($msg, 'success', response.data.message || 'Order ready. Please choose a payment method below.');
+                            self.renderInlinePaymentPanel($msg, {
                                 orderId: response.data.order_id,
                                 amount: response.data.amount,
                                 resourceId: response.data.resource_id || resourceId,
@@ -224,38 +410,86 @@
                 ? 'An unpaid order already exists for ' + resourceName + '. Continue with payment below.'
                 : 'Complete the payment for ' + resourceName + ' and you can install it immediately.';
 
+            if (!orderId) {
+                window.alert('Order was created, but no order ID was returned. Please refresh and try again.');
+                return;
+            }
+
             self.clearPolling();
             $('#shopagg-payment-modal').remove();
+            var $modal = $('<div/>', {
+                id: 'shopagg-payment-modal',
+                'class': 'shopagg-modal-overlay'
+            });
+            var $dialog = $('<div/>', {
+                'class': 'shopagg-modal'
+            });
+            var $header = $('<div/>', {
+                'class': 'shopagg-modal-header'
+            });
+            var $body = $('<div/>', {
+                'class': 'shopagg-modal-body'
+            });
+            var $methods = $('<div/>', {
+                'class': 'shopagg-payment-methods'
+            });
+            var $status = $('<div/>', {
+                'class': 'shopagg-payment-status'
+            }).hide();
 
-            var modalHtml = '<div id="shopagg-payment-modal" class="shopagg-modal-overlay">' +
-                '<div class="shopagg-modal">' +
-                    '<div class="shopagg-modal-header">' +
-                        '<h3>Complete Purchase</h3>' +
-                        '<button class="shopagg-modal-close">&times;</button>' +
-                    '</div>' +
-                    '<div class="shopagg-modal-body">' +
-                        '<p class="shopagg-payment-intro">' + introText + '</p>' +
-                        '<p class="shopagg-payment-amount">Amount: <strong>¥' + amount + '</strong></p>' +
-                        '<div class="shopagg-payment-methods">' +
-                            '<button class="button button-primary shopagg-pay-method-btn" data-method="alipay">' +
-                                'Alipay' +
-                            '</button>' +
-                            '<button class="button button-primary shopagg-pay-method-btn" data-method="wechat">' +
-                                'WeChat Pay' +
-                            '</button>' +
-                        '</div>' +
-                        '<div class="shopagg-payment-status" style="display:none;">' +
-                            '<div class="shopagg-qr-container" style="display:none;"></div>' +
-                            '<div class="shopagg-payment-actions" style="display:none;"></div>' +
-                            '<p class="shopagg-status-text">Waiting for payment...</p>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-            '</div>';
+            $header.append($('<h3/>').text('Complete Purchase'));
+            $header.append($('<button/>', {
+                'class': 'shopagg-modal-close',
+                type: 'button',
+                html: '&times;'
+            }));
 
-            $('body').append(modalHtml);
+            $body.append($('<p/>', {
+                'class': 'shopagg-payment-intro',
+                text: introText
+            }));
+            $body.append(
+                $('<p/>', {
+                    'class': 'shopagg-payment-amount',
+                    html: 'Amount: <strong>¥' + self.escapeHtml(amount) + '</strong>'
+                })
+            );
 
-            var $modal = $('#shopagg-payment-modal');
+            $methods.append($('<button/>', {
+                type: 'button',
+                'class': 'button button-primary shopagg-pay-method-btn',
+                'data-method': 'alipay',
+                text: 'Alipay'
+            }));
+            $methods.append($('<button/>', {
+                type: 'button',
+                'class': 'button button-primary shopagg-pay-method-btn',
+                'data-method': 'wechat',
+                text: 'WeChat Pay'
+            }));
+
+            $status.append($('<div/>', {
+                'class': 'shopagg-qr-container'
+            }).hide());
+            $status.append($('<div/>', {
+                'class': 'shopagg-payment-actions'
+            }).hide());
+            $status.append($('<p/>', {
+                'class': 'shopagg-status-text',
+                text: 'Waiting for payment...'
+            }));
+
+            $body.append($methods);
+            $body.append($status);
+            $dialog.append($header);
+            $dialog.append($body);
+            $modal.append($dialog);
+            $('body').append($modal);
+
+            if (!$('#shopagg-payment-modal').length) {
+                window.alert('Payment dialog could not be opened. Please refresh the page and try again.');
+                return;
+            }
 
             $modal.on('click', '.shopagg-modal-close, .shopagg-modal-overlay', function (e) {
                 if (e.target === this) {
@@ -372,9 +606,7 @@
             });
         },
 
-        installPurchasedResource: function (resourceId, $modal, $btn) {
-            var self = this;
-
+        installPurchasedResource: function (resourceId, $container, $btn, isInline) {
             $.ajax({
                 url: shopaggAppStore.ajaxUrl,
                 type: 'POST',
@@ -385,27 +617,52 @@
                 },
                 success: function (response) {
                     if (!response.success) {
-                        $modal.find('.shopagg-status-text').text(response.data.message || 'Installation failed.');
+                        if (isInline) {
+                            $container.find('.shopagg-inline-payment-status').text(response.data.message || 'Installation failed.');
+                        } else {
+                            $container.find('.shopagg-status-text').text(response.data.message || 'Installation failed.');
+                        }
                         $btn.prop('disabled', false).text('Install Now');
+                        return;
+                    }
+
+                    if (isInline) {
+                        if (response.data.activate_url) {
+                            var inlineActivateLabel = response.data.activate_label || 'Activate';
+                            $container.find('.shopagg-inline-payment-install').html(
+                                '<a class="button button-primary" href="' + response.data.activate_url + '">' + inlineActivateLabel + '</a>' +
+                                '<button type="button" class="button shopagg-inline-refresh-btn">Done</button>'
+                            );
+                        } else {
+                            $container.find('.shopagg-inline-payment-install').html(
+                                '<button type="button" class="button button-primary shopagg-inline-refresh-btn">Installed, Refresh</button>'
+                            );
+                        }
+
+                        $container.find('.shopagg-inline-payment-status').html('<span style="color:green;font-size:16px;">&#10004; Installation successful!</span>');
                         return;
                     }
 
                     if (response.data.activate_url) {
                         var activateLabel = response.data.activate_label || 'Activate';
-                        $modal.find('.shopagg-payment-actions').html(
+                        $container.find('.shopagg-payment-actions').html(
                             '<a class="button button-primary" href="' + response.data.activate_url + '">' + activateLabel + '</a>' +
                             '<button type="button" class="button shopagg-refresh-after-pay">Done</button>'
                         );
                     } else {
-                        $modal.find('.shopagg-payment-actions').html(
+                        $container.find('.shopagg-payment-actions').html(
                             '<button type="button" class="button button-primary shopagg-refresh-after-pay">Installed, Refresh</button>'
                         );
                     }
 
-                    $modal.find('.shopagg-status-text').html('<span style="color:green;font-size:18px;">&#10004; Installation successful!</span>');
+                    $container.find('.shopagg-status-text').html('<span style="color:green;font-size:18px;">&#10004; Installation successful!</span>');
                 },
                 error: function () {
-                    $modal.find('.shopagg-status-text').text('Installation failed. Please try again.');
+                    if (isInline) {
+                        $container.find('.shopagg-inline-payment-status').text('Installation failed. Please try again.');
+                    } else {
+                        $container.find('.shopagg-status-text').text('Installation failed. Please try again.');
+                    }
                     $btn.prop('disabled', false).text('Install Now');
                 }
             });
