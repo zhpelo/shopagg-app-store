@@ -22,6 +22,8 @@ class ShopAGG_App_Store_Market {
     private function init() {
         add_action('wp_ajax_shopagg_app_store_install', [$this, 'ajax_install']);
         add_action('wp_ajax_shopagg_app_store_purchase', [$this, 'ajax_purchase']);
+        add_action('wp_ajax_shopagg_app_store_pay', [$this, 'ajax_pay']);
+        add_action('wp_ajax_shopagg_app_store_order_status', [$this, 'ajax_order_status']);
     }
 
     /**
@@ -349,7 +351,7 @@ class ShopAGG_App_Store_Market {
     }
 
     /**
-     * AJAX Purchase handler.
+     * AJAX Purchase handler - create order and return order info.
      */
     public function ajax_purchase() {
         check_ajax_referer('shopagg_app_store_nonce', 'nonce');
@@ -369,26 +371,75 @@ class ShopAGG_App_Store_Market {
 
         $api = ShopAGG_App_Store_API_Client::instance();
 
-        // Create order
+        // Create order on server
         $order_result = $api->post('orders', ['resource_id' => $resource_id]);
         if (is_wp_error($order_result)) {
             wp_send_json_error(['message' => $order_result->get_error_message()]);
         }
 
-        $order_id = $order_result['order']['id'];
+        wp_send_json_success([
+            'order_id' => $order_result['order']['id'],
+            'amount'   => $order_result['order']['amount'],
+            'message'  => __('Order created. Please select payment method.', 'shopagg-app-store'),
+        ]);
+    }
 
-        // Simulate payment (MVP)
+    /**
+     * AJAX Pay handler - initiate payment for an order.
+     */
+    public function ajax_pay() {
+        check_ajax_referer('shopagg_app_store_nonce', 'nonce');
+
+        if (! current_user_can('manage_options')) {
+            wp_send_json_error(['message' => __('Permission denied.', 'shopagg-app-store')]);
+        }
+
+        if (! shopagg_app_store_is_logged_in()) {
+            wp_send_json_error(['message' => __('Please log in first.', 'shopagg-app-store')]);
+        }
+
+        $order_id = isset($_POST['order_id']) ? sanitize_text_field(wp_unslash($_POST['order_id'])) : '';
+        $payment_method = isset($_POST['payment_method']) ? sanitize_text_field(wp_unslash($_POST['payment_method'])) : '';
+
+        if (empty($order_id) || ! in_array($payment_method, ['alipay', 'wechat'], true)) {
+            wp_send_json_error(['message' => __('Invalid parameters.', 'shopagg-app-store')]);
+        }
+
+        $api = ShopAGG_App_Store_API_Client::instance();
+
         $pay_result = $api->post('orders/' . $order_id . '/pay', [
-            'domain' => home_url(),
+            'payment_method' => $payment_method,
         ]);
 
         if (is_wp_error($pay_result)) {
             wp_send_json_error(['message' => $pay_result->get_error_message()]);
         }
 
-        wp_send_json_success([
-            'message' => __('Purchase successful! You can now install this resource.', 'shopagg-app-store'),
-            'license' => $pay_result['license'],
-        ]);
+        wp_send_json_success($pay_result);
+    }
+
+    /**
+     * AJAX Order status check - for payment polling.
+     */
+    public function ajax_order_status() {
+        check_ajax_referer('shopagg_app_store_nonce', 'nonce');
+
+        if (! shopagg_app_store_is_logged_in()) {
+            wp_send_json_error(['message' => __('Please log in first.', 'shopagg-app-store')]);
+        }
+
+        $order_id = isset($_GET['order_id']) ? sanitize_text_field(wp_unslash($_GET['order_id'])) : '';
+        if (empty($order_id)) {
+            wp_send_json_error(['message' => __('Invalid order.', 'shopagg-app-store')]);
+        }
+
+        $api = ShopAGG_App_Store_API_Client::instance();
+        $result = $api->get('orders/' . $order_id . '/status');
+
+        if (is_wp_error($result)) {
+            wp_send_json_error(['message' => $result->get_error_message()]);
+        }
+
+        wp_send_json_success($result);
     }
 }
