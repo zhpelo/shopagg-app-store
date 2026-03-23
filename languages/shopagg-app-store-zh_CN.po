@@ -1,0 +1,204 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ShopAGG App Store\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-23 10:25+0000\n"
+"PO-Revision-Date: 2026-03-23 10:26+0000\n"
+"Last-Translator: \n"
+"Language-Team: 简体中文\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.8.3; wp-6.9.4; php-8.4.16\n"
+"X-Domain: shopagg-app-store"
+
+#: includes/class-market.php:249
+msgid "Activate"
+msgstr "激活"
+
+#: includes/class-installer.php:86
+msgid "Activate Plugin"
+msgstr "激活插件"
+
+#: includes/class-installer.php:87
+msgid "Activate Theme"
+msgstr "激活主题"
+
+#: includes/class-market.php:168
+msgid "Already Installed"
+msgstr "已安装"
+
+#: includes/class-api-client.php:68
+msgid "API request failed."
+msgstr "API 请求失败。"
+
+#: includes/class-auth.php:117
+msgid "API Token"
+msgstr "应用程序接口令牌"
+
+#: includes/class-api-client.php:64
+msgid "API Token is invalid or expired. Please reconnect."
+msgstr "API 令牌无效或过期。请重新连接。"
+
+#: shopagg-app-store.php:74
+msgid "App Store"
+msgstr "应用程序商店"
+
+#: includes/class-market.php:143
+msgid "Back to Store"
+msgstr "返回商店"
+
+#: includes/class-auth.php:122
+msgid "Connect"
+msgstr "连接"
+
+#: includes/class-auth.php:87
+msgid "Connected successfully!"
+msgstr "连接成功！"
+
+#: includes/class-installer.php:160
+msgid "Could not create temporary file."
+msgstr "无法创建临时文件。"
+
+#: includes/class-auth.php:99
+msgid "Disconnected."
+msgstr "断开连接。"
+
+#: includes/class-installer.php:179
+msgid "Download failed with HTTP status %d."
+msgstr "下载失败，HTTP 状态为 %d。"
+
+#: includes/class-installer.php:186
+msgid "Downloaded file is empty."
+msgstr "下载的文件为空。"
+
+#: includes/class-auth.php:112
+msgid "Enter your API Token to connect"
+msgstr "输入您的 API 令牌进行连接"
+
+#: includes/class-installer.php:53 includes/class-updater.php:238
+msgid "Failed to get download URL."
+msgstr "获取下载 URL 失败。"
+
+#: includes/class-market.php:91 includes/class-market.php:128
+msgid "Free"
+msgstr "免费"
+
+#. URI of the plugin
+#. Author URI of the plugin
+msgid "https://shopagg.com"
+msgstr "https://shopagg.com"
+
+#: includes/class-market.php:174 includes/class-market.php:180
+msgid "Install"
+msgstr "安装"
+
+#. Description of the plugin
+msgid "Install and manage WordPress plugins and themes from ShopAGG App Store."
+msgstr "在ShopAGG应用商店安装和管理WordPress插件和主题。"
+
+#: includes/class-market.php:247
+msgid "Installation successful!"
+msgstr "安装成功！"
+
+#: includes/class-auth.php:47
+msgid "Invalid API Token. Please check and try again."
+msgstr "API 令牌无效。请检查并重试。"
+
+#: includes/class-installer.php:70
+msgid "Invalid resource type."
+msgstr "资源类型无效。"
+
+#: includes/class-market.php:237 includes/class-market.php:269
+#: includes/class-updater.php:226
+msgid "Invalid resource."
+msgstr "无效资源。"
+
+#: includes/class-market.php:38
+msgid "Logout"
+msgstr "注销"
+
+#: includes/class-market.php:76
+msgid "No resources found."
+msgstr "未找到资源。"
+
+#: includes/class-auth.php:118
+msgid "Paste your API Token here"
+msgstr "在此处粘贴您的应用程序接口令牌"
+
+#: includes/class-market.php:228 includes/class-market.php:260
+#: includes/class-auth.php:65
+msgid "Permission denied."
+msgstr "拒绝许可。"
+
+#: includes/class-auth.php:71
+msgid "Please enter your API Token."
+msgstr "请输入您的 API 标记。"
+
+#: includes/class-market.php:232 includes/class-market.php:264
+msgid "Please log in first."
+msgstr "请先登录。"
+
+#: includes/class-installer.php:241
+msgid "Plugin installation failed."
+msgstr "插件安装失败。"
+
+#: includes/class-market.php:45
+msgid "Plugins"
+msgstr "插件"
+
+#: includes/class-market.php:185
+#, php-format
+msgid "Purchase %s"
+msgstr "购买 %s"
+
+#: includes/class-market.php:292
+msgid "Purchase successful! You can now install this resource."
+msgstr "购买成功！您现在可以安装该资源。"
+
+#: includes/class-updater.php:222
+msgid "Security check failed."
+msgstr "安全检查失败。"
+
+#. Author of the plugin
+msgid "ShopAGG"
+msgstr "购物袋"
+
+#. Name of the plugin
+#: shopagg-app-store.php:73 includes/class-market.php:35
+#: includes/class-auth.php:111
+msgid "ShopAGG App Store"
+msgstr "购物袋应用商店"
+
+#: includes/class-auth.php:134
+msgid "ShopAGG Dashboard"
+msgstr "购物车控制面板"
+
+#: includes/class-installer.php:242
+msgid "Theme installation failed."
+msgstr "主题安装失败。"
+
+#: includes/class-market.php:49
+msgid "Themes"
+msgstr "主题"
+
+#: includes/class-auth.php:52
+msgid "Unexpected API response."
+msgstr "意外的 API 响应。"
+
+#. %s: URL to ShopAGG dashboard
+#: includes/class-auth.php:132
+#, php-format
+msgid "You can generate an API Token from your %s."
+msgstr "您可以通过 %s 生成一个 API 令牌。"
+
+#: includes/class-installer.php:31
+msgid "You must be logged in to install resources."
+msgstr "您必须登录后才能安装资源。"
+
+#: includes/class-api-client.php:39
+msgid "You must connect your API Token first."
+msgstr "您必须先连接 API 令牌。"

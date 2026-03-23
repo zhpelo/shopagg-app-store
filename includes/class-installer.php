@@ -24,7 +24,7 @@ class ShopAGG_App_Store_Installer {
      * Install a resource by ID.
      *
      * @param int $resource_id
-     * @return true|WP_Error
+        * @return array|WP_Error
      */
     public function install($resource_id) {
         if (! shopagg_app_store_is_logged_in()) {
@@ -77,9 +77,70 @@ class ShopAGG_App_Store_Installer {
                 $resource['type'],
                 $resource['id']
             );
+
+            return [
+                'installed'       => true,
+                'type'            => $resource['type'],
+                'activate_url'    => $this->get_activate_url($resource['type'], $resource['slug']),
+                'activate_label'  => $resource['type'] === 'plugin'
+                    ? __('Activate Plugin', 'shopagg-app-store')
+                    : __('Activate Theme', 'shopagg-app-store'),
+            ];
         }
 
         return $install_result;
+    }
+
+    /**
+     * Build activation URL for installed resource.
+     *
+     * @param string $type
+     * @param string $slug
+     * @return string
+     */
+    private function get_activate_url($type, $slug) {
+        if ($type === 'plugin') {
+            $plugin_file = $this->find_plugin_file($slug);
+            if (empty($plugin_file)) {
+                return '';
+            }
+
+            return wp_nonce_url(
+                admin_url('plugins.php?action=activate&plugin=' . rawurlencode($plugin_file)),
+                'activate-plugin_' . $plugin_file
+            );
+        }
+
+        if ($type === 'theme') {
+            return wp_nonce_url(
+                admin_url('themes.php?action=activate&stylesheet=' . rawurlencode($slug)),
+                'switch-theme_' . $slug
+            );
+        }
+
+        return '';
+    }
+
+    /**
+     * Find plugin main file path by slug.
+     *
+     * @param string $slug
+     * @return string|null
+     */
+    private function find_plugin_file($slug) {
+        if (! function_exists('get_plugins')) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        $plugins = get_plugins();
+
+        foreach ($plugins as $file => $plugin) {
+            if (strpos($file, $slug . '/') === 0) {
+                return $file;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -136,7 +197,7 @@ class ShopAGG_App_Store_Installer {
      *
      * @param string $tmp_file Path to downloaded ZIP file.
      * @param string $type     'plugin' or 'theme'.
-     * @return true|WP_Error
+    * @return bool|WP_Error
      */
     private function install_from_file($tmp_file, $type) {
         require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';

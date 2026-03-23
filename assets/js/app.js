@@ -101,7 +101,13 @@
                     success: function (response) {
                         if (response.success) {
                             $msg.addClass('success').text(response.data.message);
-                            $btn.text('Installed').prop('disabled', true);
+
+                            if (response.data.activate_url) {
+                                var activateLabel = response.data.activate_label || 'Activate';
+                                $btn.replaceWith('<a class="button button-primary shopagg-activate-btn" href="' + response.data.activate_url + '">' + activateLabel + '</a>');
+                            } else {
+                                $btn.text('Installed').prop('disabled', true);
+                            }
                         } else {
                             $msg.addClass('error').text(response.data.message);
                             $btn.prop('disabled', false).text('Install');

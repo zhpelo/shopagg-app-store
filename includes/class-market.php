@@ -243,7 +243,11 @@ class ShopAGG_App_Store_Market {
             wp_send_json_error(['message' => $result->get_error_message()]);
         }
 
-        wp_send_json_success(['message' => __('Installation successful!', 'shopagg-app-store')]);
+        wp_send_json_success([
+            'message'        => __('Installation successful!', 'shopagg-app-store'),
+            'activate_url'   => isset($result['activate_url']) ? $result['activate_url'] : '',
+            'activate_label' => isset($result['activate_label']) ? $result['activate_label'] : __('Activate', 'shopagg-app-store'),
+        ]);
     }
 
     /**
