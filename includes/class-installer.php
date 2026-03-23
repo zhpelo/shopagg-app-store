@@ -43,7 +43,9 @@ class ShopAGG_App_Store_Installer {
         $type = $resource['type'];
 
         // Get download URL from API
-        $result = $api->get('download/' . $resource_id);
+        $result = $api->get('download/' . $resource_id, [
+            'domain' => shopagg_app_store_get_site_domain(),
+        ]);
 
         if (is_wp_error($result)) {
             return $result;

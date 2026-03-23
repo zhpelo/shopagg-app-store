@@ -22,7 +22,7 @@ class ShopAGG_App_Store_API_Client {
      * Make an API request.
      */
     public function request($endpoint, $method = 'GET', $body = [], $requires_auth = true) {
-        $url = rtrim(SHOPAGG_APP_STORE_API_URL, '/') . '/' . ltrim($endpoint, '/');
+        $url = rtrim(shopagg_app_store_get_api_url(), '/') . '/' . ltrim($endpoint, '/');
 
         $args = [
             'method'  => strtoupper($method),
@@ -56,7 +56,12 @@ class ShopAGG_App_Store_API_Client {
         }
 
         $code = wp_remote_retrieve_response_code($response);
-        $body = json_decode(wp_remote_retrieve_body($response), true);
+        $raw_body = wp_remote_retrieve_body($response);
+        $body = $raw_body !== '' ? json_decode($raw_body, true) : [];
+
+        if ($raw_body !== '' && json_last_error() !== JSON_ERROR_NONE) {
+            return new WP_Error('invalid_json', __('API returned an invalid JSON response.', 'shopagg-app-store'));
+        }
 
         if ($code === 401) {
             delete_option('shopagg_app_store_access_token');

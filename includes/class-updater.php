@@ -192,14 +192,23 @@ class ShopAGG_App_Store_Updater {
         $resource = $resource_result['resource'];
 
         return (object) [
-            'name'          => $resource['name'],
-            'slug'          => $resource['slug'],
-            'version'       => $resource['version'],
-            'author'        => 'ShopAGG',
-            'homepage'      => 'https://shopagg.com',
-            'sections'      => [
-                'description' => $resource['description'] ?? '',
-            ],
+            'name' => $resource['name'],
+            'slug' => $resource['slug'],
+            'version' => $resource['version'],
+            'author' => isset($resource['author']) ? $resource['author'] : 'ShopAGG',
+            'author_profile' => isset($resource['author_homepage']) ? $resource['author_homepage'] : '',
+            'homepage' => isset($resource['homepage']) ? $resource['homepage'] : 'https://shopagg.com',
+            'requires' => isset($resource['requires']) ? $resource['requires'] : '',
+            'requires_php' => isset($resource['requires_php']) ? $resource['requires_php'] : '',
+            'tested' => isset($resource['tested']) ? $resource['tested'] : '',
+            'last_updated' => isset($resource['last_updated']) ? $resource['last_updated'] : '',
+            'sections' => isset($resource['sections']) && is_array($resource['sections'])
+                ? $resource['sections']
+                : [
+                    'description' => isset($resource['description']) ? $resource['description'] : '',
+                ],
+            'banners' => isset($resource['banners']) && is_array($resource['banners']) ? $resource['banners'] : [],
+            'icons' => isset($resource['icons']) && is_array($resource['icons']) ? $resource['icons'] : [],
         ];
     }
 
@@ -228,7 +237,9 @@ class ShopAGG_App_Store_Updater {
 
         // Get download URL from API
         $api = ShopAGG_App_Store_API_Client::instance();
-        $result = $api->get('download/' . $resource_id);
+        $result = $api->get('download/' . $resource_id, [
+            'domain' => shopagg_app_store_get_site_domain(),
+        ]);
 
         if (is_wp_error($result)) {
             return $result;
@@ -238,8 +249,8 @@ class ShopAGG_App_Store_Updater {
             return new WP_Error('no_url', __('Failed to get download URL.', 'shopagg-app-store'));
         }
 
-        // Download the file
-        $tmpfile = download_url($result['download_url']);
+        // Download the file ourselves so local/private addresses work during updates too.
+        $tmpfile = $this->download_package($result['download_url']);
 
         if (is_wp_error($tmpfile)) {
             return $tmpfile;
@@ -265,6 +276,50 @@ class ShopAGG_App_Store_Updater {
 
         return null;
     }
+
+    /**
+     * Download an update package into a temp file.
+     *
+     * Mirrors installer behavior so updates work against local/private origins.
+     *
+     * @param string $url
+     * @return string|WP_Error
+     */
+    private function download_package($url) {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+
+        $tmp_file = wp_tempnam($url);
+        if (! $tmp_file) {
+            return new WP_Error('tmp_file_error', __('Could not create temporary file.', 'shopagg-app-store'));
+        }
+
+        $response = wp_remote_get($url, [
+            'timeout'  => 300,
+            'stream'   => true,
+            'filename' => $tmp_file,
+        ]);
+
+        if (is_wp_error($response)) {
+            @unlink($tmp_file);
+            return $response;
+        }
+
+        $code = wp_remote_retrieve_response_code($response);
+        if ($code !== 200) {
+            @unlink($tmp_file);
+            return new WP_Error(
+                'download_failed',
+                sprintf(__('Download failed with HTTP status %d.', 'shopagg-app-store'), $code)
+            );
+        }
+
+        if (! file_exists($tmp_file) || filesize($tmp_file) === 0) {
+            @unlink($tmp_file);
+            return new WP_Error('download_empty', __('Downloaded file is empty.', 'shopagg-app-store'));
+        }
+
+        return $tmp_file;
+    }
 }
 
 /**
@@ -281,7 +336,9 @@ add_action('wp_ajax_shopagg_app_store_download_update', function () {
     }
 
     $api = ShopAGG_App_Store_API_Client::instance();
-    $result = $api->get('download/' . $resource_id);
+    $result = $api->get('download/' . $resource_id, [
+        'domain' => shopagg_app_store_get_site_domain(),
+    ]);
 
     if (is_wp_error($result) || empty($result['download_url'])) {
         wp_die('Failed to get download URL.');

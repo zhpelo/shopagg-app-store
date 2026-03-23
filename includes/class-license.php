@@ -38,6 +38,11 @@ class ShopAGG_App_Store_License {
  */
 function shopagg_app_store_has_license($resource_id) {
     static $cache = [];
+    $resource_id = absint($resource_id);
+
+    if (! $resource_id) {
+        return false;
+    }
 
     if (isset($cache[$resource_id])) {
         return $cache[$resource_id];
@@ -48,10 +53,18 @@ function shopagg_app_store_has_license($resource_id) {
         return false;
     }
 
+    $transient_key = 'shopagg_license_' . $resource_id;
+    $cached_result = get_transient($transient_key);
+
+    if (is_array($cached_result) && array_key_exists('valid', $cached_result)) {
+        $cache[$resource_id] = (bool) $cached_result['valid'];
+        return $cache[$resource_id];
+    }
+
     $api = ShopAGG_App_Store_API_Client::instance();
     $result = $api->post('licenses/verify', [
         'resource_id' => $resource_id,
-        'domain'      => home_url(),
+        'domain'      => shopagg_app_store_get_site_domain(),
     ]);
 
     if (is_wp_error($result)) {
@@ -61,6 +74,7 @@ function shopagg_app_store_has_license($resource_id) {
 
     $valid = isset($result['valid']) && $result['valid'] === true;
     $cache[$resource_id] = $valid;
+    set_transient($transient_key, ['valid' => $valid], 5 * MINUTE_IN_SECONDS);
 
     return $valid;
 }

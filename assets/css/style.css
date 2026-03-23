@@ -372,6 +372,12 @@
     color: #333;
 }
 
+.shopagg-payment-intro {
+    margin: 0 0 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
 .shopagg-payment-methods {
     display: flex;
     gap: 12px;
@@ -387,6 +393,14 @@
 
 .shopagg-qr-container {
     margin: 16px auto;
+}
+
+.shopagg-payment-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .shopagg-qr-container img {

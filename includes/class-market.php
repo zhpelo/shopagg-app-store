@@ -355,6 +355,8 @@ class ShopAGG_App_Store_Market {
             wp_send_json_error(['message' => $result->get_error_message()]);
         }
 
+        shopagg_app_store_forget_license_cache($resource_id);
+
         wp_send_json_success([
             'message'        => __('Installation successful!', 'shopagg-app-store'),
             'activate_url'   => isset($result['activate_url']) ? $result['activate_url'] : '',
@@ -389,10 +391,18 @@ class ShopAGG_App_Store_Market {
             wp_send_json_error(['message' => $order_result->get_error_message()]);
         }
 
+        if (! empty($order_result['owned'])) {
+            shopagg_app_store_forget_license_cache($resource_id);
+        }
+
         wp_send_json_success([
-            'order_id' => $order_result['order']['id'],
-            'amount'   => $order_result['order']['amount'],
-            'message'  => __('Order created. Please select payment method.', 'shopagg-app-store'),
+            'order_id'       => isset($order_result['order']['id']) ? $order_result['order']['id'] : '',
+            'amount'         => isset($order_result['order']['amount']) ? $order_result['order']['amount'] : '',
+            'resource_id'    => isset($order_result['resource_id']) ? absint($order_result['resource_id']) : $resource_id,
+            'resource_name'  => isset($order_result['resource_name']) ? $order_result['resource_name'] : '',
+            'owned'          => ! empty($order_result['owned']),
+            'existing_order' => ! empty($order_result['existing_order']),
+            'message'        => isset($order_result['message']) ? $order_result['message'] : __('Order created. Please select payment method.', 'shopagg-app-store'),
         ]);
     }
 
@@ -450,6 +460,10 @@ class ShopAGG_App_Store_Market {
 
         if (is_wp_error($result)) {
             wp_send_json_error(['message' => $result->get_error_message()]);
+        }
+
+        if (! empty($result['paid']) && ! empty($result['resource_id'])) {
+            shopagg_app_store_forget_license_cache($result['resource_id']);
         }
 
         wp_send_json_success($result);

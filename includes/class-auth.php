@@ -28,7 +28,7 @@ class ShopAGG_App_Store_Auth {
      * Verify a token by calling the /me endpoint.
      */
     private function verify_token($token) {
-        $url = rtrim(SHOPAGG_APP_STORE_API_URL, '/') . '/me';
+        $url = rtrim(shopagg_app_store_get_api_url(), '/') . '/me';
 
         $response = wp_remote_get($url, [
             'headers' => [
@@ -130,7 +130,7 @@ class ShopAGG_App_Store_Auth {
                             printf(
                                 /* translators: %s: URL to ShopAGG dashboard */
                                 esc_html__('You can generate an API Token from your %s.', 'shopagg-app-store'),
-                                '<a href="' . esc_url(rtrim(SHOPAGG_APP_STORE_API_URL, '/api/shopagg-app-store/') . '/dashboard') . '" target="_blank">' .
+                                '<a href="' . esc_url(shopagg_app_store_get_dashboard_url()) . '" target="_blank" rel="noopener noreferrer">' .
                                 esc_html__('ShopAGG Dashboard', 'shopagg-app-store') .
                                 '</a>'
                             );
