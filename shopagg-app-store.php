@@ -56,16 +56,7 @@ function shopagg_app_store_get_user() {
  * Get configured API base URL.
  */
 function shopagg_app_store_get_api_url() {
-    $configured = get_option('shopagg_app_store_api_url', SHOPAGG_APP_STORE_DEFAULT_API_URL);
-    $url = is_string($configured) ? trim($configured) : '';
-
-    if ($url === '') {
-        $url = SHOPAGG_APP_STORE_DEFAULT_API_URL;
-    }
-
-    $url = untrailingslashit($url) . '/';
-
-    return apply_filters('shopagg_app_store_api_url', $url);
+    return untrailingslashit(SHOPAGG_APP_STORE_DEFAULT_API_URL) . '/';
 }
 
 /**
@@ -141,91 +132,8 @@ function shopagg_app_store_admin_menu() {
         'dashicons-store',
         30
     );
-
-    add_submenu_page(
-        'shopagg-app-store',
-        __('App Store Settings', 'shopagg-app-store'),
-        __('Settings', 'shopagg-app-store'),
-        'manage_options',
-        'shopagg-app-store-settings',
-        'shopagg_app_store_render_settings_page'
-    );
 }
 add_action('admin_menu', 'shopagg_app_store_admin_menu');
-
-/**
- * Save plugin settings.
- */
-function shopagg_app_store_save_settings() {
-    if (! current_user_can('manage_options')) {
-        wp_die(esc_html__('Permission denied.', 'shopagg-app-store'));
-    }
-
-    check_admin_referer('shopagg_app_store_save_settings');
-
-    $api_url = isset($_POST['api_url']) ? esc_url_raw(trim(wp_unslash($_POST['api_url']))) : '';
-
-    if ($api_url === '') {
-        delete_option('shopagg_app_store_api_url');
-    } else {
-        update_option('shopagg_app_store_api_url', untrailingslashit($api_url) . '/');
-    }
-
-    $redirect_url = add_query_arg([
-        'page'    => 'shopagg-app-store-settings',
-        'updated' => '1',
-    ], admin_url('admin.php'));
-
-    wp_safe_redirect($redirect_url);
-    exit;
-}
-add_action('admin_post_shopagg_app_store_save_settings', 'shopagg_app_store_save_settings');
-
-/**
- * Render settings page.
- */
-function shopagg_app_store_render_settings_page() {
-    $current_api_url = shopagg_app_store_get_api_url();
-    ?>
-    <div class="wrap shopagg-app-store-wrap">
-        <h1><?php esc_html_e('ShopAGG App Store Settings', 'shopagg-app-store'); ?></h1>
-
-        <?php if (isset($_GET['updated']) && $_GET['updated'] === '1') : ?>
-            <div class="notice notice-success is-dismissible">
-                <p><?php esc_html_e('Settings saved.', 'shopagg-app-store'); ?></p>
-            </div>
-        <?php endif; ?>
-
-        <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="shopagg-settings-form">
-            <?php wp_nonce_field('shopagg_app_store_save_settings'); ?>
-            <input type="hidden" name="action" value="shopagg_app_store_save_settings">
-
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row">
-                        <label for="shopagg-app-store-api-url"><?php esc_html_e('API Base URL', 'shopagg-app-store'); ?></label>
-                    </th>
-                    <td>
-                        <input
-                            type="url"
-                            class="regular-text code"
-                            id="shopagg-app-store-api-url"
-                            name="api_url"
-                            value="<?php echo esc_attr($current_api_url); ?>"
-                            placeholder="<?php echo esc_attr(SHOPAGG_APP_STORE_DEFAULT_API_URL); ?>"
-                        >
-                        <p class="description">
-                            <?php esc_html_e('Example: https://your-shopagg-site.com/api/shopagg-app-store/', 'shopagg-app-store'); ?>
-                        </p>
-                    </td>
-                </tr>
-            </table>
-
-            <?php submit_button(__('Save Settings', 'shopagg-app-store')); ?>
-        </form>
-    </div>
-    <?php
-}
 
 /**
  * Main page render.
