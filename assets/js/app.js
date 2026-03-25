@@ -10,7 +10,9 @@
         init: function () {
             this.bindTokenForm();
             this.bindLogout();
+            this.bindCatalogFilters();
             this.bindInstall();
+            this.bindToggleResource();
             this.bindPurchase();
             this.bindInlinePayment();
             this.bindDeleteConfirm();
@@ -48,6 +50,35 @@
                 clearInterval(this.pollTimer);
                 this.pollTimer = null;
             }
+        },
+
+        bindCatalogFilters: function () {
+            var self = this;
+
+            var applyFilters = function () {
+                var keyword = ($('#shopagg-market-search').val() || '').toLowerCase();
+                var type = $('#shopagg-market-type').val() || 'all';
+                var price = $('#shopagg-market-price').val() || 'all';
+                var visibleCount = 0;
+
+                $('.shopagg-resource-card').each(function () {
+                    var $card = $(this);
+                    var matchesKeyword = !keyword || String($card.data('search') || '').indexOf(keyword) !== -1;
+                    var matchesType = type === 'all' || $card.data('type') === type;
+                    var matchesPrice = price === 'all' || $card.data('price') === price;
+                    var visible = matchesKeyword && matchesType && matchesPrice;
+
+                    $card.toggle(visible);
+                    if (visible) {
+                        visibleCount += 1;
+                    }
+                });
+
+                $('#shopagg-filter-empty').toggle(visibleCount === 0 && $('.shopagg-resource-card').length > 0);
+            };
+
+            $(document).on('input change', '#shopagg-market-search, #shopagg-market-type, #shopagg-market-price', applyFilters);
+            applyFilters();
         },
 
         renderInlinePaymentPanel: function ($msg, options) {
@@ -320,13 +351,10 @@
                     success: function (response) {
                         if (response.success) {
                             ShopAGGAppStore.showMessage($msg, 'success', response.data.message);
-
-                            if (response.data.activate_url) {
-                                var activateLabel = response.data.activate_label || 'Activate';
-                                $btn.replaceWith('<a class="button button-primary shopagg-activate-btn" href="' + response.data.activate_url + '">' + activateLabel + '</a>');
-                            } else {
-                                ShopAGGAppStore.setButtonState($btn, 'Installed', true);
-                            }
+                            ShopAGGAppStore.setButtonState($btn, 'Installed', true);
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 900);
                         } else {
                             ShopAGGAppStore.showMessage($msg, 'error', response.data.message);
                             ShopAGGAppStore.setButtonState($btn, 'Install', false);
@@ -335,6 +363,46 @@
                     error: function () {
                         ShopAGGAppStore.showMessage($msg, 'error', 'Installation failed. Please try again.');
                         ShopAGGAppStore.setButtonState($btn, 'Install', false);
+                    }
+                });
+            });
+        },
+
+        bindToggleResource: function () {
+            $(document).on('click', '.shopagg-toggle-resource-btn', function (e) {
+                e.preventDefault();
+
+                var $btn = $(this);
+                var $msg = $('#detail-message');
+
+                ShopAGGAppStore.setButtonState($btn, 'Processing...', true);
+                ShopAGGAppStore.resetMessage($msg);
+
+                $.ajax({
+                    url: shopaggAppStore.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'shopagg_app_store_toggle_resource',
+                        nonce: shopaggAppStore.nonce,
+                        resource_type: $btn.data('resource-type'),
+                        toggle_action: $btn.data('toggle-action'),
+                        target: $btn.data('target')
+                    },
+                    success: function (response) {
+                        if (!response.success) {
+                            ShopAGGAppStore.showMessage($msg, 'error', response.data.message || 'Operation failed.');
+                            ShopAGGAppStore.setButtonState($btn, 'Retry', false);
+                            return;
+                        }
+
+                        ShopAGGAppStore.showMessage($msg, 'success', response.data.message || 'Done.');
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 700);
+                    },
+                    error: function () {
+                        ShopAGGAppStore.showMessage($msg, 'error', 'Operation failed. Please try again.');
+                        ShopAGGAppStore.setButtonState($btn, 'Retry', false);
                     }
                 });
             });
@@ -627,33 +695,16 @@
                     }
 
                     if (isInline) {
-                        if (response.data.activate_url) {
-                            var inlineActivateLabel = response.data.activate_label || 'Activate';
-                            $container.find('.shopagg-inline-payment-install').html(
-                                '<a class="button button-primary" href="' + response.data.activate_url + '">' + inlineActivateLabel + '</a>' +
-                                '<button type="button" class="button shopagg-inline-refresh-btn">Done</button>'
-                            );
-                        } else {
-                            $container.find('.shopagg-inline-payment-install').html(
-                                '<button type="button" class="button button-primary shopagg-inline-refresh-btn">Installed, Refresh</button>'
-                            );
-                        }
-
+                        $container.find('.shopagg-inline-payment-install').html(
+                            '<button type="button" class="button button-primary shopagg-inline-refresh-btn">Installed, Refresh</button>'
+                        );
                         $container.find('.shopagg-inline-payment-status').html('<span style="color:green;font-size:16px;">&#10004; Installation successful!</span>');
                         return;
                     }
 
-                    if (response.data.activate_url) {
-                        var activateLabel = response.data.activate_label || 'Activate';
-                        $container.find('.shopagg-payment-actions').html(
-                            '<a class="button button-primary" href="' + response.data.activate_url + '">' + activateLabel + '</a>' +
-                            '<button type="button" class="button shopagg-refresh-after-pay">Done</button>'
-                        );
-                    } else {
-                        $container.find('.shopagg-payment-actions').html(
-                            '<button type="button" class="button button-primary shopagg-refresh-after-pay">Installed, Refresh</button>'
-                        );
-                    }
+                    $container.find('.shopagg-payment-actions').html(
+                        '<button type="button" class="button button-primary shopagg-refresh-after-pay">Installed, Refresh</button>'
+                    );
 
                     $container.find('.shopagg-status-text').html('<span style="color:green;font-size:18px;">&#10004; Installation successful!</span>');
                 },

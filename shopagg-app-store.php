@@ -236,7 +236,7 @@ function shopagg_app_store_render_page() {
         return;
     }
 
-    $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'plugins';
+    $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'browse';
     $action = isset($_GET['action']) ? sanitize_text_field($_GET['action']) : '';
     $resource_id = isset($_GET['resource_id']) ? absint($_GET['resource_id']) : 0;
 
