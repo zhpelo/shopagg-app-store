@@ -63,6 +63,10 @@ class ShopAGG_App_Store_Market {
                         <span class="shopagg-stat-label"><?php esc_html_e('Licenses', 'shopagg-app-store'); ?></span>
                         <strong><?php echo esc_html(count($state['licenses'])); ?></strong>
                     </div>
+                    <div class="shopagg-stat-card">
+                        <span class="shopagg-stat-label"><?php esc_html_e('Updates', 'shopagg-app-store'); ?></span>
+                        <strong><?php echo esc_html(count($state['updates'])); ?></strong>
+                    </div>
                 </div>
 
                 <div class="shopagg-nav">
@@ -78,6 +82,8 @@ class ShopAGG_App_Store_Market {
                     <?php $this->render_orders_panel($state['orders']); ?>
                 <?php elseif ($state['tab'] === 'licenses') : ?>
                     <?php $this->render_licenses_panel($state['licenses']); ?>
+                <?php elseif ($state['tab'] === 'updates') : ?>
+                    <?php $this->render_updates_panel($state['updates']); ?>
                 <?php else : ?>
                     <?php $this->render_browse_panel($state['resources'], $state['preset_type']); ?>
                 <?php endif; ?>
@@ -124,6 +130,9 @@ class ShopAGG_App_Store_Market {
                                     <?php if ($has_license && ! $is_free) : ?>
                                         <span class="shopagg-chip owned"><?php esc_html_e('Licensed', 'shopagg-app-store'); ?></span>
                                     <?php endif; ?>
+                                    <?php if (! empty($status['update'])) : ?>
+                                        <span class="shopagg-chip update"><?php echo esc_html(sprintf(__('New v%s', 'shopagg-app-store'), $status['update']['version'])); ?></span>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -138,6 +147,23 @@ class ShopAGG_App_Store_Market {
                             <div><span><?php esc_html_e('Tested Up To', 'shopagg-app-store'); ?></span><strong><?php echo esc_html($resource['tested'] ?: '-'); ?></strong></div>
                             <div><span><?php esc_html_e('Bound Domain', 'shopagg-app-store'); ?></span><strong><?php echo esc_html($resource['bound_domain'] ?? '-'); ?></strong></div>
                         </div>
+
+                        <?php if (! empty($status['update'])) : ?>
+                            <div class="shopagg-update-banner">
+                                <strong><?php esc_html_e('Update available', 'shopagg-app-store'); ?></strong>
+                                <span>
+                                    <?php
+                                    echo esc_html(
+                                        sprintf(
+                                            __('Installed v%s, latest v%s.', 'shopagg-app-store'),
+                                            $status['installed_version'] ?: '0.0.0',
+                                            $status['update']['version']
+                                        )
+                                    );
+                                    ?>
+                                </span>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="shopagg-detail-actions">
                             <?php $this->render_detail_action_buttons($resource, $status, $has_license, $is_free); ?>
@@ -159,7 +185,7 @@ class ShopAGG_App_Store_Market {
         ];
 
         $preset_type = isset($legacy_map[$tab]) ? $legacy_map[$tab] : 'all';
-        $normalized_tab = in_array($tab, ['browse', 'orders', 'licenses'], true) ? $tab : 'browse';
+        $normalized_tab = in_array($tab, ['browse', 'updates', 'orders', 'licenses'], true) ? $tab : 'browse';
 
         return [
             'tab' => $normalized_tab,
@@ -167,12 +193,14 @@ class ShopAGG_App_Store_Market {
             'resources' => $this->fetch_resources(),
             'orders' => $this->fetch_orders(),
             'licenses' => $this->fetch_licenses(),
+            'updates' => $this->fetch_available_updates(),
         ];
     }
 
     private function get_market_tabs() {
         return [
             'browse' => __('Browse', 'shopagg-app-store'),
+            'updates' => __('Updates', 'shopagg-app-store'),
             'orders' => __('Orders', 'shopagg-app-store'),
             'licenses' => __('Licenses', 'shopagg-app-store'),
         ];
@@ -209,6 +237,10 @@ class ShopAGG_App_Store_Market {
         }
 
         return isset($result['licenses']) && is_array($result['licenses']) ? $result['licenses'] : [];
+    }
+
+    private function fetch_available_updates() {
+        return ShopAGG_App_Store_Updater::instance()->get_available_updates();
     }
 
     private function render_browse_panel($resources, $preset_type) {
@@ -332,6 +364,60 @@ class ShopAGG_App_Store_Market {
         <?php
     }
 
+    private function render_updates_panel($updates) {
+        ?>
+        <div class="shopagg-panel">
+            <div class="shopagg-panel-head">
+                <div>
+                    <h2><?php esc_html_e('Available Updates', 'shopagg-app-store'); ?></h2>
+                    <p><?php esc_html_e('集中查看并更新通过 ShopAGG 安装的插件和主题版本。', 'shopagg-app-store'); ?></p>
+                </div>
+            </div>
+
+            <?php if (empty($updates)) : ?>
+                <div class="shopagg-empty-state">
+                    <h3><?php esc_html_e('Everything is up to date.', 'shopagg-app-store'); ?></h3>
+                </div>
+            <?php else : ?>
+                <div class="shopagg-update-list">
+                    <?php foreach ($updates as $update) : ?>
+                        <div class="shopagg-update-card">
+                            <div>
+                                <div class="shopagg-update-header">
+                                    <h3><?php echo esc_html($update['name'] ?? $update['slug']); ?></h3>
+                                    <span class="shopagg-chip"><?php echo esc_html($update['type'] === 'theme' ? __('Theme', 'shopagg-app-store') : __('Plugin', 'shopagg-app-store')); ?></span>
+                                </div>
+                                <p class="shopagg-update-summary">
+                                    <?php
+                                    echo esc_html(
+                                        sprintf(
+                                            __('Installed v%s, latest v%s', 'shopagg-app-store'),
+                                            $update['installed_version'] ?? '0.0.0',
+                                            $update['version']
+                                        )
+                                    );
+                                    ?>
+                                </p>
+                                <?php if (! empty($update['sections']['changelog'])) : ?>
+                                    <div class="shopagg-update-changelog"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($update['sections']['changelog']), 28)); ?></div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="shopagg-update-actions">
+                                <a class="button button-primary" href="<?php echo esc_url($update['update_url']); ?>">
+                                    <?php esc_html_e('Update Now', 'shopagg-app-store'); ?>
+                                </a>
+                                <a class="button button-secondary" href="<?php echo esc_url(admin_url('admin.php?page=shopagg-app-store&action=detail&resource_id=' . absint($update['id']))); ?>">
+                                    <?php esc_html_e('View Details', 'shopagg-app-store'); ?>
+                                </a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+
     private function render_resource_card($resource) {
         $status = $this->get_resource_install_state($resource);
         $is_free = (float) $resource['price'] === 0.0;
@@ -340,7 +426,7 @@ class ShopAGG_App_Store_Market {
         $cover = ! empty($resource['cover_image']) ? $resource['cover_image'] : SHOPAGG_APP_STORE_PLUGIN_URL . 'assets/images/placeholder.png';
         $search_text = strtolower(trim(($resource['name'] ?? '') . ' ' . ($resource['slug'] ?? '') . ' ' . wp_strip_all_tags($resource['description'] ?? '')));
         ?>
-        <article class="shopagg-resource-card"
+        <article class="shopagg-resource-card <?php echo ! empty($status['update']) ? 'has-update' : ''; ?>"
                  data-type="<?php echo esc_attr($resource['type']); ?>"
                  data-price="<?php echo esc_attr($is_free ? 'free' : 'paid'); ?>"
                  data-search="<?php echo esc_attr($search_text); ?>">
@@ -363,6 +449,9 @@ class ShopAGG_App_Store_Market {
                         <?php if (! empty($status['installed'])) : ?>
                             <span class="shopagg-flag installed"><?php echo esc_html(! empty($status['active']) ? __('Active', 'shopagg-app-store') : __('Installed', 'shopagg-app-store')); ?></span>
                         <?php endif; ?>
+                        <?php if (! empty($status['update'])) : ?>
+                            <span class="shopagg-flag update"><?php echo esc_html(sprintf(__('Update v%s', 'shopagg-app-store'), $status['update']['version'])); ?></span>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <a class="button button-primary shopagg-card-btn" href="<?php echo esc_url($detail_url); ?>">
@@ -374,6 +463,14 @@ class ShopAGG_App_Store_Market {
     }
 
     private function render_detail_action_buttons($resource, $status, $has_license, $is_free) {
+        if (! empty($status['update']['update_url'])) {
+            ?>
+            <a class="button button-primary" href="<?php echo esc_url($status['update']['update_url']); ?>">
+                <?php echo esc_html(sprintf(__('Update to v%s', 'shopagg-app-store'), $status['update']['version'])); ?>
+            </a>
+            <?php
+        }
+
         if (! $status['installed'] && ($is_free || $has_license)) {
             ?>
             <button class="button button-primary shopagg-install-btn"
@@ -447,25 +544,44 @@ class ShopAGG_App_Store_Market {
     }
 
     private function get_resource_install_state($resource) {
+        $update = ShopAGG_App_Store_Updater::instance()->get_update_for_slug($resource['slug']);
         $is_plugin = isset($resource['type']) && $resource['type'] === 'plugin';
 
         if ($is_plugin) {
             $plugin_file = $this->get_plugin_file($resource['slug']);
+            $installed_version = $plugin_file ? $this->get_plugin_version($plugin_file) : null;
+            $update_url = $plugin_file ? wp_nonce_url(
+                admin_url('update.php?action=upgrade-plugin&plugin=' . rawurlencode($plugin_file)),
+                'upgrade-plugin_' . $plugin_file
+            ) : '';
 
             return [
                 'installed' => ! empty($plugin_file),
                 'active' => ! empty($plugin_file) ? $this->is_plugin_active($plugin_file) : false,
                 'target' => $plugin_file,
+                'installed_version' => $installed_version,
+                'update' => (! empty($update['update_available']) && $installed_version && version_compare($update['version'], $installed_version, '>'))
+                    ? array_merge($update, ['update_url' => $update_url])
+                    : null,
             ];
         }
 
         $stylesheet = $this->get_theme_stylesheet($resource['slug']);
         $installed = ! empty($stylesheet);
+        $installed_version = $installed ? $this->get_theme_version($stylesheet) : null;
+        $update_url = $installed ? wp_nonce_url(
+            admin_url('update.php?action=upgrade-theme&theme=' . rawurlencode($stylesheet)),
+            'upgrade-theme_' . $stylesheet
+        ) : '';
 
         return [
             'installed' => $installed,
             'active' => $installed ? $this->is_theme_active($stylesheet) : false,
             'target' => $stylesheet ?: $resource['slug'],
+            'installed_version' => $installed_version,
+            'update' => (! empty($update['update_available']) && $installed_version && version_compare($update['version'], $installed_version, '>'))
+                ? array_merge($update, ['update_url' => $update_url])
+                : null,
         ];
     }
 
@@ -515,6 +631,25 @@ class ShopAGG_App_Store_Market {
         return is_plugin_active($plugin_file);
     }
 
+    private function get_plugin_version($plugin_file) {
+        if (empty($plugin_file)) {
+            return null;
+        }
+
+        if (! function_exists('get_plugin_data')) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        $plugin_path = WP_PLUGIN_DIR . '/' . ltrim($plugin_file, '/');
+        if (! file_exists($plugin_path)) {
+            return null;
+        }
+
+        $data = get_plugin_data($plugin_path, false, false);
+
+        return ! empty($data['Version']) ? $data['Version'] : null;
+    }
+
     private function get_theme_stylesheet($slug) {
         $theme = wp_get_theme($slug);
         if ($theme->exists()) {
@@ -537,6 +672,12 @@ class ShopAGG_App_Store_Market {
 
     private function is_theme_active($slug) {
         return get_option('stylesheet') === $slug;
+    }
+
+    private function get_theme_version($slug) {
+        $theme = wp_get_theme($slug);
+
+        return $theme->exists() ? $theme->get('Version') : null;
     }
 
     private function get_plugin_delete_url($plugin_file) {

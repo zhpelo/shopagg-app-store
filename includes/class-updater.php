@@ -94,6 +94,54 @@ class ShopAGG_App_Store_Updater {
         return $this->cached_updates;
     }
 
+    public function get_update_for_slug($slug) {
+        $updates = $this->fetch_updates();
+
+        foreach ($updates as $update) {
+            if (isset($update['slug']) && $update['slug'] === $slug) {
+                return $update;
+            }
+        }
+
+        return null;
+    }
+
+    public function get_available_updates() {
+        $managed = $this->get_managed_slugs();
+        $available = [];
+
+        foreach ($this->fetch_updates() as $update) {
+            if (empty($update['slug']) || empty($update['update_available'])) {
+                continue;
+            }
+
+            $slug = $update['slug'];
+            if (empty($managed[$slug]['type'])) {
+                continue;
+            }
+
+            $type = $managed[$slug]['type'];
+            $asset_file = ! empty($managed[$slug]['asset_file']) ? $managed[$slug]['asset_file'] : '';
+            $installed_version = $type === 'theme'
+                ? $this->get_installed_theme_version($asset_file ?: $slug)
+                : $this->get_installed_plugin_version($asset_file ?: $this->find_plugin_file($slug));
+
+            if (! $installed_version || version_compare($update['version'], $installed_version, '<=')) {
+                continue;
+            }
+
+            $update['installed_version'] = $installed_version;
+            $update['asset_file'] = $asset_file;
+            $update['update_url'] = $type === 'theme'
+                ? $this->build_theme_update_url($asset_file ?: $slug)
+                : $this->build_plugin_update_url($asset_file ?: $this->find_plugin_file($slug));
+
+            $available[] = $update;
+        }
+
+        return $available;
+    }
+
     /**
      * Check for plugin updates.
      */
@@ -315,6 +363,61 @@ class ShopAGG_App_Store_Updater {
         delete_site_transient('update_plugins');
         delete_site_transient('update_themes');
         wp_clean_themes_cache();
+    }
+
+    private function get_installed_plugin_version($plugin_file) {
+        if (empty($plugin_file)) {
+            return null;
+        }
+
+        if (! function_exists('get_plugin_data')) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        $plugin_path = WP_PLUGIN_DIR . '/' . ltrim($plugin_file, '/');
+        if (! file_exists($plugin_path)) {
+            return null;
+        }
+
+        $data = get_plugin_data($plugin_path, false, false);
+
+        return ! empty($data['Version']) ? $data['Version'] : null;
+    }
+
+    private function get_installed_theme_version($stylesheet) {
+        if (empty($stylesheet)) {
+            return null;
+        }
+
+        $theme = wp_get_theme($stylesheet);
+
+        if (! $theme->exists()) {
+            return null;
+        }
+
+        return $theme->get('Version');
+    }
+
+    private function build_plugin_update_url($plugin_file) {
+        if (empty($plugin_file)) {
+            return '';
+        }
+
+        return wp_nonce_url(
+            admin_url('update.php?action=upgrade-plugin&plugin=' . rawurlencode($plugin_file)),
+            'upgrade-plugin_' . $plugin_file
+        );
+    }
+
+    private function build_theme_update_url($stylesheet) {
+        if (empty($stylesheet)) {
+            return '';
+        }
+
+        return wp_nonce_url(
+            admin_url('update.php?action=upgrade-theme&theme=' . rawurlencode($stylesheet)),
+            'upgrade-theme_' . $stylesheet
+        );
     }
 
     private function find_theme_stylesheet($slug) {
