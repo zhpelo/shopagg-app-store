@@ -74,11 +74,20 @@ class ShopAGG_App_Store_Installer {
 
         // Register for auto-updates tracking
         if ($install_result === true) {
+            $asset_file = $resource['type'] === 'plugin'
+                ? $this->find_plugin_file($resource['slug'])
+                : $this->find_theme_stylesheet($resource['slug']);
+
             ShopAGG_App_Store_Updater::register_managed_resource(
                 $resource['slug'],
                 $resource['type'],
-                $resource['id']
+                $resource['id'],
+                $asset_file
             );
+
+            delete_site_transient('update_plugins');
+            delete_site_transient('update_themes');
+            wp_clean_themes_cache();
 
             return [
                 'installed'       => true,
@@ -143,6 +152,30 @@ class ShopAGG_App_Store_Installer {
         }
 
         return null;
+    }
+
+    /**
+     * Find installed theme stylesheet by slug.
+     *
+     * @param string $slug
+     * @return string
+     */
+    private function find_theme_stylesheet($slug) {
+        $theme = wp_get_theme($slug);
+        if ($theme->exists()) {
+            return $theme->get_stylesheet();
+        }
+
+        $themes = wp_get_themes();
+        foreach ($themes as $stylesheet => $installed_theme) {
+            $template = $installed_theme->get_template();
+
+            if ($stylesheet === $slug || $template === $slug) {
+                return $stylesheet;
+            }
+        }
+
+        return $slug;
     }
 
     /**

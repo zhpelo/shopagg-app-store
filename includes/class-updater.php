@@ -32,6 +32,9 @@ class ShopAGG_App_Store_Updater {
 
         // Filter download URL to add auth header
         add_filter('upgrader_pre_download', [$this, 'filter_download'], 10, 3);
+
+        // Refresh tracked files after installs or updates finish.
+        add_action('upgrader_process_complete', [$this, 'handle_upgrader_complete'], 10, 2);
     }
 
     /**
@@ -45,7 +48,7 @@ class ShopAGG_App_Store_Updater {
     /**
      * Register a resource as managed by ShopAGG.
      */
-    public static function register_managed_resource($slug, $type, $resource_id) {
+    public static function register_managed_resource($slug, $type, $resource_id, $asset_file = '') {
         $managed = get_option('shopagg_app_store_managed_resources', []);
         if (! is_array($managed)) {
             $managed = [];
@@ -53,6 +56,7 @@ class ShopAGG_App_Store_Updater {
         $managed[$slug] = [
             'type'        => $type,
             'resource_id' => $resource_id,
+            'asset_file'  => (string) $asset_file,
         ];
         update_option('shopagg_app_store_managed_resources', $managed);
     }
@@ -107,7 +111,7 @@ class ShopAGG_App_Store_Updater {
             }
 
             $slug = $update['slug'];
-            $plugin_file = $this->find_plugin_file($slug);
+            $plugin_file = ! empty($managed[$slug]['asset_file']) ? $managed[$slug]['asset_file'] : $this->find_plugin_file($slug);
 
             if (! $plugin_file) {
                 continue;
@@ -147,7 +151,8 @@ class ShopAGG_App_Store_Updater {
             }
 
             $slug = $update['slug'];
-            $theme = wp_get_theme($slug);
+            $stylesheet = ! empty($managed[$slug]['asset_file']) ? $managed[$slug]['asset_file'] : $slug;
+            $theme = wp_get_theme($stylesheet);
 
             if (! $theme->exists()) {
                 continue;
@@ -156,8 +161,8 @@ class ShopAGG_App_Store_Updater {
             $installed_version = $theme->get('Version');
             if (version_compare($update['version'], $installed_version, '>')) {
                 $resource_id = isset($managed[$slug]) ? $managed[$slug]['resource_id'] : 0;
-                $transient->response[$slug] = [
-                    'theme'       => $slug,
+                $transient->response[$stylesheet] = [
+                    'theme'       => $stylesheet,
                     'new_version' => $update['version'],
                     'package'     => admin_url('admin-ajax.php?action=shopagg_app_store_download_update&resource_id=' . $resource_id . '&nonce=' . wp_create_nonce('shopagg_app_store_update')),
                     'url'         => '',
@@ -259,6 +264,22 @@ class ShopAGG_App_Store_Updater {
         return $tmpfile;
     }
 
+    public function handle_upgrader_complete($upgrader, $hook_extra) {
+        if (empty($hook_extra['type']) || empty($hook_extra['action'])) {
+            return;
+        }
+
+        if (! in_array($hook_extra['type'], ['plugin', 'theme'], true)) {
+            return;
+        }
+
+        if (! in_array($hook_extra['action'], ['install', 'update'], true)) {
+            return;
+        }
+
+        $this->refresh_managed_assets();
+    }
+
     /**
      * Find plugin file by slug.
      */
@@ -275,6 +296,43 @@ class ShopAGG_App_Store_Updater {
         }
 
         return null;
+    }
+
+    private function refresh_managed_assets() {
+        $managed = get_option('shopagg_app_store_managed_resources', []);
+        if (! is_array($managed) || empty($managed)) {
+            return;
+        }
+
+        foreach ($managed as $slug => $resource) {
+            $type = isset($resource['type']) ? $resource['type'] : '';
+            $managed[$slug]['asset_file'] = $type === 'theme'
+                ? $this->find_theme_stylesheet($slug)
+                : $this->find_plugin_file($slug);
+        }
+
+        update_option('shopagg_app_store_managed_resources', $managed);
+        delete_site_transient('update_plugins');
+        delete_site_transient('update_themes');
+        wp_clean_themes_cache();
+    }
+
+    private function find_theme_stylesheet($slug) {
+        $theme = wp_get_theme($slug);
+        if ($theme->exists()) {
+            return $theme->get_stylesheet();
+        }
+
+        $themes = wp_get_themes();
+        foreach ($themes as $stylesheet => $installed_theme) {
+            $template = $installed_theme->get_template();
+
+            if ($stylesheet === $slug || $template === $slug) {
+                return $stylesheet;
+            }
+        }
+
+        return $slug;
     }
 
     /**
