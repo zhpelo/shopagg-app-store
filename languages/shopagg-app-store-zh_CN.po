@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ShopAGG App Store\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-23 10:25+0000\n"
-"PO-Revision-Date: 2026-03-23 10:34+0000\n"
+"PO-Revision-Date: 2026-03-25 08:45+0000\n"
 "Last-Translator: \n"
 "Language-Team: 简体中文\n"
 "Language: zh_CN\n"
@@ -15,41 +15,77 @@ msgstr ""
 "X-Loco-Version: 2.8.3; wp-6.9.4; php-8.4.16\n"
 "X-Domain: shopagg-app-store"
 
-#: includes/class-market.php:249
+#: includes/class-market.php:511 includes/class-market.php:538
 msgid "Activate"
 msgstr "激活"
 
-#: includes/class-installer.php:86
+#: includes/class-installer.php:97
 msgid "Activate Plugin"
 msgstr "激活插件"
 
-#: includes/class-installer.php:87
+#: includes/class-installer.php:98
 msgid "Activate Theme"
 msgstr "激活主题"
 
-#: includes/class-market.php:168
-msgid "Already Installed"
-msgstr "已安装"
+#: includes/class-market.php:450
+msgid "Active"
+msgstr "活跃"
 
-#: includes/class-api-client.php:68
+#: includes/class-market.php:262
+msgid "All Prices"
+msgstr "所有价格"
+
+#: includes/class-market.php:257
+msgid "All Types"
+msgstr "所有类型"
+
+#: includes/class-market.php:307
+msgid "Amount"
+msgstr "金额"
+
+#: includes/class-api-client.php:73
 msgid "API request failed."
 msgstr "API 请求失败。"
+
+#: includes/class-api-client.php:63
+msgid "API returned an invalid JSON response."
+msgstr "API 返回了无效的 JSON 响应。"
 
 #: includes/class-auth.php:117
 msgid "API Token"
 msgstr "应用程序接口令牌"
 
-#: includes/class-api-client.php:64
+#: includes/class-api-client.php:69
 msgid "API Token is invalid or expired. Please reconnect."
 msgstr "API 令牌无效或过期。请重新连接。"
 
-#: shopagg-app-store.php:74
+#: shopagg-app-store.php:128
 msgid "App Store"
 msgstr "应用商店"
 
-#: includes/class-market.php:143
+#: includes/class-market.php:372
+msgid "Available Updates"
+msgstr "可用更新"
+
+#: includes/class-market.php:115
 msgid "Back to Store"
 msgstr "返回商店"
+
+#: includes/class-market.php:148
+msgid "Bound Domain"
+msgstr "绑定域"
+
+#: includes/class-market.php:202
+msgid "Browse"
+msgstr "浏览"
+
+#: includes/class-market.php:595
+msgid "Cancelled"
+msgstr "已取消"
+
+#: includes/class-market.php:593
+msgid "Completed"
+msgstr "已完成"
 
 #: includes/class-auth.php:122
 msgid "Connect"
@@ -59,19 +95,43 @@ msgstr "连接"
 msgid "Connected successfully!"
 msgstr "连接成功！"
 
-#: includes/class-installer.php:160
+#: includes/class-installer.php:195 includes/class-updater.php:454
 msgid "Could not create temporary file."
 msgstr "无法创建临时文件。"
+
+#: includes/class-market.php:309
+msgid "Created"
+msgstr "创建"
+
+#: includes/class-market.php:45
+msgid "Current Account"
+msgstr "经常账户"
+
+#: includes/class-market.php:527
+msgid "Current Theme"
+msgstr "当前主题"
+
+#: includes/class-market.php:502
+msgid "Deactivate"
+msgstr "停用"
+
+#: includes/class-market.php:518 includes/class-market.php:541
+msgid "Delete"
+msgstr "删除"
 
 #: includes/class-auth.php:99
 msgid "Disconnected."
 msgstr "断开连接。"
 
-#: includes/class-installer.php:179
+#: includes/class-market.php:356
+msgid "Domain"
+msgstr "域名"
+
+#: includes/class-installer.php:214 includes/class-updater.php:473
 msgid "Download failed with HTTP status %d."
 msgstr "下载失败，HTTP 状态为 %d。"
 
-#: includes/class-installer.php:186
+#: includes/class-installer.php:221 includes/class-updater.php:479
 msgid "Downloaded file is empty."
 msgstr "下载的文件为空。"
 
@@ -79,20 +139,33 @@ msgstr "下载的文件为空。"
 msgid "Enter your API Token to connect"
 msgstr "输入您的 API 令牌进行连接"
 
-#: includes/class-installer.php:53 includes/class-updater.php:238
+#: includes/class-market.php:379
+msgid "Everything is up to date."
+msgstr "一切都是最新的。"
+
+#: includes/class-market.php:594
+msgid "Failed"
+msgstr "失败"
+
+#: includes/class-installer.php:55 includes/class-updater.php:302
 msgid "Failed to get download URL."
 msgstr "获取下载 URL 失败。"
 
-#: includes/class-market.php:91 includes/class-market.php:128
+#: includes/class-market.php:107 includes/class-market.php:263
+#: includes/class-market.php:424 includes/class-market.php:489
 msgid "Free"
 msgstr "免费"
+
+#: includes/class-market.php:357
+msgid "Granted"
+msgstr "批准"
 
 #. URI of the plugin
 #. Author URI of the plugin
 msgid "https://shopagg.com"
 msgstr "https://shopagg.com"
 
-#: includes/class-market.php:174 includes/class-market.php:180
+#: includes/class-market.php:479
 msgid "Install"
 msgstr "安装"
 
@@ -100,36 +173,116 @@ msgstr "安装"
 msgid "Install and manage WordPress plugins and themes from ShopAGG App Store."
 msgstr "在ShopAGG应用商店安装和管理WordPress插件和主题。"
 
-#: includes/class-market.php:247
-msgid "Installation successful!"
-msgstr "安装成功！"
+#: includes/class-market.php:724
+msgid "Installation successful! Refreshing resource status..."
+msgstr "安装成功！刷新资源状态..."
+
+#: includes/class-market.php:450
+msgid "Installed"
+msgstr "已安装"
+
+#: includes/class-market.php:394
+#, php-format
+msgid "Installed v%s, latest v%s"
+msgstr "已安装 v%s，最新 v%s"
+
+#: includes/class-market.php:158
+#, php-format
+msgid "Installed v%s, latest v%s."
+msgstr "已安装 v%s，最新 v%s。"
 
 #: includes/class-auth.php:47
 msgid "Invalid API Token. Please check and try again."
 msgstr "API 令牌无效。请检查并重试。"
 
-#: includes/class-installer.php:70
+#: includes/class-market.php:805
+msgid "Invalid order."
+msgstr "顺序无效。"
+
+#: includes/class-market.php:781 includes/class-market.php:834
+msgid "Invalid parameters."
+msgstr "参数无效。"
+
+#: includes/class-installer.php:72
 msgid "Invalid resource type."
 msgstr "资源类型无效。"
 
-#: includes/class-market.php:237 includes/class-market.php:269
-#: includes/class-updater.php:226
+#: includes/class-market.php:712 includes/class-market.php:741
+#: includes/class-updater.php:288
 msgid "Invalid resource."
 msgstr "无效资源。"
 
-#: includes/class-market.php:38
+#: includes/class-market.php:337
+msgid "License Records"
+msgstr "许可证记录"
+
+#: includes/class-market.php:131
+msgid "Licensed"
+msgstr "特许"
+
+#: includes/class-market.php:63 includes/class-market.php:205
+msgid "Licenses"
+msgstr "许可证"
+
+#: includes/class-market.php:49
 msgid "Logout"
 msgstr "注销"
 
-#: includes/class-market.php:76
+#: includes/class-market.php:134
+#, php-format
+msgid "New v%s"
+msgstr "新 v%s"
+
+#: includes/class-market.php:344
+msgid "No licenses yet."
+msgstr "还没有许可证。"
+
+#: includes/class-market.php:301
+msgid "No orders yet."
+msgstr "还没有订单。"
+
+#: includes/class-market.php:272
 msgid "No resources found."
 msgstr "未找到资源。"
+
+#: includes/class-market.php:282
+msgid "No resources match the current filters."
+msgstr "没有符合当前筛选条件的资源。"
+
+#: includes/class-market.php:356
+msgid "Not bound"
+msgstr "不受约束"
+
+#: includes/class-market.php:762
+msgid "Order created. Please select payment method."
+msgstr "创建订单。请选择付款方式。"
+
+#: includes/class-market.php:294
+msgid "Order History"
+msgstr "订购历史"
+
+#: includes/class-market.php:59 includes/class-market.php:204
+msgid "Orders"
+msgstr "订单"
+
+#: includes/class-market.php:447
+msgid "Owned"
+msgstr "自有"
+
+#: includes/class-market.php:264 includes/class-market.php:591
+msgid "Paid"
+msgstr "已付款"
 
 #: includes/class-auth.php:118
 msgid "Paste your API Token here"
 msgstr "在此处粘贴您的应用程序接口令牌"
 
-#: includes/class-market.php:228 includes/class-market.php:260
+#: includes/class-market.php:590
+msgid "Pending"
+msgstr "待定"
+
+#: includes/class-market.php:703 includes/class-market.php:732
+#: includes/class-market.php:770 includes/class-market.php:826
 #: includes/class-auth.php:65
 msgid "Permission denied."
 msgstr "拒绝许可。"
@@ -138,28 +291,66 @@ msgstr "拒绝许可。"
 msgid "Please enter your API Token."
 msgstr "请输入您的 API 标记。"
 
-#: includes/class-market.php:232 includes/class-market.php:264
+#: includes/class-market.php:707 includes/class-market.php:736
+#: includes/class-market.php:774 includes/class-market.php:800
 msgid "Please log in first."
 msgstr "请先登录。"
 
-#: includes/class-installer.php:241
+#: includes/class-market.php:127 includes/class-market.php:353
+#: includes/class-market.php:388 includes/class-market.php:438
+msgid "Plugin"
+msgstr "插件"
+
+#: includes/class-market.php:846
+msgid "Plugin activated."
+msgstr "已激活插件。"
+
+#: includes/class-market.php:850
+msgid "Plugin deactivated."
+msgstr "插件已停用。"
+
+#: includes/class-installer.php:276
 msgid "Plugin installation failed."
 msgstr "插件安装失败。"
 
-#: includes/class-market.php:45
+#: includes/class-market.php:258
 msgid "Plugins"
 msgstr "插件"
 
-#: includes/class-market.php:185
+#: includes/class-market.php:592
+msgid "Processing"
+msgstr "加工"
+
+#: includes/class-market.php:489
 #, php-format
 msgid "Purchase %s"
 msgstr "购买 %s"
 
-#: includes/class-market.php:292
-msgid "Purchase successful! You can now install this resource."
-msgstr "购买成功！您现在可以安装该资源。"
+#: includes/class-market.php:146
+msgid "Requires PHP"
+msgstr "需要 PHP"
 
-#: includes/class-updater.php:222
+#: includes/class-market.php:145
+msgid "Requires WordPress"
+msgstr "需要 WordPress"
+
+#: includes/class-market.php:306
+msgid "Resource"
+msgstr "资源"
+
+#: includes/class-market.php:251
+msgid "Resource Library"
+msgstr "资源库"
+
+#: includes/class-market.php:55
+msgid "Resources"
+msgstr "资源"
+
+#: includes/class-market.php:255
+msgid "Search by name or slug..."
+msgstr "按名称或标题搜索..."
+
+#: includes/class-updater.php:284
 msgid "Security check failed."
 msgstr "安全检查失败。"
 
@@ -168,7 +359,7 @@ msgid "ShopAGG"
 msgstr "购物袋"
 
 #. Name of the plugin
-#: shopagg-app-store.php:73 includes/class-market.php:35
+#: shopagg-app-store.php:127 includes/class-market.php:40
 #: includes/class-auth.php:111
 msgid "ShopAGG App Store"
 msgstr "ShopAGG 应用商店"
@@ -177,17 +368,72 @@ msgstr "ShopAGG 应用商店"
 msgid "ShopAGG Dashboard"
 msgstr "购物车控制面板"
 
-#: includes/class-installer.php:242
+#: includes/class-market.php:308
+msgid "Status"
+msgstr "现状"
+
+#: includes/class-market.php:147
+msgid "Tested Up To"
+msgstr "测试达"
+
+#: includes/class-market.php:127 includes/class-market.php:353
+#: includes/class-market.php:388 includes/class-market.php:438
+msgid "Theme"
+msgstr "主题"
+
+#: includes/class-market.php:858
+msgid "Theme activated."
+msgstr "激活主题。"
+
+#: includes/class-installer.php:277
 msgid "Theme installation failed."
 msgstr "主题安装失败。"
 
-#: includes/class-market.php:49
+#: includes/class-market.php:259
 msgid "Themes"
 msgstr "主题"
+
+#: includes/class-market.php:854
+msgid "Themes can only be activated here."
+msgstr "主题只能在这里激活。"
+
+#: includes/class-market.php:283
+msgid "Try changing the type, price or search keywords."
+msgstr "尝试更改类型、价格或搜索关键词。"
 
 #: includes/class-auth.php:52
 msgid "Unexpected API response."
 msgstr "意外的 API 响应。"
+
+#: includes/class-market.php:318 includes/class-market.php:352
+msgid "Unknown Resource"
+msgstr "未知资源"
+
+#: includes/class-market.php:153
+msgid "Update available"
+msgstr "可更新"
+
+#: includes/class-market.php:407
+msgid "Update Now"
+msgstr "立即更新"
+
+#: includes/class-market.php:469
+#, php-format
+msgid "Update to v%s"
+msgstr "更新至 v%s"
+
+#: includes/class-market.php:453
+#, php-format
+msgid "Update v%s"
+msgstr "更新 v%s"
+
+#: includes/class-market.php:67 includes/class-market.php:203
+msgid "Updates"
+msgstr "更新"
+
+#: includes/class-market.php:410 includes/class-market.php:458
+msgid "View Details"
+msgstr "查看详情"
 
 #. %s: URL to ShopAGG dashboard
 #: includes/class-auth.php:132
@@ -202,3 +448,23 @@ msgstr "您必须登录后才能安装资源。"
 #: includes/class-api-client.php:39
 msgid "You must connect your API Token first."
 msgstr "您必须先连接 API 令牌。"
+
+#: includes/class-market.php:295
+msgid "查看你的应用商店订单状态和支付记录。"
+msgstr "查看你的应用商店订单状态和支付记录。"
+
+#: includes/class-market.php:338
+msgid "查看已授权资源以及当前站点绑定的域名。"
+msgstr "查看已授权资源以及当前站点绑定的域名。"
+
+#: includes/class-market.php:252
+msgid "筛选并管理你需要的插件和主题资源。"
+msgstr "筛选并管理你需要的插件和主题资源。"
+
+#: includes/class-market.php:41
+msgid "集中安装、购买、授权和管理你的 WordPress 插件与主题资源。"
+msgstr "集中安装、购买、授权和管理你的 WordPress 插件与主题资源。"
+
+#: includes/class-market.php:373
+msgid "集中查看并更新通过 ShopAGG 安装的插件和主题版本。"
+msgstr "集中查看并更新通过 ShopAGG 安装的插件和主题版本。"
