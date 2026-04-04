@@ -22,7 +22,7 @@ class ShopAGG_App_Store_API_Client {
      * Make an API request.
      */
     public function request($endpoint, $method = 'GET', $body = [], $requires_auth = true) {
-        $url = rtrim(shopagg_app_store_get_api_url(), '/') . '/' . ltrim($endpoint, '/');
+        $url = shopagg_app_store_get_api_url() . '/' . ltrim($endpoint, '/');
 
         $args = [
             'method'  => strtoupper($method),

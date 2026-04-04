@@ -20,7 +20,8 @@ if (! defined('ABSPATH')) {
 define('SHOPAGG_APP_STORE_VERSION', '1.0.0');
 define('SHOPAGG_APP_STORE_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SHOPAGG_APP_STORE_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('SHOPAGG_APP_STORE_DEFAULT_API_URL', 'http://new-shopagg.local/api/shopagg-app-store/');
+define('SHOPAGG_APP_STORE_API_DOMAIN', 'http://v3.shopagg.test');
+define('SHOPAGG_APP_STORE_DEFAULT_API_URL', SHOPAGG_APP_STORE_API_DOMAIN . '/api/shopagg-app-store/');
 
 // Include files
 require_once SHOPAGG_APP_STORE_PLUGIN_DIR . 'includes/class-api-client.php';
@@ -63,14 +64,7 @@ function shopagg_app_store_get_api_url() {
  * Get ShopAGG dashboard URL from API base URL.
  */
 function shopagg_app_store_get_dashboard_url() {
-    $api_url = untrailingslashit(shopagg_app_store_get_api_url());
-    $dashboard_url = preg_replace('#/api/shopagg-app-store$#', '', $api_url);
-
-    if (! is_string($dashboard_url) || $dashboard_url === '') {
-        return $api_url;
-    }
-
-    return $dashboard_url . '/dashboard';
+    return SHOPAGG_APP_STORE_API_DOMAIN . '/dashboard/api-tokens';
 }
 
 /**
