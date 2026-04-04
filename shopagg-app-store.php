@@ -53,12 +53,7 @@ function shopagg_app_store_get_user() {
     return get_option('shopagg_app_store_user', []);
 }
 
-/**
- * Get configured API base URL.
- */
-function shopagg_app_store_get_api_url() {
-    return untrailingslashit(SHOPAGG_APP_STORE_DEFAULT_API_URL) . '/';
-}
+
 
 /**
  * Get ShopAGG dashboard URL from API base URL.

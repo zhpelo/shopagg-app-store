@@ -28,7 +28,7 @@ class ShopAGG_App_Store_Auth {
      * Verify a token by calling the /me endpoint.
      */
     private function verify_token($token) {
-        $url = shopagg_app_store_get_api_url(). '/me';
+        $url = SHOPAGG_APP_STORE_DEFAULT_API_URL . 'me';
 
         $response = wp_remote_get($url, [
             'headers' => [
