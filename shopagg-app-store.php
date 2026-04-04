@@ -74,6 +74,25 @@ function shopagg_app_store_get_dashboard_url() {
 }
 
 /**
+ * Build the connect page URL for binding an API token.
+ *
+ * @param string $redirect_to Optional admin URL to return to after connecting.
+ * @return string
+ */
+function shopagg_app_store_get_connect_url($redirect_to = '') {
+    $args = [
+        'page' => 'shopagg-app-store',
+        'action' => 'connect',
+    ];
+
+    if (! empty($redirect_to)) {
+        $args['redirect_to'] = $redirect_to;
+    }
+
+    return add_query_arg($args, admin_url('admin.php'));
+}
+
+/**
  * Normalize the current WordPress site domain for license binding.
  */
 function shopagg_app_store_get_site_domain() {
@@ -139,14 +158,20 @@ add_action('admin_menu', 'shopagg_app_store_admin_menu');
  * Main page render.
  */
 function shopagg_app_store_render_page() {
-    if (! shopagg_app_store_is_logged_in()) {
-        ShopAGG_App_Store_Auth::instance()->render_login_page();
-        return;
-    }
-
     $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'browse';
     $action = isset($_GET['action']) ? sanitize_text_field($_GET['action']) : '';
     $resource_id = isset($_GET['resource_id']) ? absint($_GET['resource_id']) : 0;
+    $redirect_to = isset($_GET['redirect_to']) ? esc_url_raw(wp_unslash($_GET['redirect_to'])) : '';
+
+    if ($action === 'connect') {
+        if (shopagg_app_store_is_logged_in() && ! empty($redirect_to)) {
+            wp_safe_redirect($redirect_to);
+            exit;
+        }
+
+        ShopAGG_App_Store_Auth::instance()->render_login_page();
+        return;
+    }
 
     if ($action === 'detail' && $resource_id > 0) {
         ShopAGG_App_Store_Market::instance()->render_detail_page($resource_id);

@@ -30,7 +30,8 @@ class ShopAGG_App_Store_Market {
 
     public function render_market_page($tab = 'browse') {
         $state = $this->resolve_market_state($tab);
-        $user = shopagg_app_store_get_user();
+        $is_connected = shopagg_app_store_is_logged_in();
+        $user = $is_connected ? shopagg_app_store_get_user() : [];
         ?>
         <div class="wrap shopagg-app-store-wrap">
             <div class="shopagg-shell">
@@ -42,11 +43,23 @@ class ShopAGG_App_Store_Market {
                     </div>
                     <div class="shopagg-hero-user">
                         <div class="shopagg-hero-user-card">
-                            <span class="shopagg-hero-user-label"><?php esc_html_e('Current Account', 'shopagg-app-store'); ?></span>
-                            <strong><?php echo esc_html($user['name'] ?? ''); ?></strong>
-                            <span><?php echo esc_html($user['email'] ?? ''); ?></span>
+                            <?php if ($is_connected) : ?>
+                                <span class="shopagg-hero-user-label"><?php esc_html_e('Current Account', 'shopagg-app-store'); ?></span>
+                                <strong><?php echo esc_html($user['name'] ?? ''); ?></strong>
+                                <span><?php echo esc_html($user['email'] ?? ''); ?></span>
+                            <?php else : ?>
+                                <span class="shopagg-hero-user-label"><?php esc_html_e('未绑定令牌', 'shopagg-app-store'); ?></span>
+                                <strong><?php esc_html_e('现在可以直接浏览和搜索', 'shopagg-app-store'); ?></strong>
+                                <span><?php esc_html_e('安装或更新时再绑定 API Token 即可。', 'shopagg-app-store'); ?></span>
+                            <?php endif; ?>
                         </div>
-                        <button id="shopagg-logout" class="button button-secondary"><?php esc_html_e('Logout', 'shopagg-app-store'); ?></button>
+                        <?php if ($is_connected) : ?>
+                            <button id="shopagg-logout" class="button button-secondary"><?php esc_html_e('Logout', 'shopagg-app-store'); ?></button>
+                        <?php else : ?>
+                            <a class="button button-primary" href="<?php echo esc_url(shopagg_app_store_get_connect_url()); ?>">
+                                <?php esc_html_e('Connect', 'shopagg-app-store'); ?>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -57,15 +70,15 @@ class ShopAGG_App_Store_Market {
                     </div>
                     <div class="shopagg-stat-card">
                         <span class="shopagg-stat-label"><?php esc_html_e('Orders', 'shopagg-app-store'); ?></span>
-                        <strong><?php echo esc_html(count($state['orders'])); ?></strong>
+                        <strong><?php echo esc_html($is_connected ? count($state['orders']) : '-'); ?></strong>
                     </div>
                     <div class="shopagg-stat-card">
                         <span class="shopagg-stat-label"><?php esc_html_e('Licenses', 'shopagg-app-store'); ?></span>
-                        <strong><?php echo esc_html(count($state['licenses'])); ?></strong>
+                        <strong><?php echo esc_html($is_connected ? count($state['licenses']) : '-'); ?></strong>
                     </div>
                     <div class="shopagg-stat-card">
                         <span class="shopagg-stat-label"><?php esc_html_e('Updates', 'shopagg-app-store'); ?></span>
-                        <strong><?php echo esc_html(count($state['updates'])); ?></strong>
+                        <strong><?php echo esc_html($is_connected ? count($state['updates']) : '-'); ?></strong>
                     </div>
                 </div>
 
@@ -94,7 +107,7 @@ class ShopAGG_App_Store_Market {
 
     public function render_detail_page($resource_id) {
         $api = ShopAGG_App_Store_API_Client::instance();
-        $result = $api->get('resources/' . $resource_id);
+        $result = $api->get('resources/' . $resource_id, [], false);
 
         if (is_wp_error($result)) {
             echo '<div class="wrap shopagg-app-store-wrap"><div class="shopagg-panel-message error"><p>' . esc_html($result->get_error_message()) . '</p></div></div>';
@@ -102,7 +115,7 @@ class ShopAGG_App_Store_Market {
         }
 
         $resource = $result['resource'];
-        $has_license = ! empty($result['has_license']);
+        $has_license = shopagg_app_store_is_logged_in() && ! empty($result['has_license']);
         $is_free = (float) $resource['price'] === 0.0;
         $price_label = $is_free ? __('Free', 'shopagg-app-store') : '$' . number_format((float) $resource['price'], 2);
 
@@ -179,6 +192,7 @@ class ShopAGG_App_Store_Market {
 
     private function resolve_market_state($tab) {
         $tab = sanitize_key($tab);
+        $is_connected = shopagg_app_store_is_logged_in();
         $legacy_map = [
             'plugins' => 'plugin',
             'themes' => 'theme',
@@ -186,6 +200,9 @@ class ShopAGG_App_Store_Market {
 
         $preset_type = isset($legacy_map[$tab]) ? $legacy_map[$tab] : 'all';
         $normalized_tab = in_array($tab, ['browse', 'updates', 'orders', 'licenses'], true) ? $tab : 'browse';
+        if (! $is_connected && $normalized_tab !== 'browse') {
+            $normalized_tab = 'browse';
+        }
 
         return [
             'tab' => $normalized_tab,
@@ -198,17 +215,22 @@ class ShopAGG_App_Store_Market {
     }
 
     private function get_market_tabs() {
-        return [
+        $tabs = [
             'browse' => __('Browse', 'shopagg-app-store'),
-            'updates' => __('Updates', 'shopagg-app-store'),
-            'orders' => __('Orders', 'shopagg-app-store'),
-            'licenses' => __('Licenses', 'shopagg-app-store'),
         ];
+
+        if (shopagg_app_store_is_logged_in()) {
+            $tabs['updates'] = __('Updates', 'shopagg-app-store');
+            $tabs['orders'] = __('Orders', 'shopagg-app-store');
+            $tabs['licenses'] = __('Licenses', 'shopagg-app-store');
+        }
+
+        return $tabs;
     }
 
     private function fetch_resources() {
         $api = ShopAGG_App_Store_API_Client::instance();
-        $result = $api->get('resources');
+        $result = $api->get('resources', [], false);
 
         if (is_wp_error($result)) {
             return [];
@@ -218,6 +240,10 @@ class ShopAGG_App_Store_Market {
     }
 
     private function fetch_orders() {
+        if (! shopagg_app_store_is_logged_in()) {
+            return [];
+        }
+
         $api = ShopAGG_App_Store_API_Client::instance();
         $result = $api->get('orders');
 
@@ -229,6 +255,10 @@ class ShopAGG_App_Store_Market {
     }
 
     private function fetch_licenses() {
+        if (! shopagg_app_store_is_logged_in()) {
+            return [];
+        }
+
         $api = ShopAGG_App_Store_API_Client::instance();
         $result = $api->get('licenses');
 
@@ -250,6 +280,9 @@ class ShopAGG_App_Store_Market {
                 <div>
                     <h2><?php esc_html_e('Resource Library', 'shopagg-app-store'); ?></h2>
                     <p><?php esc_html_e('筛选并管理你需要的插件和主题资源。', 'shopagg-app-store'); ?></p>
+                    <?php if (! shopagg_app_store_is_logged_in()) : ?>
+                        <p><a href="<?php echo esc_url(shopagg_app_store_get_connect_url()); ?>"><?php esc_html_e('绑定 API Token', 'shopagg-app-store'); ?></a> <?php esc_html_e('后即可安装或更新资源。', 'shopagg-app-store'); ?></p>
+                    <?php endif; ?>
                 </div>
                 <div class="shopagg-filter-bar">
                     <input type="search" id="shopagg-market-search" class="shopagg-filter-input" placeholder="<?php esc_attr_e('Search by name or slug...', 'shopagg-app-store'); ?>">
@@ -463,6 +496,18 @@ class ShopAGG_App_Store_Market {
     }
 
     private function render_detail_action_buttons($resource, $status, $has_license, $is_free) {
+        if (! shopagg_app_store_is_logged_in() && (empty($status['installed']) || ! empty($status['update']))) {
+            $connect_label = ! empty($status['update'])
+                ? __('绑定 Token 后更新', 'shopagg-app-store')
+                : ($is_free ? __('绑定 Token 后安装', 'shopagg-app-store') : __('绑定 Token 后购买', 'shopagg-app-store'));
+            ?>
+            <a class="button button-primary" href="<?php echo esc_url(shopagg_app_store_get_connect_url($this->get_resource_detail_url($resource['id']))); ?>">
+                <?php echo esc_html($connect_label); ?>
+            </a>
+            <?php
+            return;
+        }
+
         if (! empty($status['update']['update_url'])) {
             ?>
             <a class="button button-primary" href="<?php echo esc_url($status['update']['update_url']); ?>">
@@ -694,6 +739,10 @@ class ShopAGG_App_Store_Market {
             admin_url('themes.php?action=delete&stylesheet=' . rawurlencode($slug)),
             'delete-theme_' . $slug
         );
+    }
+
+    private function get_resource_detail_url($resource_id) {
+        return admin_url('admin.php?page=shopagg-app-store&action=detail&resource_id=' . absint($resource_id));
     }
 
     public function ajax_install() {
