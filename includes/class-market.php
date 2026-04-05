@@ -26,6 +26,7 @@ class ShopAGG_App_Store_Market {
         add_action('wp_ajax_shopagg_app_store_pay', [$this, 'ajax_pay']);
         add_action('wp_ajax_shopagg_app_store_order_status', [$this, 'ajax_order_status']);
         add_action('wp_ajax_shopagg_app_store_toggle_resource', [$this, 'ajax_toggle_resource']);
+        add_action('wp_ajax_shopagg_app_store_submit_review', [$this, 'ajax_submit_review']);
     }
 
     public function render_market_page($tab = 'browse') {
@@ -107,7 +108,11 @@ class ShopAGG_App_Store_Market {
 
     public function render_detail_page($resource_id) {
         $api = ShopAGG_App_Store_API_Client::instance();
-        $result = $api->get('resources/' . $resource_id, [], false);
+        $result = $api->get('resources/' . $resource_id, [], shopagg_app_store_is_logged_in());
+
+        if (is_wp_error($result) && shopagg_app_store_is_logged_in()) {
+            $result = $api->get('resources/' . $resource_id, [], false);
+        }
 
         if (is_wp_error($result)) {
             echo '<div class="wrap shopagg-app-store-wrap"><div class="shopagg-panel-message error"><p>' . esc_html($result->get_error_message()) . '</p></div></div>';
@@ -128,6 +133,7 @@ class ShopAGG_App_Store_Market {
             ? $resource['short_description']
             : wp_trim_words(wp_strip_all_tags($resource['description'] ?? ''), 28);
         $reviews = ! empty($resource['reviews']) && is_array($resource['reviews']) ? $resource['reviews'] : [];
+        $user_review = ! empty($resource['user_review']) && is_array($resource['user_review']) ? $resource['user_review'] : null;
         $update_history = ! empty($resource['update_history']) && is_array($resource['update_history']) ? $resource['update_history'] : [];
         $rating_average = isset($resource['rating_average']) && $resource['rating_average'] !== null && $resource['rating_average'] !== ''
             ? round((float) $resource['rating_average'], 1)
@@ -291,6 +297,7 @@ class ShopAGG_App_Store_Market {
                                 <p><?php echo esc_html($rating_count > 0 ? sprintf(_n('%s rating', '%s ratings', $rating_count, 'shopagg-app-store'), number_format_i18n($rating_count)) : __('Reviews are coming soon.', 'shopagg-app-store')); ?></p>
                             </div>
                             <div class="shopagg-detail-review-list">
+                                <?php $this->render_review_form($resource, $status, $user_review); ?>
                                 <?php if (! empty($reviews)) : ?>
                                     <?php foreach ($reviews as $review) : ?>
                                         <div class="shopagg-detail-review-card">
@@ -357,6 +364,101 @@ class ShopAGG_App_Store_Market {
                     </div>
                 </div>
             </div>
+        </div>
+        <?php
+    }
+
+    private function render_review_form($resource, $status, $user_review) {
+        $is_connected = shopagg_app_store_is_logged_in();
+        $is_installed = ! empty($status['installed']);
+        $is_hidden = is_array($user_review) && isset($user_review['status']) && $user_review['status'] === 'hidden';
+        $rating = is_array($user_review) && isset($user_review['rating']) ? (int) round((float) $user_review['rating']) : 5;
+        $title = is_array($user_review) ? (string) ($user_review['title'] ?? '') : '';
+        $content = is_array($user_review) ? (string) ($user_review['content'] ?? '') : '';
+        ?>
+        <div class="shopagg-detail-review-form-card">
+            <div class="shopagg-detail-review-form-head">
+                <div>
+                    <strong>
+                        <?php echo esc_html($user_review ? __('Update Your Review', 'shopagg-app-store') : __('Share Your Experience', 'shopagg-app-store')); ?>
+                    </strong>
+                    <span>
+                        <?php
+                        if (! $is_connected) {
+                            esc_html_e('Connect your API token first, then you can publish a rating and review from this site.', 'shopagg-app-store');
+                        } elseif (! $is_installed) {
+                            esc_html_e('Install this resource on your site first. Once it is installed, you can leave a rating and review here.', 'shopagg-app-store');
+                        } else {
+                            esc_html_e('Your review is linked to your ShopAGG account. You can come back anytime to edit it.', 'shopagg-app-store');
+                        }
+                        ?>
+                    </span>
+                </div>
+                <?php if ($is_hidden) : ?>
+                    <em class="shopagg-review-status-badge"><?php esc_html_e('Currently Hidden', 'shopagg-app-store'); ?></em>
+                <?php endif; ?>
+            </div>
+
+            <?php if (! $is_connected) : ?>
+                <a class="button button-secondary shopagg-review-connect-btn" href="<?php echo esc_url(shopagg_app_store_get_connect_url($this->get_resource_detail_url($resource['id']))); ?>">
+                    <?php esc_html_e('Connect Token to Review', 'shopagg-app-store'); ?>
+                </a>
+            <?php elseif (! $is_installed) : ?>
+                <div class="shopagg-review-install-note">
+                    <?php esc_html_e('Reviews open automatically after this plugin or theme is installed on the current WordPress site.', 'shopagg-app-store'); ?>
+                </div>
+            <?php else : ?>
+                <form class="shopagg-review-form" data-resource-id="<?php echo esc_attr($resource['id']); ?>">
+                    <div class="shopagg-review-stars-field" role="radiogroup" aria-label="<?php esc_attr_e('Rating', 'shopagg-app-store'); ?>">
+                        <?php for ($star = 5; $star >= 1; $star--) : ?>
+                            <input type="radio"
+                                   id="shopagg-review-rating-<?php echo esc_attr($resource['id'] . '-' . $star); ?>"
+                                   name="review_rating"
+                                   value="<?php echo esc_attr($star); ?>"
+                                   <?php checked($rating, $star); ?>>
+                            <label for="shopagg-review-rating-<?php echo esc_attr($resource['id'] . '-' . $star); ?>" title="<?php echo esc_attr(sprintf(__('%d stars', 'shopagg-app-store'), $star)); ?>">&#9733;</label>
+                        <?php endfor; ?>
+                    </div>
+
+                    <div class="shopagg-review-form-grid">
+                        <div>
+                            <label for="shopagg-review-title-<?php echo esc_attr($resource['id']); ?>"><?php esc_html_e('Review Title', 'shopagg-app-store'); ?></label>
+                            <input type="text"
+                                   id="shopagg-review-title-<?php echo esc_attr($resource['id']); ?>"
+                                   name="review_title"
+                                   value="<?php echo esc_attr($title); ?>"
+                                   placeholder="<?php esc_attr_e('Summarize your experience in one line', 'shopagg-app-store'); ?>">
+                        </div>
+                        <div>
+                            <label for="shopagg-review-version-<?php echo esc_attr($resource['id']); ?>"><?php esc_html_e('Installed Version', 'shopagg-app-store'); ?></label>
+                            <input type="text"
+                                   id="shopagg-review-version-<?php echo esc_attr($resource['id']); ?>"
+                                   value="<?php echo esc_attr($status['installed_version'] ?: ($resource['version'] ?? '')); ?>"
+                                   disabled>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="shopagg-review-content-<?php echo esc_attr($resource['id']); ?>"><?php esc_html_e('Your Review', 'shopagg-app-store'); ?></label>
+                        <textarea id="shopagg-review-content-<?php echo esc_attr($resource['id']); ?>"
+                                  name="review_content"
+                                  rows="4"
+                                  placeholder="<?php esc_attr_e('What do you like, and how is it working on your site?', 'shopagg-app-store'); ?>"><?php echo esc_textarea($content); ?></textarea>
+                    </div>
+
+                    <div class="shopagg-review-form-actions">
+                        <button type="submit"
+                                class="button button-primary shopagg-review-submit-btn"
+                                data-default-text="<?php echo esc_attr($user_review ? __('Update Review', 'shopagg-app-store') : __('Publish Review', 'shopagg-app-store')); ?>">
+                            <?php echo esc_html($user_review ? __('Update Review', 'shopagg-app-store') : __('Publish Review', 'shopagg-app-store')); ?>
+                        </button>
+                        <?php if ($is_hidden) : ?>
+                            <span class="shopagg-review-form-note"><?php esc_html_e('An administrator hid your last review. Updating it will keep it saved for later review.', 'shopagg-app-store'); ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="shopagg-message shopagg-review-message"></div>
+                </form>
+            <?php endif; ?>
         </div>
         <?php
     }
@@ -1288,5 +1390,60 @@ class ShopAGG_App_Store_Market {
 
         switch_theme($target);
         wp_send_json_success(['message' => __('Theme activated.', 'shopagg-app-store')]);
+    }
+
+    public function ajax_submit_review() {
+        check_ajax_referer('shopagg_app_store_nonce', 'nonce');
+
+        if (! current_user_can('manage_options')) {
+            wp_send_json_error(['message' => __('Permission denied.', 'shopagg-app-store')]);
+        }
+
+        if (! shopagg_app_store_is_logged_in()) {
+            wp_send_json_error(['message' => __('Please log in first.', 'shopagg-app-store')]);
+        }
+
+        $resource_id = isset($_POST['resource_id']) ? absint($_POST['resource_id']) : 0;
+        $rating = isset($_POST['rating']) ? (float) wp_unslash($_POST['rating']) : 0;
+        $title = isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '';
+        $content = isset($_POST['content']) ? sanitize_textarea_field(wp_unslash($_POST['content'])) : '';
+
+        if (! $resource_id || $rating < 1 || $rating > 5 || $content === '') {
+            wp_send_json_error(['message' => __('Please complete the rating and review before submitting.', 'shopagg-app-store')]);
+        }
+
+        $api = ShopAGG_App_Store_API_Client::instance();
+        $resource_result = $api->get('resources/' . $resource_id);
+
+        if (is_wp_error($resource_result) || empty($resource_result['resource'])) {
+            wp_send_json_error(['message' => __('Invalid resource.', 'shopagg-app-store')]);
+        }
+
+        $resource = $resource_result['resource'];
+
+        if (shopagg_app_store_is_client_resource($resource)) {
+            wp_send_json_error(['message' => __('This resource cannot be reviewed from inside the ShopAGG App Store plugin.', 'shopagg-app-store')]);
+        }
+
+        $status = $this->get_resource_install_state($resource);
+        if (empty($status['installed']) || empty($status['installed_version'])) {
+            wp_send_json_error(['message' => __('Install this resource on your site first, then you can publish a review.', 'shopagg-app-store')]);
+        }
+
+        $result = $api->post('resources/' . $resource_id . '/reviews', [
+            'rating' => round($rating, 1),
+            'title' => $title,
+            'content' => $content,
+            'installed_version' => $status['installed_version'],
+            'site_domain' => shopagg_app_store_get_site_domain(),
+        ]);
+
+        if (is_wp_error($result)) {
+            wp_send_json_error(['message' => $result->get_error_message()]);
+        }
+
+        wp_send_json_success([
+            'message' => isset($result['message']) ? $result['message'] : __('Your review has been saved.', 'shopagg-app-store'),
+        ]);
     }
 }

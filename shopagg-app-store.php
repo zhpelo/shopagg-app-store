@@ -240,6 +240,11 @@ function shopagg_app_store_admin_enqueue($hook) {
             'retry' => __('Retry', 'shopagg-app-store'),
             'creatingOrder' => __('Creating order...', 'shopagg-app-store'),
             'purchase' => __('Purchase', 'shopagg-app-store'),
+            'savingReview' => __('Saving Review...', 'shopagg-app-store'),
+            'publishReview' => __('Publish Review', 'shopagg-app-store'),
+            'updateReview' => __('Update Review', 'shopagg-app-store'),
+            'reviewSaved' => __('Your review has been saved.', 'shopagg-app-store'),
+            'reviewSaveFailed' => __('Failed to save your review. Please try again.', 'shopagg-app-store'),
         ],
     ]);
 }

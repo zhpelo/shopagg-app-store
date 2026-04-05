@@ -21,6 +21,7 @@
             this.bindToggleResource();
             this.bindPurchase();
             this.bindInlinePayment();
+            this.bindReviewForm();
             this.bindDeleteConfirm();
         },
 
@@ -760,6 +761,49 @@
                 if (!confirm('Are you sure you want to delete this resource?')) {
                     e.preventDefault();
                 }
+            });
+        },
+
+        bindReviewForm: function () {
+            $(document).on('submit', '.shopagg-review-form', function (e) {
+                e.preventDefault();
+
+                var $form = $(this);
+                var $btn = $form.find('.shopagg-review-submit-btn');
+                var $msg = $form.find('.shopagg-review-message');
+                var defaultText = $btn.data('default-text') || t('publishReview', 'Publish Review');
+
+                ShopAGGAppStore.setButtonState($btn, t('savingReview', 'Saving Review...'), true);
+                ShopAGGAppStore.resetMessage($msg);
+
+                $.ajax({
+                    url: shopaggAppStore.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'shopagg_app_store_submit_review',
+                        nonce: shopaggAppStore.nonce,
+                        resource_id: $form.data('resource-id'),
+                        rating: $form.find('input[name="review_rating"]:checked').val(),
+                        title: $form.find('input[name="review_title"]').val(),
+                        content: $form.find('textarea[name="review_content"]').val()
+                    },
+                    success: function (response) {
+                        if (!response.success) {
+                            ShopAGGAppStore.showMessage($msg, 'error', response.data.message || t('reviewSaveFailed', 'Failed to save your review. Please try again.'));
+                            ShopAGGAppStore.setButtonState($btn, defaultText, false);
+                            return;
+                        }
+
+                        ShopAGGAppStore.showMessage($msg, 'success', response.data.message || t('reviewSaved', 'Your review has been saved.'));
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 900);
+                    },
+                    error: function () {
+                        ShopAGGAppStore.showMessage($msg, 'error', t('reviewSaveFailed', 'Failed to save your review. Please try again.'));
+                        ShopAGGAppStore.setButtonState($btn, defaultText, false);
+                    }
+                });
             });
         }
     };

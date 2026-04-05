@@ -1166,6 +1166,118 @@
     gap: 14px;
 }
 
+.shopagg-detail-review-form-card {
+    padding: 20px;
+    border: 1px solid #dbeafe;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #f8fbff 0%, #eff6ff 100%);
+}
+
+.shopagg-detail-review-form-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.shopagg-detail-review-form-head strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #0f172a;
+}
+
+.shopagg-detail-review-form-head span,
+.shopagg-review-form-note,
+.shopagg-review-install-note {
+    color: #64748b;
+    line-height: 1.7;
+}
+
+.shopagg-review-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #fff7ed;
+    color: #c2410c;
+    font-style: normal;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.shopagg-review-form {
+    display: grid;
+    gap: 14px;
+}
+
+.shopagg-review-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.shopagg-review-form label {
+    display: block;
+    margin-bottom: 6px;
+    color: #334155;
+    font-weight: 600;
+}
+
+.shopagg-review-form input[type="text"],
+.shopagg-review-form textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    background: #fff;
+    color: #0f172a;
+    box-sizing: border-box;
+}
+
+.shopagg-review-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.shopagg-review-form input[disabled] {
+    color: #64748b;
+    background: #f8fafc;
+}
+
+.shopagg-review-stars-field {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.shopagg-review-stars-field input {
+    display: none;
+}
+
+.shopagg-review-stars-field label {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.shopagg-review-stars-field label:hover,
+.shopagg-review-stars-field label:hover ~ label,
+.shopagg-review-stars-field input:checked ~ label {
+    color: #f59e0b;
+}
+
+.shopagg-review-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
 .shopagg-detail-review-card {
     padding: 18px;
     border: 1px solid #e2e8f0;
@@ -1283,6 +1395,7 @@
     .shopagg-detail-app,
     .shopagg-detail-guidance-grid,
     .shopagg-detail-reviews-layout,
+    .shopagg-review-form-grid,
     .shopagg-storefront-stats,
     .shopagg-action-secondary {
         grid-template-columns: 1fr;
@@ -1343,6 +1456,7 @@
     }
 
     .shopagg-detail-review-top,
+    .shopagg-detail-review-form-head,
     .shopagg-detail-timeline-head {
         flex-direction: column;
         align-items: flex-start;
