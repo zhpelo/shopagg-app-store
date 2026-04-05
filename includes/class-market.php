@@ -118,6 +118,19 @@ class ShopAGG_App_Store_Market {
         $has_license = shopagg_app_store_is_logged_in() && ! empty($result['has_license']);
         $is_free = (float) $resource['price'] === 0.0;
         $price_label = $is_free ? __('Free', 'shopagg-app-store') : '$' . number_format((float) $resource['price'], 2);
+        $short_description = ! empty($resource['short_description'])
+            ? $resource['short_description']
+            : wp_trim_words(wp_strip_all_tags($resource['description'] ?? ''), 28);
+        $reviews = ! empty($resource['reviews']) && is_array($resource['reviews']) ? $resource['reviews'] : [];
+        $update_history = ! empty($resource['update_history']) && is_array($resource['update_history']) ? $resource['update_history'] : [];
+        $rating_average = isset($resource['rating_average']) && $resource['rating_average'] !== null && $resource['rating_average'] !== ''
+            ? round((float) $resource['rating_average'], 1)
+            : null;
+        $rating_count = isset($resource['rating_count']) ? absint($resource['rating_count']) : 0;
+        $installs_count = isset($resource['installs_count']) ? absint($resource['installs_count']) : 0;
+        $latest_update = ! empty($resource['last_updated']) ? $this->format_storefront_date($resource['last_updated']) : '-';
+        $detail_description = $resource['sections']['description'] ?? ($resource['description'] ?? '');
+        $latest_changelog = $resource['sections']['changelog'] ?? '';
 
         $status = $this->get_resource_install_state($resource);
         $cover = ! empty($resource['cover_image']) ? $resource['cover_image'] : SHOPAGG_APP_STORE_PLUGIN_URL . 'assets/images/placeholder.png';
@@ -128,66 +141,311 @@ class ShopAGG_App_Store_Market {
                     &larr; <?php esc_html_e('Back to Store', 'shopagg-app-store'); ?>
                 </a>
 
-                <div class="shopagg-detail-card">
-                    <div class="shopagg-detail-cover">
-                        <img src="<?php echo esc_url($cover); ?>" alt="<?php echo esc_attr($resource['name']); ?>">
-                    </div>
-                    <div class="shopagg-detail-main">
-                        <div class="shopagg-detail-heading">
-                            <div>
-                                <h1><?php echo esc_html($resource['name']); ?></h1>
-                                <div class="shopagg-detail-badges">
-                                    <span class="shopagg-chip"><?php echo esc_html($resource['type'] === 'theme' ? __('Theme', 'shopagg-app-store') : __('Plugin', 'shopagg-app-store')); ?></span>
-                                    <span class="shopagg-chip">v<?php echo esc_html($resource['version']); ?></span>
-                                    <span class="shopagg-chip <?php echo $is_free ? 'free' : 'paid'; ?>"><?php echo esc_html($price_label); ?></span>
-                                    <?php if ($has_license && ! $is_free) : ?>
-                                        <span class="shopagg-chip owned"><?php esc_html_e('Licensed', 'shopagg-app-store'); ?></span>
+                <div class="shopagg-detail-card shopagg-detail-storefront">
+                    <div class="shopagg-detail-top">
+                        <div class="shopagg-detail-app">
+                            <div class="shopagg-detail-cover shopagg-detail-icon">
+                                <img src="<?php echo esc_url($cover); ?>" alt="<?php echo esc_attr($resource['name']); ?>">
+                            </div>
+                            <div class="shopagg-detail-main">
+                                <div class="shopagg-detail-heading">
+                                    <div class="shopagg-detail-heading-top">
+                                        <span class="shopagg-chip"><?php echo esc_html($resource['type'] === 'theme' ? __('Theme', 'shopagg-app-store') : __('Plugin', 'shopagg-app-store')); ?></span>
+                                        <span class="shopagg-chip">v<?php echo esc_html($resource['version']); ?></span>
+                                        <?php if ($has_license && ! $is_free) : ?>
+                                            <span class="shopagg-chip owned"><?php esc_html_e('Licensed', 'shopagg-app-store'); ?></span>
+                                        <?php endif; ?>
+                                        <?php if (! empty($status['update'])) : ?>
+                                            <span class="shopagg-chip update"><?php echo esc_html(sprintf(__('New v%s', 'shopagg-app-store'), $status['update']['version'])); ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <h1><?php echo esc_html($resource['name']); ?></h1>
+                                    <?php if (! empty($short_description)) : ?>
+                                        <p class="shopagg-detail-tagline"><?php echo esc_html($short_description); ?></p>
                                     <?php endif; ?>
-                                    <?php if (! empty($status['update'])) : ?>
-                                        <span class="shopagg-chip update"><?php echo esc_html(sprintf(__('New v%s', 'shopagg-app-store'), $status['update']['version'])); ?></span>
-                                    <?php endif; ?>
+                                </div>
+
+                                <div class="shopagg-storefront-stats">
+                                    <div class="shopagg-storefront-stat">
+                                        <span class="shopagg-storefront-stat-label"><?php esc_html_e('Price', 'shopagg-app-store'); ?></span>
+                                        <strong class="<?php echo esc_attr($is_free ? 'free' : 'paid'); ?>"><?php echo esc_html($price_label); ?></strong>
+                                    </div>
+                                    <div class="shopagg-storefront-stat">
+                                        <span class="shopagg-storefront-stat-label"><?php esc_html_e('Installs', 'shopagg-app-store'); ?></span>
+                                        <strong><?php echo esc_html($this->format_storefront_install_count($installs_count)); ?></strong>
+                                    </div>
+                                    <div class="shopagg-storefront-stat">
+                                        <span class="shopagg-storefront-stat-label"><?php esc_html_e('Rating', 'shopagg-app-store'); ?></span>
+                                        <strong><?php echo esc_html($rating_average !== null ? number_format($rating_average, 1) : __('New', 'shopagg-app-store')); ?></strong>
+                                        <span class="shopagg-storefront-stars"><?php echo wp_kses_post($this->render_rating_stars($rating_average)); ?></span>
+                                    </div>
+                                    <div class="shopagg-storefront-stat">
+                                        <span class="shopagg-storefront-stat-label"><?php esc_html_e('Reviews', 'shopagg-app-store'); ?></span>
+                                        <strong><?php echo esc_html($rating_count > 0 ? number_format_i18n($rating_count) : __('Soon', 'shopagg-app-store')); ?></strong>
+                                    </div>
+                                    <div class="shopagg-storefront-stat">
+                                        <span class="shopagg-storefront-stat-label"><?php esc_html_e('Updated', 'shopagg-app-store'); ?></span>
+                                        <strong><?php echo esc_html($latest_update); ?></strong>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="shopagg-detail-description">
-                            <?php echo wp_kses_post($resource['description']); ?>
+                        <div class="shopagg-detail-cta-card">
+                            <div class="shopagg-detail-cta-price">
+                                <span><?php esc_html_e('Get This Resource', 'shopagg-app-store'); ?></span>
+                                <strong class="<?php echo esc_attr($is_free ? 'free' : 'paid'); ?>"><?php echo esc_html($price_label); ?></strong>
+                            </div>
+
+                            <div class="shopagg-detail-actions shopagg-detail-actions-storefront">
+                                <?php $this->render_detail_action_buttons($resource, $status, $has_license, $is_free); ?>
+                            </div>
+
+                            <p class="shopagg-detail-action-hint"><?php echo esc_html($this->get_detail_action_hint($resource, $status, $has_license, $is_free)); ?></p>
+                            <div class="shopagg-message" id="detail-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="shopagg-detail-guidance-grid">
+                        <div class="shopagg-detail-guide-card">
+                            <h2><?php esc_html_e('How To Get It', 'shopagg-app-store'); ?></h2>
+                            <div class="shopagg-detail-guide-steps">
+                                <div class="shopagg-detail-guide-step">
+                                    <span class="shopagg-detail-guide-num">1</span>
+                                    <div>
+                                        <strong><?php esc_html_e('Read the overview', 'shopagg-app-store'); ?></strong>
+                                        <p><?php esc_html_e('先看上方评分、安装量和更新信息，确认这是你要的插件或主题。', 'shopagg-app-store'); ?></p>
+                                    </div>
+                                </div>
+                                <div class="shopagg-detail-guide-step">
+                                    <span class="shopagg-detail-guide-num">2</span>
+                                    <div>
+                                        <strong><?php esc_html_e('Tap the main button', 'shopagg-app-store'); ?></strong>
+                                        <p><?php echo esc_html($this->get_detail_install_step_text($status, $has_license, $is_free)); ?></p>
+                                    </div>
+                                </div>
+                                <div class="shopagg-detail-guide-step">
+                                    <span class="shopagg-detail-guide-num">3</span>
+                                    <div>
+                                        <strong><?php esc_html_e('Finish setup in WordPress', 'shopagg-app-store'); ?></strong>
+                                        <p><?php esc_html_e('安装完成后，可以在当前页面继续启用、停用、切换主题或更新版本。', 'shopagg-app-store'); ?></p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="shopagg-detail-meta-grid">
-                            <div><span><?php esc_html_e('Requires WordPress', 'shopagg-app-store'); ?></span><strong><?php echo esc_html($resource['requires'] ?: '-'); ?></strong></div>
-                            <div><span><?php esc_html_e('Requires PHP', 'shopagg-app-store'); ?></span><strong><?php echo esc_html($resource['requires_php'] ?: '-'); ?></strong></div>
-                            <div><span><?php esc_html_e('Tested Up To', 'shopagg-app-store'); ?></span><strong><?php echo esc_html($resource['tested'] ?: '-'); ?></strong></div>
-                            <div><span><?php esc_html_e('Bound Domain', 'shopagg-app-store'); ?></span><strong><?php echo esc_html($resource['bound_domain'] ?? '-'); ?></strong></div>
+                        <div class="shopagg-detail-guide-card">
+                            <h2><?php esc_html_e('Compatibility', 'shopagg-app-store'); ?></h2>
+                            <div class="shopagg-detail-meta-grid shopagg-detail-meta-grid-compact">
+                                <div><span><?php esc_html_e('Requires WordPress', 'shopagg-app-store'); ?></span><strong><?php echo esc_html($resource['requires'] ?: '-'); ?></strong></div>
+                                <div><span><?php esc_html_e('Requires PHP', 'shopagg-app-store'); ?></span><strong><?php echo esc_html($resource['requires_php'] ?: '-'); ?></strong></div>
+                                <div><span><?php esc_html_e('Tested Up To', 'shopagg-app-store'); ?></span><strong><?php echo esc_html($resource['tested'] ?: '-'); ?></strong></div>
+                                <div><span><?php esc_html_e('Bound Domain', 'shopagg-app-store'); ?></span><strong><?php echo esc_html($resource['bound_domain'] ?? '-'); ?></strong></div>
+                            </div>
                         </div>
 
-                        <?php if (! empty($status['update'])) : ?>
-                            <div class="shopagg-update-banner">
-                                <strong><?php esc_html_e('Update available', 'shopagg-app-store'); ?></strong>
-                                <span>
-                                    <?php
-                                    echo esc_html(
-                                        sprintf(
-                                            __('Installed v%s, latest v%s.', 'shopagg-app-store'),
-                                            $status['installed_version'] ?: '0.0.0',
-                                            $status['update']['version']
-                                        )
-                                    );
-                                    ?>
-                                </span>
+                        <div class="shopagg-detail-guide-card">
+                            <h2><?php esc_html_e('Latest Update', 'shopagg-app-store'); ?></h2>
+                            <?php if (! empty($status['update'])) : ?>
+                                <div class="shopagg-update-banner">
+                                    <strong><?php esc_html_e('Update available', 'shopagg-app-store'); ?></strong>
+                                    <span>
+                                        <?php
+                                        echo esc_html(
+                                            sprintf(
+                                                __('Installed v%s, latest v%s.', 'shopagg-app-store'),
+                                                $status['installed_version'] ?: '0.0.0',
+                                                $status['update']['version']
+                                            )
+                                        );
+                                        ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="shopagg-detail-latest-notes">
+                                <?php if (! empty($latest_changelog)) : ?>
+                                    <p><?php echo esc_html(wp_trim_words(wp_strip_all_tags($latest_changelog), 36)); ?></p>
+                                <?php else : ?>
+                                    <p><?php esc_html_e('The latest version is ready to install. Release notes will appear here after each update.', 'shopagg-app-store'); ?></p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="shopagg-detail-section">
+                        <div class="shopagg-detail-section-head">
+                            <h2><?php esc_html_e('Ratings & Reviews', 'shopagg-app-store'); ?></h2>
+                            <p><?php esc_html_e('通过评分和用户反馈，快速判断这款资源是否适合你的站点。', 'shopagg-app-store'); ?></p>
+                        </div>
+                        <div class="shopagg-detail-reviews-layout">
+                            <div class="shopagg-detail-rating-summary">
+                                <div class="shopagg-detail-rating-value"><?php echo esc_html($rating_average !== null ? number_format($rating_average, 1) : '—'); ?></div>
+                                <div class="shopagg-storefront-stars shopagg-storefront-stars-large"><?php echo wp_kses_post($this->render_rating_stars($rating_average)); ?></div>
+                                <p><?php echo esc_html($rating_count > 0 ? sprintf(_n('%s rating', '%s ratings', $rating_count, 'shopagg-app-store'), number_format_i18n($rating_count)) : __('Reviews are coming soon.', 'shopagg-app-store')); ?></p>
+                            </div>
+                            <div class="shopagg-detail-review-list">
+                                <?php if (! empty($reviews)) : ?>
+                                    <?php foreach ($reviews as $review) : ?>
+                                        <div class="shopagg-detail-review-card">
+                                            <div class="shopagg-detail-review-top">
+                                                <div>
+                                                    <strong><?php echo esc_html($review['title'] ?: ($review['author'] ?? __('ShopAGG User', 'shopagg-app-store'))); ?></strong>
+                                                    <span><?php echo esc_html($review['author'] ?? __('ShopAGG User', 'shopagg-app-store')); ?><?php echo ! empty($review['version']) ? ' · v' . esc_html($review['version']) : ''; ?></span>
+                                                </div>
+                                                <span class="shopagg-storefront-stars"><?php echo wp_kses_post($this->render_rating_stars(isset($review['rating']) ? (float) $review['rating'] : null)); ?></span>
+                                            </div>
+                                            <p><?php echo esc_html($review['content'] ?? ''); ?></p>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else : ?>
+                                    <div class="shopagg-empty-state">
+                                        <h3><?php esc_html_e('No reviews yet.', 'shopagg-app-store'); ?></h3>
+                                        <p><?php esc_html_e('先安装体验，后续这里会展示更多用户反馈。', 'shopagg-app-store'); ?></p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="shopagg-detail-section">
+                        <div class="shopagg-detail-section-head">
+                            <h2><?php esc_html_e('Update History', 'shopagg-app-store'); ?></h2>
+                            <p><?php esc_html_e('像查看 App Store 更新日志一样，快速了解每个版本有什么变化。', 'shopagg-app-store'); ?></p>
+                        </div>
+                        <?php if (! empty($update_history)) : ?>
+                            <div class="shopagg-detail-timeline">
+                                <?php foreach ($update_history as $entry) : ?>
+                                    <div class="shopagg-detail-timeline-item">
+                                        <div class="shopagg-detail-timeline-head">
+                                            <strong><?php echo esc_html('v' . ($entry['version'] ?? '')); ?></strong>
+                                            <span><?php echo esc_html($this->format_storefront_date($entry['released_at'] ?? '')); ?></span>
+                                        </div>
+                                        <?php if (! empty($entry['changelog'])) : ?>
+                                            <p><?php echo esc_html(wp_trim_words(wp_strip_all_tags($entry['changelog']), 60)); ?></p>
+                                        <?php endif; ?>
+                                        <div class="shopagg-detail-timeline-meta">
+                                            <span><?php esc_html_e('WP', 'shopagg-app-store'); ?> <?php echo esc_html($entry['requires_wp'] ?: '-'); ?></span>
+                                            <span><?php esc_html_e('PHP', 'shopagg-app-store'); ?> <?php echo esc_html($entry['requires_php'] ?: '-'); ?></span>
+                                            <span><?php esc_html_e('Tested', 'shopagg-app-store'); ?> <?php echo esc_html($entry['tested_wp'] ?: '-'); ?></span>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else : ?>
+                            <div class="shopagg-empty-state">
+                                <h3><?php esc_html_e('No update history yet.', 'shopagg-app-store'); ?></h3>
+                                <p><?php esc_html_e('发布新版本后，这里会自动展示更新记录。', 'shopagg-app-store'); ?></p>
                             </div>
                         <?php endif; ?>
+                    </div>
 
-                        <div class="shopagg-detail-actions">
-                            <?php $this->render_detail_action_buttons($resource, $status, $has_license, $is_free); ?>
+                    <div class="shopagg-detail-section">
+                        <div class="shopagg-detail-section-head">
+                            <h2><?php esc_html_e('Resource Details', 'shopagg-app-store'); ?></h2>
+                            <p><?php esc_html_e('下面是完整资源介绍，适合在确认功能后再继续深入查看。', 'shopagg-app-store'); ?></p>
                         </div>
-
-                        <div class="shopagg-message" id="detail-message"></div>
+                        <div class="shopagg-detail-description shopagg-detail-description-bottom">
+                            <?php echo wp_kses_post($detail_description); ?>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <?php
+    }
+
+    private function render_rating_stars($rating) {
+        if ($rating === null) {
+            return '<span class="shopagg-star empty">&#9734;</span><span class="shopagg-star empty">&#9734;</span><span class="shopagg-star empty">&#9734;</span><span class="shopagg-star empty">&#9734;</span><span class="shopagg-star empty">&#9734;</span>';
+        }
+
+        $output = '';
+        $rounded = round((float) $rating * 2) / 2;
+
+        for ($i = 1; $i <= 5; $i++) {
+            if ($rounded >= $i) {
+                $output .= '<span class="shopagg-star">&#9733;</span>';
+            } elseif ($rounded >= ($i - 0.5)) {
+                $output .= '<span class="shopagg-star half">&#9733;</span>';
+            } else {
+                $output .= '<span class="shopagg-star empty">&#9734;</span>';
+            }
+        }
+
+        return $output;
+    }
+
+    private function format_storefront_install_count($count) {
+        $count = absint($count);
+
+        if ($count >= 1000000) {
+            return round($count / 1000000, 1) . 'M+';
+        }
+
+        if ($count >= 10000) {
+            return round($count / 1000, 1) . 'K+';
+        }
+
+        if ($count > 0) {
+            return number_format_i18n($count);
+        }
+
+        return __('New', 'shopagg-app-store');
+    }
+
+    private function format_storefront_date($value) {
+        if (empty($value)) {
+            return '-';
+        }
+
+        $timestamp = strtotime($value);
+
+        return $timestamp ? wp_date('Y-m-d', $timestamp) : (string) $value;
+    }
+
+    private function get_detail_action_hint($resource, $status, $has_license, $is_free) {
+        if (! shopagg_app_store_is_logged_in() && (empty($status['installed']) || ! empty($status['update']))) {
+            return __('Bind your API Token first, then you can install, purchase or update this resource in one step.', 'shopagg-app-store');
+        }
+
+        if (! empty($status['update'])) {
+            return __('A newer version is ready. Tap update to download and replace the old version automatically.', 'shopagg-app-store');
+        }
+
+        if (! $status['installed'] && ($is_free || $has_license)) {
+            return __('Tap install and WordPress will download this resource to your site automatically.', 'shopagg-app-store');
+        }
+
+        if (! $status['installed']) {
+            return __('Purchase first, then you can install it on this site right away.', 'shopagg-app-store');
+        }
+
+        if ($resource['type'] === 'plugin') {
+            return __('This plugin is already on your site. You can activate, deactivate or delete it here.', 'shopagg-app-store');
+        }
+
+        return __('This theme is already on your site. You can switch to it or remove it here.', 'shopagg-app-store');
+    }
+
+    private function get_detail_install_step_text($status, $has_license, $is_free) {
+        if (! shopagg_app_store_is_logged_in() && (empty($status['installed']) || ! empty($status['update']))) {
+            return __('如果你还没绑定 Token，先绑定一次；以后安装、购买和更新都会更顺畅。', 'shopagg-app-store');
+        }
+
+        if (! empty($status['update'])) {
+            return __('如果有新版本，直接点击更新即可，WordPress 会自动完成下载和替换。', 'shopagg-app-store');
+        }
+
+        if (! $status['installed'] && ($is_free || $has_license)) {
+            return __('点击安装按钮后，资源会自动下载到当前站点，无需手动上传 ZIP 文件。', 'shopagg-app-store');
+        }
+
+        if (! $status['installed']) {
+            return __('先完成购买，支付成功后就能立即安装到当前站点。', 'shopagg-app-store');
+        }
+
+        return __('如果已经安装，当前页面就能继续完成启用、停用或删除。', 'shopagg-app-store');
     }
 
     private function resolve_market_state($tab) {
