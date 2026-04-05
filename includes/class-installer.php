@@ -40,6 +40,11 @@ class ShopAGG_App_Store_Installer {
         }
 
         $resource = $resource_info['resource'];
+
+        if (shopagg_app_store_is_client_resource($resource)) {
+            return new WP_Error('managed_separately', __('The ShopAGG App Store plugin is updated through its own standalone channel and cannot be installed from inside the marketplace.', 'shopagg-app-store'));
+        }
+
         $type = $resource['type'];
 
         // Get download URL from API

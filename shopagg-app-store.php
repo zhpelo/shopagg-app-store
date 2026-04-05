@@ -22,6 +22,7 @@ define('SHOPAGG_APP_STORE_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SHOPAGG_APP_STORE_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SHOPAGG_APP_STORE_API_DOMAIN', 'http://v3.shopagg.test');
 define('SHOPAGG_APP_STORE_DEFAULT_API_URL', SHOPAGG_APP_STORE_API_DOMAIN . '/api/shopagg-app-store/');
+define('SHOPAGG_APP_STORE_CLIENT_PLUGIN_SLUG', 'shopagg-app-store');
 
 // Include files
 require_once SHOPAGG_APP_STORE_PLUGIN_DIR . 'includes/class-api-client.php';
@@ -51,6 +52,28 @@ function shopagg_app_store_get_token() {
  */
 function shopagg_app_store_get_user() {
     return get_option('shopagg_app_store_user', []);
+}
+
+/**
+ * Check whether a slug belongs to the ShopAGG App Store client plugin itself.
+ *
+ * @param string $slug
+ * @return bool
+ */
+function shopagg_app_store_is_client_plugin_slug($slug) {
+    return sanitize_key((string) $slug) === SHOPAGG_APP_STORE_CLIENT_PLUGIN_SLUG;
+}
+
+/**
+ * Check whether a resource payload represents the ShopAGG App Store client plugin itself.
+ *
+ * @param array $resource
+ * @return bool
+ */
+function shopagg_app_store_is_client_resource($resource) {
+    return is_array($resource)
+        && ! empty($resource['slug'])
+        && shopagg_app_store_is_client_plugin_slug($resource['slug']);
 }
 
 

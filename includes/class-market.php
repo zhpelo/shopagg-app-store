@@ -115,6 +115,12 @@ class ShopAGG_App_Store_Market {
         }
 
         $resource = $result['resource'];
+
+        if (shopagg_app_store_is_client_resource($resource)) {
+            echo '<div class="wrap shopagg-app-store-wrap"><div class="shopagg-panel-message error"><p>' . esc_html__('The ShopAGG App Store plugin is managed separately and is not shown inside the marketplace library.', 'shopagg-app-store') . '</p></div></div>';
+            return;
+        }
+
         $has_license = shopagg_app_store_is_logged_in() && ! empty($result['has_license']);
         $is_free = (float) $resource['price'] === 0.0;
         $price_label = $is_free ? __('Free', 'shopagg-app-store') : '$' . number_format((float) $resource['price'], 2);
@@ -494,7 +500,11 @@ class ShopAGG_App_Store_Market {
             return [];
         }
 
-        return isset($result['data']) && is_array($result['data']) ? $result['data'] : [];
+        $resources = isset($result['data']) && is_array($result['data']) ? $result['data'] : [];
+
+        return array_values(array_filter($resources, function ($resource) {
+            return ! shopagg_app_store_is_client_resource($resource);
+        }));
     }
 
     private function fetch_orders() {
@@ -509,7 +519,15 @@ class ShopAGG_App_Store_Market {
             return [];
         }
 
-        return isset($result['data']) && is_array($result['data']) ? $result['data'] : [];
+        $orders = isset($result['data']) && is_array($result['data']) ? $result['data'] : [];
+
+        return array_values(array_filter($orders, function ($order) {
+            $resource = isset($order['app_store_resource']) && is_array($order['app_store_resource'])
+                ? $order['app_store_resource']
+                : [];
+
+            return ! shopagg_app_store_is_client_resource($resource);
+        }));
     }
 
     private function fetch_licenses() {
@@ -524,7 +542,15 @@ class ShopAGG_App_Store_Market {
             return [];
         }
 
-        return isset($result['licenses']) && is_array($result['licenses']) ? $result['licenses'] : [];
+        $licenses = isset($result['licenses']) && is_array($result['licenses']) ? $result['licenses'] : [];
+
+        return array_values(array_filter($licenses, function ($license) {
+            $resource = isset($license['resource']) && is_array($license['resource'])
+                ? $license['resource']
+                : [];
+
+            return ! shopagg_app_store_is_client_resource($resource);
+        }));
     }
 
     private function fetch_available_updates() {
@@ -710,6 +736,10 @@ class ShopAGG_App_Store_Market {
     }
 
     private function render_resource_card($resource) {
+        if (shopagg_app_store_is_client_resource($resource)) {
+            return;
+        }
+
         $status = $this->get_resource_install_state($resource);
         $is_free = (float) $resource['price'] === 0.0;
         $price_label = $is_free ? __('Free', 'shopagg-app-store') : '$' . number_format((float) $resource['price'], 2);
@@ -926,6 +956,16 @@ class ShopAGG_App_Store_Market {
     }
 
     private function get_resource_install_state($resource) {
+        if (shopagg_app_store_is_client_resource($resource)) {
+            return [
+                'installed' => false,
+                'active' => false,
+                'target' => '',
+                'installed_version' => null,
+                'update' => null,
+            ];
+        }
+
         $update = ShopAGG_App_Store_Updater::instance()->get_update_for_slug($resource['slug']);
         $is_plugin = isset($resource['type']) && $resource['type'] === 'plugin';
 
@@ -1128,6 +1168,12 @@ class ShopAGG_App_Store_Market {
         }
 
         $api = ShopAGG_App_Store_API_Client::instance();
+        $resource_result = $api->get('resources/' . $resource_id);
+
+        if (is_wp_error($resource_result) || empty($resource_result['resource']) || shopagg_app_store_is_client_resource($resource_result['resource'])) {
+            wp_send_json_error(['message' => __('This resource cannot be installed from inside the ShopAGG App Store plugin.', 'shopagg-app-store')]);
+        }
+
         $order_result = $api->post('orders', ['resource_id' => $resource_id]);
 
         if (is_wp_error($order_result)) {

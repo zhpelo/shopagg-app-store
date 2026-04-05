@@ -41,14 +41,20 @@ class ShopAGG_App_Store_Updater {
      * Get slugs of installed resources managed by ShopAGG.
      */
     private function get_managed_slugs() {
-        $slugs = get_option('shopagg_app_store_managed_resources', []);
-        return is_array($slugs) ? $slugs : [];
+        $managed = get_option('shopagg_app_store_managed_resources', []);
+
+        return $this->sanitize_managed_resources($managed);
     }
 
     /**
      * Register a resource as managed by ShopAGG.
      */
     public static function register_managed_resource($slug, $type, $resource_id, $asset_file = '') {
+        if (shopagg_app_store_is_client_plugin_slug($slug)) {
+            self::unregister_managed_resource($slug);
+            return;
+        }
+
         $managed = get_option('shopagg_app_store_managed_resources', []);
         if (! is_array($managed)) {
             $managed = [];
@@ -58,6 +64,17 @@ class ShopAGG_App_Store_Updater {
             'resource_id' => $resource_id,
             'asset_file'  => (string) $asset_file,
         ];
+        update_option('shopagg_app_store_managed_resources', $managed);
+    }
+
+    public static function unregister_managed_resource($slug) {
+        $managed = get_option('shopagg_app_store_managed_resources', []);
+
+        if (! is_array($managed) || ! isset($managed[$slug])) {
+            return;
+        }
+
+        unset($managed[$slug]);
         update_option('shopagg_app_store_managed_resources', $managed);
     }
 
@@ -347,8 +364,8 @@ class ShopAGG_App_Store_Updater {
     }
 
     private function refresh_managed_assets() {
-        $managed = get_option('shopagg_app_store_managed_resources', []);
-        if (! is_array($managed) || empty($managed)) {
+        $managed = $this->get_managed_slugs();
+        if (empty($managed)) {
             return;
         }
 
@@ -363,6 +380,30 @@ class ShopAGG_App_Store_Updater {
         delete_site_transient('update_plugins');
         delete_site_transient('update_themes');
         wp_clean_themes_cache();
+    }
+
+    private function sanitize_managed_resources($managed) {
+        if (! is_array($managed) || empty($managed)) {
+            return [];
+        }
+
+        $sanitized = [];
+        $changed = false;
+
+        foreach ($managed as $slug => $resource) {
+            if (shopagg_app_store_is_client_plugin_slug($slug)) {
+                $changed = true;
+                continue;
+            }
+
+            $sanitized[$slug] = $resource;
+        }
+
+        if ($changed) {
+            update_option('shopagg_app_store_managed_resources', $sanitized);
+        }
+
+        return $sanitized;
     }
 
     private function get_installed_plugin_version($plugin_file) {
