@@ -624,6 +624,178 @@
     margin: 16px 0;
 }
 
+.shopagg-login-container {
+    padding: 28px 0 32px;
+}
+
+.shopagg-login-box {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 32px;
+    border: 1px solid #dbe3ec;
+    border-radius: 24px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+}
+
+.shopagg-login-header h1 {
+    margin: 0;
+    font-size: 32px;
+    line-height: 1.1;
+    color: #0f172a;
+}
+
+.shopagg-login-header p {
+    margin: 10px 0 0;
+    max-width: 720px;
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.shopagg-connect-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.9fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.shopagg-connect-guide {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.shopagg-guide-card,
+.shopagg-connect-form-card {
+    padding: 24px;
+    border: 1px solid #dbe3ec;
+    border-radius: 20px;
+    background: #fff;
+}
+
+.shopagg-guide-card-accent {
+    border-color: #bfdbfe;
+    background:
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 38%),
+        linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
+}
+
+.shopagg-guide-card h2,
+.shopagg-connect-form-head h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #0f172a;
+}
+
+.shopagg-guide-card p,
+.shopagg-connect-form-head p,
+.shopagg-token-help p {
+    margin: 10px 0 0;
+    color: #64748b;
+    line-height: 1.7;
+}
+
+.shopagg-guide-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.shopagg-guide-steps,
+.shopagg-guide-notes {
+    display: grid;
+    gap: 14px;
+}
+
+.shopagg-guide-step,
+.shopagg-guide-note {
+    display: flex;
+    gap: 14px;
+    padding: 18px 20px;
+    border: 1px solid #dbe3ec;
+    border-radius: 18px;
+    background: #fff;
+}
+
+.shopagg-guide-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.shopagg-guide-step strong,
+.shopagg-guide-note strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #0f172a;
+    font-size: 15px;
+}
+
+.shopagg-guide-step p,
+.shopagg-guide-note p {
+    margin: 0;
+    color: #64748b;
+    line-height: 1.7;
+}
+
+.shopagg-connect-form-card {
+    position: sticky;
+    top: 32px;
+}
+
+.shopagg-connect-form-head {
+    margin-bottom: 18px;
+}
+
+.shopagg-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.shopagg-field:last-of-type {
+    margin-bottom: 0;
+}
+
+.shopagg-field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.shopagg-field input[type="password"],
+.shopagg-field input[type="text"] {
+    min-height: 46px;
+    padding: 0 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.shopagg-token-help {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.shopagg-token-help a {
+    color: #1d4ed8;
+    text-decoration: none;
+    font-weight: 600;
+}
+
 @media (max-width: 1080px) {
     .shopagg-hero,
     .shopagg-license-card,
@@ -646,6 +818,14 @@
     .shopagg-update-banner {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .shopagg-connect-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .shopagg-connect-form-card {
+        position: static;
     }
 }
 
@@ -677,5 +857,16 @@
 
     .shopagg-filter-select {
         width: 100%;
+    }
+
+    .shopagg-login-box {
+        padding: 20px;
+    }
+
+    .shopagg-guide-card,
+    .shopagg-guide-step,
+    .shopagg-guide-note,
+    .shopagg-connect-form-card {
+        padding: 18px;
     }
 }
