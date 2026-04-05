@@ -39,7 +39,7 @@ class ShopAGG_App_Store_Market {
                     <div>
                         <p class="shopagg-eyebrow">ShopAGG Marketplace</p>
                         <h1><?php esc_html_e('ShopAGG App Store', 'shopagg-app-store'); ?></h1>
-                        <p class="shopagg-hero-text"><?php esc_html_e('集中安装、购买、授权和管理你的 WordPress 插件与主题资源。', 'shopagg-app-store'); ?></p>
+                        <p class="shopagg-hero-text"><?php esc_html_e('Browse, purchase, install, and manage WordPress plugins and themes from one place.', 'shopagg-app-store'); ?></p>
                     </div>
                     <div class="shopagg-hero-user">
                         <div class="shopagg-hero-user-card">
@@ -48,9 +48,9 @@ class ShopAGG_App_Store_Market {
                                 <strong><?php echo esc_html($user['name'] ?? ''); ?></strong>
                                 <span><?php echo esc_html($user['email'] ?? ''); ?></span>
                             <?php else : ?>
-                                <span class="shopagg-hero-user-label"><?php esc_html_e('未绑定令牌', 'shopagg-app-store'); ?></span>
-                                <strong><?php esc_html_e('现在可以直接浏览和搜索', 'shopagg-app-store'); ?></strong>
-                                <span><?php esc_html_e('安装或更新时再绑定 API Token 即可。', 'shopagg-app-store'); ?></span>
+                                <span class="shopagg-hero-user-label"><?php esc_html_e('No Token Connected', 'shopagg-app-store'); ?></span>
+                                <strong><?php esc_html_e('Browsing and search are available now', 'shopagg-app-store'); ?></strong>
+                                <span><?php esc_html_e('Connect your API token only when you want to install or update.', 'shopagg-app-store'); ?></span>
                             <?php endif; ?>
                         </div>
                         <?php if ($is_connected) : ?>
@@ -214,7 +214,7 @@ class ShopAGG_App_Store_Market {
                                     <span class="shopagg-detail-guide-num">1</span>
                                     <div>
                                         <strong><?php esc_html_e('Read the overview', 'shopagg-app-store'); ?></strong>
-                                        <p><?php esc_html_e('先看上方评分、安装量和更新信息，确认这是你要的插件或主题。', 'shopagg-app-store'); ?></p>
+                                        <p><?php esc_html_e('Start with the rating, install count, and update details above to confirm that this is the right plugin or theme for you.', 'shopagg-app-store'); ?></p>
                                     </div>
                                 </div>
                                 <div class="shopagg-detail-guide-step">
@@ -228,7 +228,7 @@ class ShopAGG_App_Store_Market {
                                     <span class="shopagg-detail-guide-num">3</span>
                                     <div>
                                         <strong><?php esc_html_e('Finish setup in WordPress', 'shopagg-app-store'); ?></strong>
-                                        <p><?php esc_html_e('安装完成后，可以在当前页面继续启用、停用、切换主题或更新版本。', 'shopagg-app-store'); ?></p>
+                                        <p><?php esc_html_e('After installation, you can activate, deactivate, switch themes, or update right from this page.', 'shopagg-app-store'); ?></p>
                                     </div>
                                 </div>
                             </div>
@@ -276,7 +276,7 @@ class ShopAGG_App_Store_Market {
                     <div class="shopagg-detail-section">
                         <div class="shopagg-detail-section-head">
                             <h2><?php esc_html_e('Ratings & Reviews', 'shopagg-app-store'); ?></h2>
-                            <p><?php esc_html_e('通过评分和用户反馈，快速判断这款资源是否适合你的站点。', 'shopagg-app-store'); ?></p>
+                            <p><?php esc_html_e('Use ratings and customer feedback to quickly decide whether this resource is a good fit for your site.', 'shopagg-app-store'); ?></p>
                         </div>
                         <div class="shopagg-detail-reviews-layout">
                             <div class="shopagg-detail-rating-summary">
@@ -301,7 +301,7 @@ class ShopAGG_App_Store_Market {
                                 <?php else : ?>
                                     <div class="shopagg-empty-state">
                                         <h3><?php esc_html_e('No reviews yet.', 'shopagg-app-store'); ?></h3>
-                                        <p><?php esc_html_e('先安装体验，后续这里会展示更多用户反馈。', 'shopagg-app-store'); ?></p>
+                                        <p><?php esc_html_e('Install it first and check back later for more customer feedback.', 'shopagg-app-store'); ?></p>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -311,7 +311,7 @@ class ShopAGG_App_Store_Market {
                     <div class="shopagg-detail-section">
                         <div class="shopagg-detail-section-head">
                             <h2><?php esc_html_e('Update History', 'shopagg-app-store'); ?></h2>
-                            <p><?php esc_html_e('像查看 App Store 更新日志一样，快速了解每个版本有什么变化。', 'shopagg-app-store'); ?></p>
+                            <p><?php esc_html_e('Review each version like an App Store changelog so you can quickly see what has changed.', 'shopagg-app-store'); ?></p>
                         </div>
                         <?php if (! empty($update_history)) : ?>
                             <div class="shopagg-detail-timeline">
@@ -335,7 +335,7 @@ class ShopAGG_App_Store_Market {
                         <?php else : ?>
                             <div class="shopagg-empty-state">
                                 <h3><?php esc_html_e('No update history yet.', 'shopagg-app-store'); ?></h3>
-                                <p><?php esc_html_e('发布新版本后，这里会自动展示更新记录。', 'shopagg-app-store'); ?></p>
+                                <p><?php esc_html_e('Update history will appear here automatically after new versions are published.', 'shopagg-app-store'); ?></p>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -343,7 +343,7 @@ class ShopAGG_App_Store_Market {
                     <div class="shopagg-detail-section">
                         <div class="shopagg-detail-section-head">
                             <h2><?php esc_html_e('Resource Details', 'shopagg-app-store'); ?></h2>
-                            <p><?php esc_html_e('下面是完整资源介绍，适合在确认功能后再继续深入查看。', 'shopagg-app-store'); ?></p>
+                            <p><?php esc_html_e('The full product description is shown below, which is ideal when you want to dive deeper after reviewing the summary above.', 'shopagg-app-store'); ?></p>
                         </div>
                         <div class="shopagg-detail-description shopagg-detail-description-bottom">
                             <?php echo wp_kses_post($detail_description); ?>
@@ -430,22 +430,22 @@ class ShopAGG_App_Store_Market {
 
     private function get_detail_install_step_text($status, $has_license, $is_free) {
         if (! shopagg_app_store_is_logged_in() && (empty($status['installed']) || ! empty($status['update']))) {
-            return __('如果你还没绑定 Token，先绑定一次；以后安装、购买和更新都会更顺畅。', 'shopagg-app-store');
+            return __('If you have not connected a token yet, do that first. It makes installation, purchasing, and updates much smoother.', 'shopagg-app-store');
         }
 
         if (! empty($status['update'])) {
-            return __('如果有新版本，直接点击更新即可，WordPress 会自动完成下载和替换。', 'shopagg-app-store');
+            return __('If a newer version is available, just tap update and WordPress will download and replace it automatically.', 'shopagg-app-store');
         }
 
         if (! $status['installed'] && ($is_free || $has_license)) {
-            return __('点击安装按钮后，资源会自动下载到当前站点，无需手动上传 ZIP 文件。', 'shopagg-app-store');
+            return __('Tap install and the resource will be downloaded to this site automatically. There is no need to upload a ZIP file manually.', 'shopagg-app-store');
         }
 
         if (! $status['installed']) {
-            return __('先完成购买，支付成功后就能立即安装到当前站点。', 'shopagg-app-store');
+            return __('Complete the purchase first. Once payment succeeds, you can install it on this site right away.', 'shopagg-app-store');
         }
 
-        return __('如果已经安装，当前页面就能继续完成启用、停用或删除。', 'shopagg-app-store');
+        return __('If it is already installed, you can activate, deactivate, or remove it from this page.', 'shopagg-app-store');
     }
 
     private function resolve_market_state($tab) {
@@ -537,9 +537,9 @@ class ShopAGG_App_Store_Market {
             <div class="shopagg-panel-head">
                 <div>
                     <h2><?php esc_html_e('Resource Library', 'shopagg-app-store'); ?></h2>
-                    <p><?php esc_html_e('筛选并管理你需要的插件和主题资源。', 'shopagg-app-store'); ?></p>
+                    <p><?php esc_html_e('Filter and manage the plugins and themes you need.', 'shopagg-app-store'); ?></p>
                     <?php if (! shopagg_app_store_is_logged_in()) : ?>
-                        <p><a href="<?php echo esc_url(shopagg_app_store_get_connect_url()); ?>"><?php esc_html_e('绑定 API Token', 'shopagg-app-store'); ?></a> <?php esc_html_e('后即可安装或更新资源。', 'shopagg-app-store'); ?></p>
+                        <p><a href="<?php echo esc_url(shopagg_app_store_get_connect_url()); ?>"><?php esc_html_e('Connect your API Token', 'shopagg-app-store'); ?></a> <?php esc_html_e('to install or update resources.', 'shopagg-app-store'); ?></p>
                     <?php endif; ?>
                 </div>
                 <div class="shopagg-filter-bar">
@@ -583,7 +583,7 @@ class ShopAGG_App_Store_Market {
             <div class="shopagg-panel-head">
                 <div>
                     <h2><?php esc_html_e('Order History', 'shopagg-app-store'); ?></h2>
-                    <p><?php esc_html_e('查看你的应用商店订单状态和支付记录。', 'shopagg-app-store'); ?></p>
+                    <p><?php esc_html_e('View the status of your app store orders and payment records.', 'shopagg-app-store'); ?></p>
                 </div>
             </div>
 
@@ -626,7 +626,7 @@ class ShopAGG_App_Store_Market {
             <div class="shopagg-panel-head">
                 <div>
                     <h2><?php esc_html_e('License Records', 'shopagg-app-store'); ?></h2>
-                    <p><?php esc_html_e('查看已授权资源以及当前站点绑定的域名。', 'shopagg-app-store'); ?></p>
+                    <p><?php esc_html_e('View your licensed resources and the domain currently linked to this site.', 'shopagg-app-store'); ?></p>
                 </div>
             </div>
 
@@ -661,7 +661,7 @@ class ShopAGG_App_Store_Market {
             <div class="shopagg-panel-head">
                 <div>
                     <h2><?php esc_html_e('Available Updates', 'shopagg-app-store'); ?></h2>
-                    <p><?php esc_html_e('集中查看并更新通过 ShopAGG 安装的插件和主题版本。', 'shopagg-app-store'); ?></p>
+                    <p><?php esc_html_e('Review and update the plugins and themes installed through ShopAGG in one place.', 'shopagg-app-store'); ?></p>
                 </div>
             </div>
 
@@ -754,95 +754,174 @@ class ShopAGG_App_Store_Market {
     }
 
     private function render_detail_action_buttons($resource, $status, $has_license, $is_free) {
+        $detail_url = $this->get_resource_detail_url($resource['id']);
+        $connect_url = shopagg_app_store_get_connect_url($detail_url);
+        ?>
+        <div class="shopagg-action-stack">
+        <?php
+
         if (! shopagg_app_store_is_logged_in() && (empty($status['installed']) || ! empty($status['update']))) {
             $connect_label = ! empty($status['update'])
-                ? __('绑定 Token 后更新', 'shopagg-app-store')
-                : ($is_free ? __('绑定 Token 后安装', 'shopagg-app-store') : __('绑定 Token 后购买', 'shopagg-app-store'));
+                ? __('Connect Token to Update', 'shopagg-app-store')
+                : ($is_free ? __('Connect Token to Install', 'shopagg-app-store') : __('Connect Token to Purchase', 'shopagg-app-store'));
+            $this->render_detail_action_state(
+                __('Token Required', 'shopagg-app-store'),
+                __('Connect your API token first. After that, you can purchase, install, and update this resource from the same page.', 'shopagg-app-store'),
+                'warning'
+            );
             ?>
-            <a class="button button-primary" href="<?php echo esc_url(shopagg_app_store_get_connect_url($this->get_resource_detail_url($resource['id']))); ?>">
-                <?php echo esc_html($connect_label); ?>
-            </a>
+            <div class="shopagg-action-primary">
+                <a class="button button-primary shopagg-action-button shopagg-action-button-primary" href="<?php echo esc_url($connect_url); ?>">
+                    <?php echo esc_html($connect_label); ?>
+                </a>
+            </div>
+            </div>
             <?php
             return;
         }
 
         if (! empty($status['update']['update_url'])) {
+            $this->render_detail_action_state(
+                __('Update Ready', 'shopagg-app-store'),
+                sprintf(
+                    __('Version %1$s is available. You are currently using %2$s on this site.', 'shopagg-app-store'),
+                    'v' . $status['update']['version'],
+                    'v' . ($status['installed_version'] ?: '0.0.0')
+                ),
+                'warning'
+            );
             ?>
-            <a class="button button-primary" href="<?php echo esc_url($status['update']['update_url']); ?>">
-                <?php echo esc_html(sprintf(__('Update to v%s', 'shopagg-app-store'), $status['update']['version'])); ?>
-            </a>
+            <div class="shopagg-action-primary">
+                <a class="button button-primary shopagg-action-button shopagg-action-button-primary" href="<?php echo esc_url($status['update']['update_url']); ?>">
+                    <?php echo esc_html(sprintf(__('Update to v%s', 'shopagg-app-store'), $status['update']['version'])); ?>
+                </a>
+            </div>
             <?php
         }
 
         if (! $status['installed'] && ($is_free || $has_license)) {
+            $this->render_detail_action_state(
+                __('Ready to Install', 'shopagg-app-store'),
+                __('This resource is available for this site. Tap install and WordPress will download it automatically.', 'shopagg-app-store')
+            );
             ?>
-            <button class="button button-primary shopagg-install-btn"
-                    data-resource-id="<?php echo esc_attr($resource['id']); ?>"
-                    data-type="<?php echo esc_attr($resource['type']); ?>">
-                <?php esc_html_e('Install', 'shopagg-app-store'); ?>
-            </button>
+            <div class="shopagg-action-primary">
+                <button class="button button-primary shopagg-action-button shopagg-action-button-primary shopagg-install-btn"
+                        data-resource-id="<?php echo esc_attr($resource['id']); ?>"
+                        data-type="<?php echo esc_attr($resource['type']); ?>">
+                    <?php esc_html_e('Install', 'shopagg-app-store'); ?>
+                </button>
+            </div>
+            </div>
             <?php
             return;
         }
 
         if (! $status['installed']) {
+            $this->render_detail_action_state(
+                __('Purchase Required', 'shopagg-app-store'),
+                __('Purchase this resource first. As soon as payment is complete, you can install it on this site.', 'shopagg-app-store')
+            );
             ?>
-            <button class="button button-primary shopagg-purchase-btn"
-                    data-resource-id="<?php echo esc_attr($resource['id']); ?>">
-                <?php printf(esc_html__('Purchase %s', 'shopagg-app-store'), esc_html($is_free ? __('Free', 'shopagg-app-store') : '$' . number_format((float) $resource['price'], 2))); ?>
-            </button>
+            <div class="shopagg-action-primary">
+                <button class="button button-primary shopagg-action-button shopagg-action-button-primary shopagg-purchase-btn"
+                        data-resource-id="<?php echo esc_attr($resource['id']); ?>">
+                    <?php printf(esc_html__('Purchase %s', 'shopagg-app-store'), esc_html($is_free ? __('Free', 'shopagg-app-store') : '$' . number_format((float) $resource['price'], 2))); ?>
+                </button>
+            </div>
+            </div>
             <?php
             return;
         }
 
         if ($resource['type'] === 'plugin') {
+            $this->render_detail_action_state(
+                ! empty($status['active']) ? __('Installed and Active', 'shopagg-app-store') : __('Installed on This Site', 'shopagg-app-store'),
+                ! empty($status['active'])
+                    ? __('This plugin is live on your site right now. You can deactivate it temporarily or remove it completely.', 'shopagg-app-store')
+                    : __('This plugin is already installed. Activate it when you are ready, or remove it if you no longer need it.', 'shopagg-app-store')
+            );
+
             if ($status['active']) {
                 ?>
-                <button class="button button-secondary shopagg-toggle-resource-btn"
-                        data-resource-type="plugin"
-                        data-toggle-action="deactivate"
-                        data-target="<?php echo esc_attr($status['target']); ?>">
-                    <?php esc_html_e('Deactivate', 'shopagg-app-store'); ?>
-                </button>
+                <div class="shopagg-action-primary">
+                    <button class="button button-secondary shopagg-action-button shopagg-action-button-secondary shopagg-toggle-resource-btn"
+                            data-resource-type="plugin"
+                            data-toggle-action="deactivate"
+                            data-target="<?php echo esc_attr($status['target']); ?>">
+                        <?php esc_html_e('Deactivate', 'shopagg-app-store'); ?>
+                    </button>
+                </div>
                 <?php
             } else {
                 ?>
-                <button class="button button-primary shopagg-toggle-resource-btn"
-                        data-resource-type="plugin"
-                        data-toggle-action="activate"
-                        data-target="<?php echo esc_attr($status['target']); ?>">
-                    <?php esc_html_e('Activate', 'shopagg-app-store'); ?>
-                </button>
+                <div class="shopagg-action-primary">
+                    <button class="button button-primary shopagg-action-button shopagg-action-button-primary shopagg-toggle-resource-btn"
+                            data-resource-type="plugin"
+                            data-toggle-action="activate"
+                            data-target="<?php echo esc_attr($status['target']); ?>">
+                        <?php esc_html_e('Activate', 'shopagg-app-store'); ?>
+                    </button>
+                </div>
                 <?php
             }
 
             ?>
-            <a class="button-link-delete shopagg-delete-link" href="<?php echo esc_url($this->get_plugin_delete_url($status['target'])); ?>">
-                <?php esc_html_e('Delete', 'shopagg-app-store'); ?>
-            </a>
+            <div class="shopagg-action-secondary">
+                <a class="button button-secondary shopagg-action-button shopagg-action-button-danger" href="<?php echo esc_url($this->get_plugin_delete_url($status['target'])); ?>">
+                    <?php esc_html_e('Delete', 'shopagg-app-store'); ?>
+                </a>
+            </div>
+            </div>
             <?php
             return;
         }
 
         if ($status['active']) {
+            $this->render_detail_action_state(
+                __('Currently Active Theme', 'shopagg-app-store'),
+                __('This theme is already active on your site. You do not need to do anything else right now.', 'shopagg-app-store'),
+                'success'
+            );
             ?>
-            <button class="button button-secondary" disabled>
-                <?php esc_html_e('Current Theme', 'shopagg-app-store'); ?>
-            </button>
+            <div class="shopagg-action-primary">
+                <button class="button button-secondary shopagg-action-button shopagg-action-button-muted" disabled>
+                    <?php esc_html_e('Current Theme', 'shopagg-app-store'); ?>
+                </button>
+            </div>
+            </div>
             <?php
             return;
         }
 
+        $this->render_detail_action_state(
+            __('Installed on This Site', 'shopagg-app-store'),
+            __('This theme is already installed. Activate it when you want to switch your site design, or remove it if you no longer need it.', 'shopagg-app-store')
+        );
         ?>
-        <button class="button button-primary shopagg-toggle-resource-btn"
-                data-resource-type="theme"
-                data-toggle-action="activate"
-                data-target="<?php echo esc_attr($status['target']); ?>">
-            <?php esc_html_e('Activate', 'shopagg-app-store'); ?>
-        </button>
-        <a class="button-link-delete shopagg-delete-link" href="<?php echo esc_url($this->get_theme_delete_url($status['target'])); ?>">
-            <?php esc_html_e('Delete', 'shopagg-app-store'); ?>
-        </a>
+        <div class="shopagg-action-primary">
+            <button class="button button-primary shopagg-action-button shopagg-action-button-primary shopagg-toggle-resource-btn"
+                    data-resource-type="theme"
+                    data-toggle-action="activate"
+                    data-target="<?php echo esc_attr($status['target']); ?>">
+                <?php esc_html_e('Activate Theme', 'shopagg-app-store'); ?>
+            </button>
+        </div>
+        <div class="shopagg-action-secondary">
+            <a class="button button-secondary shopagg-action-button shopagg-action-button-danger" href="<?php echo esc_url($this->get_theme_delete_url($status['target'])); ?>">
+                <?php esc_html_e('Delete', 'shopagg-app-store'); ?>
+            </a>
+        </div>
+        </div>
+        <?php
+    }
+
+    private function render_detail_action_state($title, $description, $tone = 'default') {
+        ?>
+        <div class="shopagg-action-state shopagg-action-state-<?php echo esc_attr($tone); ?>">
+            <strong><?php echo esc_html($title); ?></strong>
+            <span><?php echo esc_html($description); ?></span>
+        </div>
         <?php
     }
 

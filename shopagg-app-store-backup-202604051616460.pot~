@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ShopAGG App Store\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-05 16:16+0000\n"
+"POT-Creation-Date: 2026-04-05 16:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -45,18 +45,6 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-#: includes/class-market.php:231
-msgid ""
-"After installation, you can activate, deactivate, switch themes, or update "
-"right from this page."
-msgstr ""
-
-#: includes/class-auth.php:163
-msgid ""
-"After opening the token page, go to the \"API Token\" section and click "
-"\"Generate New Token\"."
-msgstr ""
-
 #: includes/class-market.php:553
 msgid "All Prices"
 msgstr ""
@@ -67,12 +55,6 @@ msgstr ""
 
 #: includes/class-market.php:598
 msgid "Amount"
-msgstr ""
-
-#: shopagg-app-store.php:203
-msgid ""
-"An unpaid order already exists for this resource. Please complete the "
-"payment to continue."
 msgstr ""
 
 #: includes/class-api-client.php:73
@@ -117,81 +99,24 @@ msgstr ""
 msgid "Browse"
 msgstr ""
 
-#: includes/class-market.php:42
-msgid ""
-"Browse, purchase, install, and manage WordPress plugins and themes from one "
-"place."
-msgstr ""
-
-#: includes/class-market.php:52
-msgid "Browsing and search are available now"
-msgstr ""
-
 #: includes/class-market.php:898
 msgid "Cancelled"
-msgstr ""
-
-#: includes/class-auth.php:137
-msgid ""
-"Click \"Open Token Page\" above. If you are asked to sign in, sign in to "
-"your ShopAGG account first."
-msgstr ""
-
-#: includes/class-auth.php:151
-msgid ""
-"Come back to this page, paste the token into the field on the right, and "
-"click \"Connect\" to start using the app store."
 msgstr ""
 
 #: includes/class-market.php:238
 msgid "Compatibility"
 msgstr ""
 
-#: includes/class-market.php:445
-msgid ""
-"Complete the purchase first. Once payment succeeds, you can install it on "
-"this site right away."
-msgstr ""
-
 #: includes/class-market.php:896
 msgid "Completed"
 msgstr ""
 
-#: shopagg-app-store.php:212 includes/class-market.php:60
-#: includes/class-auth.php:181
+#: includes/class-market.php:60 includes/class-auth.php:181
 msgid "Connect"
-msgstr ""
-
-#: includes/class-market.php:760
-msgid "Connect Token to Install"
-msgstr ""
-
-#: includes/class-market.php:760
-msgid "Connect Token to Purchase"
-msgstr ""
-
-#: includes/class-market.php:759
-msgid "Connect Token to Update"
-msgstr ""
-
-#: includes/class-market.php:542
-msgid "Connect your API Token"
-msgstr ""
-
-#: includes/class-market.php:53
-msgid "Connect your API token only when you want to install or update."
 msgstr ""
 
 #: includes/class-auth.php:87
 msgid "Connected successfully!"
-msgstr ""
-
-#: shopagg-app-store.php:211
-msgid "Connecting..."
-msgstr ""
-
-#: shopagg-app-store.php:213
-msgid "Connection failed. Please try again."
 msgstr ""
 
 #: includes/class-installer.php:195 includes/class-updater.php:454
@@ -200,10 +125,6 @@ msgstr ""
 
 #: includes/class-market.php:600
 msgid "Created"
-msgstr ""
-
-#: shopagg-app-store.php:218
-msgid "Creating order..."
 msgstr ""
 
 #: includes/class-market.php:47
@@ -250,10 +171,6 @@ msgstr ""
 msgid "Failed to get download URL."
 msgstr ""
 
-#: includes/class-market.php:540
-msgid "Filter and manage the plugins and themes you need."
-msgstr ""
-
 #: includes/class-market.php:230
 msgid "Finish setup in WordPress"
 msgstr ""
@@ -263,28 +180,12 @@ msgstr ""
 msgid "Free"
 msgstr ""
 
-#: includes/class-auth.php:143
-msgid "Generate and copy the token"
-msgstr ""
-
 #: includes/class-market.php:196
 msgid "Get This Resource"
 msgstr ""
 
-#: includes/class-auth.php:114
-msgid "Get your API Token first, then come back here to connect it."
-msgstr ""
-
-#: includes/class-auth.php:120
-msgid "Getting a token is easy"
-msgstr ""
-
 #: includes/class-market.php:648
 msgid "Granted"
-msgstr ""
-
-#: includes/class-auth.php:158
-msgid "Helpful tip"
 msgstr ""
 
 #: includes/class-market.php:211
@@ -296,38 +197,12 @@ msgstr ""
 msgid "https://shopagg.com"
 msgstr ""
 
-#: includes/class-market.php:437
-msgid ""
-"If a newer version is available, just tap update and WordPress will download "
-"and replace it automatically."
-msgstr ""
-
-#: includes/class-market.php:448
-msgid ""
-"If it is already installed, you can activate, deactivate, or remove it from "
-"this page."
-msgstr ""
-
-#: includes/class-auth.php:162
-msgid "If you cannot find the entry"
-msgstr ""
-
-#: includes/class-market.php:433
-msgid ""
-"If you have not connected a token yet, do that first. It makes installation, "
-"purchasing, and updates much smoother."
-msgstr ""
-
-#: shopagg-app-store.php:215 includes/class-market.php:782
+#: includes/class-market.php:782
 msgid "Install"
 msgstr ""
 
 #. Description of the plugin
 msgid "Install and manage WordPress plugins and themes from ShopAGG App Store."
-msgstr ""
-
-#: includes/class-market.php:304
-msgid "Install it first and check back later for more customer feedback."
 msgstr ""
 
 #: includes/class-market.php:1031
@@ -346,10 +221,6 @@ msgstr ""
 #: includes/class-market.php:256
 #, php-format
 msgid "Installed v%s, latest v%s."
-msgstr ""
-
-#: shopagg-app-store.php:214
-msgid "Installing..."
 msgstr ""
 
 #: includes/class-market.php:174
@@ -375,12 +246,6 @@ msgstr ""
 #: includes/class-market.php:1019 includes/class-market.php:1048
 #: includes/class-updater.php:288
 msgid "Invalid resource."
-msgstr ""
-
-#: includes/class-auth.php:121
-msgid ""
-"Just follow the three steps below. It is best to open the token page in a "
-"new tab, generate the token, and copy it right away."
 msgstr ""
 
 #: includes/class-market.php:248
@@ -432,41 +297,12 @@ msgstr ""
 msgid "No reviews yet."
 msgstr ""
 
-#: includes/class-market.php:51
-msgid "No Token Connected"
-msgstr ""
-
 #: includes/class-market.php:337
 msgid "No update history yet."
 msgstr ""
 
 #: includes/class-market.php:647
 msgid "Not bound"
-msgstr ""
-
-#: includes/class-auth.php:188
-msgid ""
-"Not sure where to get the token? Click \"Open Token Page\" on the left, "
-"generate a new token there, copy it, and paste it here."
-msgstr ""
-
-#: includes/class-auth.php:144
-msgid ""
-"Once the page opens, click \"Generate New Token\". A long token string will "
-"appear. Copy it immediately because the full token will not be shown again "
-"after the page is closed."
-msgstr ""
-
-#: includes/class-auth.php:136
-msgid "Open the token page"
-msgstr ""
-
-#: includes/class-auth.php:124
-msgid "Open Token Page"
-msgstr ""
-
-#: includes/class-auth.php:191
-msgid "Open Token Page Again"
 msgstr ""
 
 #: includes/class-market.php:1069
@@ -489,26 +325,8 @@ msgstr ""
 msgid "Paid"
 msgstr ""
 
-#: includes/class-auth.php:150
-msgid "Paste it here and connect"
-msgstr ""
-
-#: includes/class-auth.php:171
-msgid ""
-"Paste the token you just copied here. After a successful connection, you can "
-"browse, install, and update app store resources."
-msgstr ""
-
 #: includes/class-auth.php:177
 msgid "Paste your API Token here"
-msgstr ""
-
-#: includes/class-auth.php:170
-msgid "Paste your token and connect"
-msgstr ""
-
-#: shopagg-app-store.php:210
-msgid "Payment successful. You can now install "
 msgstr ""
 
 #: includes/class-market.php:893
@@ -525,14 +343,6 @@ msgstr ""
 msgid "PHP"
 msgstr ""
 
-#: shopagg-app-store.php:205
-msgid "Please choose a payment method."
-msgstr ""
-
-#: shopagg-app-store.php:207
-msgid "Please complete the Alipay payment in the new window."
-msgstr ""
-
 #: includes/class-auth.php:71
 msgid "Please enter your API Token."
 msgstr ""
@@ -540,10 +350,6 @@ msgstr ""
 #: includes/class-market.php:1014 includes/class-market.php:1043
 #: includes/class-market.php:1081 includes/class-market.php:1107
 msgid "Please log in first."
-msgstr ""
-
-#: shopagg-app-store.php:209
-msgid "Please scan the QR code with WeChat to complete the payment."
 msgstr ""
 
 #: includes/class-market.php:153 includes/class-market.php:644
@@ -573,14 +379,6 @@ msgstr ""
 
 #: includes/class-market.php:895
 msgid "Processing"
-msgstr ""
-
-#: shopagg-app-store.php:216
-msgid "Processing..."
-msgstr ""
-
-#: shopagg-app-store.php:219
-msgid "Purchase"
 msgstr ""
 
 #: includes/class-market.php:792
@@ -628,22 +426,6 @@ msgstr ""
 msgid "Resources"
 msgstr ""
 
-#: shopagg-app-store.php:217
-msgid "Retry"
-msgstr ""
-
-#: includes/class-market.php:664
-msgid ""
-"Review and update the plugins and themes installed through ShopAGG in one "
-"place."
-msgstr ""
-
-#: includes/class-market.php:314
-msgid ""
-"Review each version like an App Store changelog so you can quickly see what "
-"has changed."
-msgstr ""
-
 #: includes/class-market.php:183
 msgid "Reviews"
 msgstr ""
@@ -674,32 +456,12 @@ msgstr ""
 msgid "ShopAGG User"
 msgstr ""
 
-#: includes/class-auth.php:127
-msgid "Sign In to ShopAGG"
-msgstr ""
-
 #: includes/class-market.php:184
 msgid "Soon"
 msgstr ""
 
-#: includes/class-market.php:217
-msgid ""
-"Start with the rating, install count, and update details above to confirm "
-"that this is the right plugin or theme for you."
-msgstr ""
-
-#: shopagg-app-store.php:206
-msgid "Starting payment..."
-msgstr ""
-
 #: includes/class-market.php:599
 msgid "Status"
-msgstr ""
-
-#: includes/class-market.php:441
-msgid ""
-"Tap install and the resource will be downloaded to this site automatically. "
-"There is no need to upload a ZIP file manually."
 msgstr ""
 
 #: includes/class-market.php:417
@@ -718,17 +480,6 @@ msgstr ""
 
 #: includes/class-market.php:242
 msgid "Tested Up To"
-msgstr ""
-
-#: shopagg-app-store.php:208
-msgid ""
-"The browser blocked the popup window. Please allow popups and try again."
-msgstr ""
-
-#: includes/class-market.php:346
-msgid ""
-"The full product description is shown below, which is ideal when you want to "
-"dive deeper after reviewing the summary above."
 msgstr ""
 
 #: includes/class-market.php:270
@@ -769,10 +520,6 @@ msgid ""
 "This theme is already on your site. You can switch to it or remove it here."
 msgstr ""
 
-#: includes/class-market.php:542
-msgid "to install or update resources."
-msgstr ""
-
 #: includes/class-market.php:574
 msgid "Try changing the type, price or search keywords."
 msgstr ""
@@ -791,12 +538,6 @@ msgstr ""
 
 #: includes/class-market.php:313
 msgid "Update History"
-msgstr ""
-
-#: includes/class-market.php:338
-msgid ""
-"Update history will appear here automatically after new versions are "
-"published."
 msgstr ""
 
 #: includes/class-market.php:698
@@ -821,29 +562,8 @@ msgstr ""
 msgid "Updates"
 msgstr ""
 
-#: includes/class-market.php:279
-msgid ""
-"Use ratings and customer feedback to quickly decide whether this resource is "
-"a good fit for your site."
-msgstr ""
-
 #: includes/class-market.php:701 includes/class-market.php:749
 msgid "View Details"
-msgstr ""
-
-#: includes/class-market.php:586
-msgid "View the status of your app store orders and payment records."
-msgstr ""
-
-#: includes/class-market.php:629
-msgid ""
-"View your licensed resources and the domain currently linked to this site."
-msgstr ""
-
-#: includes/class-auth.php:159
-msgid ""
-"We recommend using one token for one WordPress site. If you manage multiple "
-"sites, generate a separate token for each one."
 msgstr ""
 
 #: includes/class-market.php:328
@@ -858,7 +578,174 @@ msgstr ""
 msgid "You must connect your API Token first."
 msgstr ""
 
-#: shopagg-app-store.php:204
-msgid ""
-"Your order has been created. Please choose a payment method to continue."
+#: includes/class-auth.php:159
+msgid "一个 Token 建议只连接一个 WordPress 站点。若你有多个站点，请分别生成不同的 Token。"
+msgstr ""
+
+#: includes/class-market.php:346
+msgid "下面是完整资源介绍，适合在确认功能后再继续深入查看。"
+msgstr ""
+
+#: includes/class-auth.php:188
+msgid "不知道 Token 在哪里？点击左侧“打开 Token 页面”，在新页面里生成并复制后，再回来粘贴。"
+msgstr ""
+
+#: includes/class-market.php:314
+msgid "像查看 App Store 更新日志一样，快速了解每个版本有什么变化。"
+msgstr ""
+
+#: includes/class-auth.php:127
+msgid "先去登录 ShopAGG"
+msgstr ""
+
+#: includes/class-market.php:304
+msgid "先安装体验，后续这里会展示更多用户反馈。"
+msgstr ""
+
+#: includes/class-market.php:445
+msgid "先完成购买，支付成功后就能立即安装到当前站点。"
+msgstr ""
+
+#: includes/class-market.php:217
+msgid "先看上方评分、安装量和更新信息，确认这是你要的插件或主题。"
+msgstr ""
+
+#: includes/class-auth.php:114
+msgid "先获取 API Token，再回来粘贴连接。"
+msgstr ""
+
+#: includes/class-market.php:338
+msgid "发布新版本后，这里会自动展示更新记录。"
+msgstr ""
+
+#: includes/class-market.php:542
+msgid "后即可安装或更新资源。"
+msgstr ""
+
+#: includes/class-auth.php:151
+msgid "回到当前页面，把刚才复制的 Token 粘贴到右侧输入框，然后点击“连接”即可开始使用应用商店。"
+msgstr ""
+
+#: includes/class-auth.php:162
+msgid "如果你没有找到入口"
+msgstr ""
+
+#: includes/class-market.php:433
+msgid "如果你还没绑定 Token，先绑定一次；以后安装、购买和更新都会更顺畅。"
+msgstr ""
+
+#: includes/class-market.php:448
+msgid "如果已经安装，当前页面就能继续完成启用、停用或删除。"
+msgstr ""
+
+#: includes/class-market.php:437
+msgid "如果有新版本，直接点击更新即可，WordPress 会自动完成下载和替换。"
+msgstr ""
+
+#: includes/class-market.php:231
+msgid "安装完成后，可以在当前页面继续启用、停用、切换主题或更新版本。"
+msgstr ""
+
+#: includes/class-market.php:53
+msgid "安装或更新时再绑定 API Token 即可。"
+msgstr ""
+
+#: includes/class-auth.php:124 includes/class-auth.php:136
+msgid "打开 Token 页面"
+msgstr ""
+
+#: includes/class-auth.php:163
+msgid "打开 Token 页面后，进入“API Token”页面，点击“生成新 Token”按钮即可。"
+msgstr ""
+
+#: includes/class-auth.php:171
+msgid "把你刚刚复制的 Token 粘贴到这里。连接成功后，就可以浏览、安装和更新应用商店资源。"
+msgstr ""
+
+#: includes/class-auth.php:121
+msgid "按下面 3 步操作即可。建议先在新标签页打开 Token 页面，生成后马上复制回来。"
+msgstr ""
+
+#: includes/class-market.php:51
+msgid "未绑定令牌"
+msgstr ""
+
+#: includes/class-market.php:586
+msgid "查看你的应用商店订单状态和支付记录。"
+msgstr ""
+
+#: includes/class-market.php:629
+msgid "查看已授权资源以及当前站点绑定的域名。"
+msgstr ""
+
+#: includes/class-auth.php:158
+msgid "温馨提示"
+msgstr ""
+
+#: includes/class-auth.php:137
+msgid "点击上方“打开 Token 页面”。如果系统要求登录，请先登录你的 ShopAGG 账号。"
+msgstr ""
+
+#: includes/class-market.php:441
+msgid "点击安装按钮后，资源会自动下载到当前站点，无需手动上传 ZIP 文件。"
+msgstr ""
+
+#: includes/class-market.php:52
+msgid "现在可以直接浏览和搜索"
+msgstr ""
+
+#: includes/class-auth.php:143
+msgid "生成并复制 Token"
+msgstr ""
+
+#: includes/class-market.php:540
+msgid "筛选并管理你需要的插件和主题资源。"
+msgstr ""
+
+#: includes/class-auth.php:170
+msgid "粘贴 Token 并连接"
+msgstr ""
+
+#: includes/class-auth.php:150
+msgid "粘贴回来并连接"
+msgstr ""
+
+#: includes/class-market.php:542
+msgid "绑定 API Token"
+msgstr ""
+
+#: includes/class-market.php:760
+msgid "绑定 Token 后安装"
+msgstr ""
+
+#: includes/class-market.php:759
+msgid "绑定 Token 后更新"
+msgstr ""
+
+#: includes/class-market.php:760
+msgid "绑定 Token 后购买"
+msgstr ""
+
+#: includes/class-auth.php:120
+msgid "获取 Token 很简单"
+msgstr ""
+
+#: includes/class-auth.php:144
+msgid "进入页面后点击“生成新 Token”，系统会显示一串很长的字符。请立即点击复制，因为关闭页面后将无法再次看到完整 Token。"
+msgstr ""
+
+#: includes/class-market.php:279
+msgid "通过评分和用户反馈，快速判断这款资源是否适合你的站点。"
+msgstr ""
+
+#: includes/class-auth.php:191
+msgid "重新打开 Token 页面"
+msgstr ""
+
+#: includes/class-market.php:42
+msgid "集中安装、购买、授权和管理你的 WordPress 插件与主题资源。"
+msgstr ""
+
+#: includes/class-market.php:664
+msgid "集中查看并更新通过 ShopAGG 安装的插件和主题版本。"
 msgstr ""

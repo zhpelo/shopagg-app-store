@@ -199,6 +199,25 @@ function shopagg_app_store_admin_enqueue($hook) {
     wp_localize_script('shopagg-app-store-js', 'shopaggAppStore', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
         'nonce'   => wp_create_nonce('shopagg_app_store_nonce'),
+        'i18n'    => [
+            'existingOrderIntro' => __('An unpaid order already exists for this resource. Please complete the payment to continue.', 'shopagg-app-store'),
+            'orderCreatedIntro' => __('Your order has been created. Please choose a payment method to continue.', 'shopagg-app-store'),
+            'choosePaymentMethod' => __('Please choose a payment method.', 'shopagg-app-store'),
+            'startingPayment' => __('Starting payment...', 'shopagg-app-store'),
+            'completeAlipayInWindow' => __('Please complete the Alipay payment in the new window.', 'shopagg-app-store'),
+            'popupBlocked' => __('The browser blocked the popup window. Please allow popups and try again.', 'shopagg-app-store'),
+            'scanWechat' => __('Please scan the QR code with WeChat to complete the payment.', 'shopagg-app-store'),
+            'paymentSuccessInstall' => __('Payment successful. You can now install ', 'shopagg-app-store'),
+            'connecting' => __('Connecting...', 'shopagg-app-store'),
+            'connect' => __('Connect', 'shopagg-app-store'),
+            'connectionFailed' => __('Connection failed. Please try again.', 'shopagg-app-store'),
+            'installing' => __('Installing...', 'shopagg-app-store'),
+            'install' => __('Install', 'shopagg-app-store'),
+            'processing' => __('Processing...', 'shopagg-app-store'),
+            'retry' => __('Retry', 'shopagg-app-store'),
+            'creatingOrder' => __('Creating order...', 'shopagg-app-store'),
+            'purchase' => __('Purchase', 'shopagg-app-store'),
+        ],
     ]);
 }
 add_action('admin_enqueue_scripts', 'shopagg_app_store_admin_enqueue');

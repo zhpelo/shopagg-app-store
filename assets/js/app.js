@@ -4,6 +4,12 @@
 (function ($) {
     'use strict';
 
+    var i18n = (window.shopaggAppStore && window.shopaggAppStore.i18n) || {};
+
+    function t(key, fallback) {
+        return i18n[key] || fallback;
+    }
+
     var ShopAGGAppStore = {
         pollTimer: null,
 
@@ -90,8 +96,8 @@
 
             var resourceName = options.resourceName || 'this resource';
             var introText = options.existingOrder
-                ? '检测到该资源已有未支付订单，请继续完成付款。'
-                : '订单已创建，请选择支付方式完成付款。';
+                ? t('existingOrderIntro', 'An unpaid order already exists for this resource. Please complete the payment to continue.')
+                : t('orderCreatedIntro', 'Your order has been created. Please choose a payment method to continue.');
 
             var $panel = $('<div/>', {
                 id: 'shopagg-inline-payment-panel',
@@ -148,7 +154,7 @@
             }).hide());
             $panel.append($('<p/>', {
                 'class': 'shopagg-inline-payment-status',
-                text: '请选择支付方式。'
+                text: t('choosePaymentMethod', 'Please choose a payment method.')
             }));
 
             $msg.after($panel);
@@ -170,7 +176,7 @@
                 $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', true);
                 $panel.find('.shopagg-inline-payment-install').hide().empty();
                 $panel.find('.shopagg-inline-payment-qr').hide().empty();
-                $panel.find('.shopagg-inline-payment-status').text('正在发起支付...');
+                $panel.find('.shopagg-inline-payment-status').text(t('startingPayment', 'Starting payment...'));
 
                 $.ajax({
                     url: shopaggAppStore.ajaxUrl,
@@ -193,9 +199,9 @@
                             if (payWin) {
                                 payWin.document.write(response.data.form_html);
                                 payWin.document.close();
-                                $panel.find('.shopagg-inline-payment-status').text('请在新窗口中完成支付宝支付。');
+                                $panel.find('.shopagg-inline-payment-status').text(t('completeAlipayInWindow', 'Please complete the Alipay payment in the new window.'));
                             } else {
-                                $panel.find('.shopagg-inline-payment-status').text('浏览器拦截了新窗口，请允许弹窗后重试。');
+                                $panel.find('.shopagg-inline-payment-status').text(t('popupBlocked', 'The browser blocked the popup window. Please allow popups and try again.'));
                                 $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', false);
                                 return;
                             }
@@ -204,7 +210,7 @@
                             $panel.find('.shopagg-inline-payment-qr')
                                 .html('<img src="' + qrUrl + '" alt="WeChat Pay QR Code" width="200" height="200" />')
                                 .show();
-                            $panel.find('.shopagg-inline-payment-status').text('请使用微信扫码完成支付。');
+                            $panel.find('.shopagg-inline-payment-status').text(t('scanWechat', 'Please scan the QR code with WeChat to complete the payment.'));
                         } else {
                             $panel.find('.shopagg-inline-payment-status').text('Unknown payment response.');
                             $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', false);
@@ -252,7 +258,7 @@
             var resourceId = payload.resourceId;
 
             $panel.find('.shopagg-inline-payment-qr').hide().empty();
-            $panel.find('.shopagg-inline-payment-status').html('<span style="color:green;font-size:16px;">&#10004; 支付成功，现可安装 ' + this.escapeHtml(resourceName) + '</span>');
+            $panel.find('.shopagg-inline-payment-status').html('<span style="color:green;font-size:16px;">&#10004; ' + this.escapeHtml(t('paymentSuccessInstall', 'Payment successful. You can now install ')) + this.escapeHtml(resourceName) + '</span>');
             $panel.find('.shopagg-inline-payment-install')
                 .html(
                     '<button type="button" class="button button-primary shopagg-inline-install-btn" data-resource-id="' + this.escapeHtml(resourceId) + '">Install Now</button>' +
@@ -271,7 +277,7 @@
                 var $btn = $('#shopagg-connect-btn');
                 var $msg = $('#shopagg-token-message');
 
-                ShopAGGAppStore.setButtonState($btn, 'Connecting...', true);
+                ShopAGGAppStore.setButtonState($btn, t('connecting', 'Connecting...'), true);
                 ShopAGGAppStore.resetMessage($msg);
 
                 $.ajax({
@@ -290,12 +296,12 @@
                             }, 500);
                         } else {
                             ShopAGGAppStore.showMessage($msg, 'error', response.data.message);
-                            ShopAGGAppStore.setButtonState($btn, 'Connect', false);
+                            ShopAGGAppStore.setButtonState($btn, t('connect', 'Connect'), false);
                         }
                     },
                     error: function () {
-                        ShopAGGAppStore.showMessage($msg, 'error', 'Connection failed. Please try again.');
-                        ShopAGGAppStore.setButtonState($btn, 'Connect', false);
+                        ShopAGGAppStore.showMessage($msg, 'error', t('connectionFailed', 'Connection failed. Please try again.'));
+                        ShopAGGAppStore.setButtonState($btn, t('connect', 'Connect'), false);
                     }
                 });
             });
@@ -337,7 +343,7 @@
                     return;
                 }
 
-                ShopAGGAppStore.setButtonState($btn, 'Installing...', true);
+                ShopAGGAppStore.setButtonState($btn, t('installing', 'Installing...'), true);
                 ShopAGGAppStore.resetMessage($msg);
 
                 $.ajax({
@@ -357,12 +363,12 @@
                             }, 900);
                         } else {
                             ShopAGGAppStore.showMessage($msg, 'error', response.data.message);
-                            ShopAGGAppStore.setButtonState($btn, 'Install', false);
+                            ShopAGGAppStore.setButtonState($btn, t('install', 'Install'), false);
                         }
                     },
                     error: function () {
                         ShopAGGAppStore.showMessage($msg, 'error', 'Installation failed. Please try again.');
-                        ShopAGGAppStore.setButtonState($btn, 'Install', false);
+                        ShopAGGAppStore.setButtonState($btn, t('install', 'Install'), false);
                     }
                 });
             });
@@ -375,7 +381,7 @@
                 var $btn = $(this);
                 var $msg = $('#detail-message');
 
-                ShopAGGAppStore.setButtonState($btn, 'Processing...', true);
+                ShopAGGAppStore.setButtonState($btn, t('processing', 'Processing...'), true);
                 ShopAGGAppStore.resetMessage($msg);
 
                 $.ajax({
@@ -391,7 +397,7 @@
                     success: function (response) {
                         if (!response.success) {
                             ShopAGGAppStore.showMessage($msg, 'error', response.data.message || 'Operation failed.');
-                            ShopAGGAppStore.setButtonState($btn, 'Retry', false);
+                            ShopAGGAppStore.setButtonState($btn, t('retry', 'Retry'), false);
                             return;
                         }
 
@@ -402,7 +408,7 @@
                     },
                     error: function () {
                         ShopAGGAppStore.showMessage($msg, 'error', 'Operation failed. Please try again.');
-                        ShopAGGAppStore.setButtonState($btn, 'Retry', false);
+                        ShopAGGAppStore.setButtonState($btn, t('retry', 'Retry'), false);
                     }
                 });
             });
@@ -420,7 +426,7 @@
                 var resourceId = $btn.data('resource-id');
                 var $msg = $('#detail-message');
 
-                self.setButtonState($btn, 'Creating order...', true);
+                self.setButtonState($btn, t('creatingOrder', 'Creating order...'), true);
                 self.resetMessage($msg);
 
                 $.ajax({
@@ -433,7 +439,7 @@
                     },
                     success: function (response) {
                         if (response.success) {
-                            self.setButtonState($btn, 'Purchase', false);
+                            self.setButtonState($btn, t('purchase', 'Purchase'), false);
 
                             if (response.data.owned) {
                                 self.showMessage($msg, 'success', response.data.message || 'You already own this resource.');
@@ -454,12 +460,12 @@
                             });
                         } else {
                             self.showMessage($msg, 'error', response.data.message);
-                            self.setButtonState($btn, 'Purchase', false);
+                            self.setButtonState($btn, t('purchase', 'Purchase'), false);
                         }
                     },
                     error: function () {
                         self.showMessage($msg, 'error', 'Failed to create order. Please try again.');
-                        self.setButtonState($btn, 'Purchase', false);
+                        self.setButtonState($btn, t('purchase', 'Purchase'), false);
                     }
                 });
             });
