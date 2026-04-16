@@ -20,7 +20,9 @@ if (! defined('ABSPATH')) {
 define('SHOPAGG_APP_STORE_VERSION', '1.0.0');
 define('SHOPAGG_APP_STORE_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SHOPAGG_APP_STORE_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('SHOPAGG_APP_STORE_API_DOMAIN', 'http://v3.shopagg.test');
+if (! defined('SHOPAGG_APP_STORE_API_DOMAIN')) {
+    define('SHOPAGG_APP_STORE_API_DOMAIN', 'http://v3.shopagg.com');
+}
 define('SHOPAGG_APP_STORE_DEFAULT_API_URL', SHOPAGG_APP_STORE_API_DOMAIN . '/api/shopagg-app-store/');
 define('SHOPAGG_APP_STORE_CLIENT_PLUGIN_SLUG', 'shopagg-app-store');
 
