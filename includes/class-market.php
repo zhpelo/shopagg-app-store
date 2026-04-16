@@ -128,7 +128,7 @@ class ShopAGG_App_Store_Market {
 
         $has_license = shopagg_app_store_is_logged_in() && ! empty($result['has_license']);
         $is_free = (float) $resource['price'] === 0.0;
-        $price_label = $is_free ? __('Free', 'shopagg-app-store') : '$' . number_format((float) $resource['price'], 2);
+        $price_label = $is_free ? __('Free', 'shopagg-app-store') : '¥' . number_format((float) $resource['price'], 2);
         $short_description = ! empty($resource['short_description'])
             ? $resource['short_description']
             : wp_trim_words(wp_strip_all_tags($resource['description'] ?? ''), 28);
@@ -844,7 +844,7 @@ class ShopAGG_App_Store_Market {
 
         $status = $this->get_resource_install_state($resource);
         $is_free = (float) $resource['price'] === 0.0;
-        $price_label = $is_free ? __('Free', 'shopagg-app-store') : '$' . number_format((float) $resource['price'], 2);
+        $price_label = $is_free ? __('Free', 'shopagg-app-store') : '¥' . number_format((float) $resource['price'], 2);
         $detail_url = admin_url('admin.php?page=shopagg-app-store&action=detail&resource_id=' . absint($resource['id']));
         $cover = ! empty($resource['cover_image']) ? $resource['cover_image'] : SHOPAGG_APP_STORE_PLUGIN_URL . 'assets/images/placeholder.png';
         $search_text = strtolower(trim(($resource['name'] ?? '') . ' ' . ($resource['slug'] ?? '') . ' ' . wp_strip_all_tags($resource['description'] ?? '')));
