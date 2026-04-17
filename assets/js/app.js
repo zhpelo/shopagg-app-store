@@ -23,6 +23,7 @@
             this.bindInlinePayment();
             this.bindReviewForm();
             this.bindDeleteConfirm();
+            this.bindSectionSpy();
         },
 
         showMessage: function ($target, type, message) {
@@ -820,6 +821,104 @@
                     }
                 });
             });
+        },
+
+        bindSectionSpy: function () {
+            var $anchorLinks = $('.shopagg-admin-sidebar-link[href^="#"]');
+            var sections = [];
+            var observer = null;
+            var updateActiveLink = function (sectionId) {
+                if (!sectionId) {
+                    return;
+                }
+
+                $anchorLinks.removeClass('is-active');
+                $anchorLinks.filter('[href="#' + sectionId + '"]').addClass('is-active');
+            };
+
+            if (!$anchorLinks.length) {
+                return;
+            }
+
+            $anchorLinks.each(function () {
+                var targetId = ($(this).attr('href') || '').replace('#', '');
+                var target = document.getElementById(targetId);
+
+                if (target) {
+                    sections.push(target);
+                }
+            });
+
+            if (!sections.length) {
+                return;
+            }
+
+            $(document).on('click', '.shopagg-admin-sidebar-link[href^="#"]', function (e) {
+                var href = $(this).attr('href') || '';
+                var targetId = href.replace('#', '');
+                var target = document.getElementById(targetId);
+
+                if (!target) {
+                    return;
+                }
+
+                e.preventDefault();
+                updateActiveLink(targetId);
+
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState(null, '', '#' + targetId);
+                }
+
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+
+            if ('IntersectionObserver' in window) {
+                observer = new IntersectionObserver(function (entries) {
+                    var visibleEntries = entries.filter(function (entry) {
+                        return entry.isIntersecting;
+                    });
+
+                    if (!visibleEntries.length) {
+                        return;
+                    }
+
+                    visibleEntries.sort(function (left, right) {
+                        return left.boundingClientRect.top - right.boundingClientRect.top;
+                    });
+
+                    updateActiveLink(visibleEntries[0].target.id);
+                }, {
+                    root: null,
+                    rootMargin: '-18% 0px -58% 0px',
+                    threshold: [0.1, 0.25, 0.5]
+                });
+
+                sections.forEach(function (section) {
+                    observer.observe(section);
+                });
+            } else {
+                $(window).on('scroll.shopaggSectionSpy resize.shopaggSectionSpy', function () {
+                    var currentId = sections[0].id;
+                    var offsetTop = window.scrollY + 160;
+
+                    sections.forEach(function (section) {
+                        if (section.offsetTop <= offsetTop) {
+                            currentId = section.id;
+                        }
+                    });
+
+                    updateActiveLink(currentId);
+                });
+            }
+
+            if (window.location.hash) {
+                updateActiveLink(window.location.hash.replace('#', ''));
+            } else {
+                updateActiveLink(sections[0].id);
+            }
         }
     };
 

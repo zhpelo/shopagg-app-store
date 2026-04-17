@@ -267,9 +267,6 @@ class ShopAGG_App_Store_Market {
             'side_nav' => $side_nav,
         ]);
         ?>
-        <a href="<?php echo esc_url(admin_url('admin.php?page=shopagg-app-store')); ?>" class="shopagg-back-link">
-            &larr; 返回资源库
-        </a>
 
         <div class="shopagg-detail-card shopagg-detail-storefront" id="shopagg-detail-summary">
                     <div class="shopagg-detail-top">
@@ -609,9 +606,6 @@ class ShopAGG_App_Store_Market {
         ]);
 
         ?>
-        <a href="<?php echo esc_url($this->get_resource_detail_url($resource_id)); ?>" class="shopagg-back-link">
-            &larr; 返回资源详情
-        </a>
 
         <div class="shopagg-detail-card shopagg-checkout-layout" id="shopagg-checkout-summary">
                     <div class="shopagg-checkout-main">
@@ -1004,9 +998,10 @@ class ShopAGG_App_Store_Market {
 
     private function render_browse_panel($resources, $preset_type) {
         ?>
-        <div class="shopagg-panel">
+        <div class="shopagg-panel shopagg-panel-market">
             <div class="shopagg-panel-head">
                 <div>
+                    <div class="shopagg-panel-kicker">应用资源</div>
                     <h2>资源库</h2>
                     <p>筛选并管理所需的插件和主题。</p>
                     <?php if (! shopagg_app_store_is_logged_in()) : ?>
@@ -1025,6 +1020,13 @@ class ShopAGG_App_Store_Market {
                         <option value="free">免费</option>
                         <option value="paid">付费</option>
                     </select>
+                </div>
+            </div>
+
+            <div class="shopagg-panel-toolbar">
+                <div class="shopagg-panel-toolbar-meta">
+                    <span class="shopagg-panel-pill">共 <?php echo esc_html(count($resources)); ?> 个资源</span>
+                    <span class="shopagg-panel-toolbar-text">支持按类型、价格和关键词快速筛选。</span>
                 </div>
             </div>
 
@@ -1053,8 +1055,16 @@ class ShopAGG_App_Store_Market {
         <div class="shopagg-panel">
             <div class="shopagg-panel-head">
                 <div>
+                    <div class="shopagg-panel-kicker">业务订单</div>
                     <h2>订单历史</h2>
                     <p>查看应用程序商店订单和付款记录的状态。</p>
+                </div>
+            </div>
+
+            <div class="shopagg-panel-toolbar">
+                <div class="shopagg-panel-toolbar-meta">
+                    <span class="shopagg-panel-pill">共 <?php echo esc_html(count($orders)); ?> 笔订单</span>
+                    <span class="shopagg-panel-toolbar-text">待支付订单可以直接继续结算，已支付订单可回到资源详情页继续处理。</span>
                 </div>
             </div>
 
@@ -1069,20 +1079,33 @@ class ShopAGG_App_Store_Market {
                         <span>金额</span>
                         <span>状态</span>
                         <span>创建</span>
+                        <span>操作</span>
                     </div>
                     <?php foreach ($orders as $order) : ?>
                         <?php
                         $resource = isset($order['app_store_resource']) ? $order['app_store_resource'] : [];
                         $status = isset($order['status']) ? $order['status'] : '';
+                        $resource_id = isset($resource['id']) ? absint($resource['id']) : 0;
+                        $detail_url = $resource_id ? $this->get_resource_detail_url($resource_id) : '';
+                        $checkout_url = $resource_id ? $this->get_resource_checkout_url($resource_id) : '';
                         ?>
                         <div class="shopagg-table-row">
                             <span>
                                 <strong><?php echo esc_html($resource['name'] ?? '未知资源'); ?></strong>
-                                <small>#<?php echo esc_html($order['id'] ?? ''); ?></small>
+                                <small>#<?php echo esc_html($order['id'] ?? ''); ?><?php echo ! empty($resource['type']) ? ' · ' . esc_html($resource['type'] === 'theme' ? '主题' : '插件') : ''; ?></small>
                             </span>
                             <span>¥<?php echo esc_html(number_format((float) ($order['amount'] ?? 0), 2)); ?></span>
                             <span><em class="shopagg-status-badge status-<?php echo esc_attr($status); ?>"><?php echo esc_html($this->format_order_status($status)); ?></em></span>
                             <span><?php echo esc_html($this->format_datetime(isset($order['created_at']) ? $order['created_at'] : '')); ?></span>
+                            <span class="shopagg-table-actions">
+                                <?php if (($status === 'pending' || $status === 'processing') && $checkout_url !== '') : ?>
+                                    <a href="<?php echo esc_url($checkout_url); ?>">继续支付</a>
+                                <?php elseif ($detail_url !== '') : ?>
+                                    <a href="<?php echo esc_url($detail_url); ?>">查看资源</a>
+                                <?php else : ?>
+                                    <span class="is-muted">暂无</span>
+                                <?php endif; ?>
+                            </span>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -1096,8 +1119,16 @@ class ShopAGG_App_Store_Market {
         <div class="shopagg-panel">
             <div class="shopagg-panel-head">
                 <div>
+                    <div class="shopagg-panel-kicker">授权管理</div>
                     <h2>许可证记录</h2>
                     <p>查看您的许可资源和当前链接到本网站的域。</p>
+                </div>
+            </div>
+
+            <div class="shopagg-panel-toolbar">
+                <div class="shopagg-panel-toolbar-meta">
+                    <span class="shopagg-panel-pill">共 <?php echo esc_html(count($licenses)); ?> 个授权</span>
+                    <span class="shopagg-panel-toolbar-text">授权会按当前站点域名绑定，便于后续更新和安装校验。</span>
                 </div>
             </div>
 
@@ -1108,7 +1139,10 @@ class ShopAGG_App_Store_Market {
             <?php else : ?>
                 <div class="shopagg-license-list">
                     <?php foreach ($licenses as $license) : ?>
-                        <?php $resource = isset($license['resource']) ? $license['resource'] : []; ?>
+                        <?php
+                        $resource = isset($license['resource']) ? $license['resource'] : [];
+                        $resource_id = isset($resource['id']) ? absint($resource['id']) : 0;
+                        ?>
                         <div class="shopagg-license-card">
                             <div>
                                 <h3><?php echo esc_html($resource['name'] ?? '未知资源'); ?></h3>
@@ -1117,6 +1151,9 @@ class ShopAGG_App_Store_Market {
                             <div class="shopagg-license-meta">
                                 <span><strong>域名:</strong> <?php echo esc_html(! empty($license['domain']) ? $license['domain'] : '未绑定'); ?></span>
                                 <span><strong>授权时间:</strong> <?php echo esc_html($this->format_datetime(isset($license['created_at']) ? $license['created_at'] : '')); ?></span>
+                                <?php if ($resource_id) : ?>
+                                    <span class="shopagg-license-link"><a href="<?php echo esc_url($this->get_resource_detail_url($resource_id)); ?>">查看资源详情</a></span>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -1131,8 +1168,16 @@ class ShopAGG_App_Store_Market {
         <div class="shopagg-panel">
             <div class="shopagg-panel-head">
                 <div>
+                    <div class="shopagg-panel-kicker">版本维护</div>
                     <h2>可用更新</h2>
                     <p>在一个地方查看和更新通过 ShopAGG 安装的插件和主题。</p>
+                </div>
+            </div>
+
+            <div class="shopagg-panel-toolbar">
+                <div class="shopagg-panel-toolbar-meta">
+                    <span class="shopagg-panel-pill">共 <?php echo esc_html(count($updates)); ?> 个更新</span>
+                    <span class="shopagg-panel-toolbar-text">建议优先处理安全修复和版本跨度较大的更新。</span>
                 </div>
             </div>
 
