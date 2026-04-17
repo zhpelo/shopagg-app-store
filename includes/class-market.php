@@ -30,83 +30,91 @@ class ShopAGG_App_Store_Market {
         add_action('wp_ajax_shopagg_app_store_submit_review', [$this, 'ajax_submit_review']);
     }
 
+    private function build_market_shell_navigation($active_tab = 'browse', $preset_type = 'all') {
+        $is_connected = shopagg_app_store_is_logged_in();
+
+        return [
+            'top_nav' => [
+                [
+                    'label' => '资源库',
+                    'url' => admin_url('admin.php?page=shopagg-app-store'),
+                    'active' => $active_tab === 'browse',
+                ],
+                [
+                    'label' => '更新',
+                    'url' => admin_url('admin.php?page=shopagg-app-store&tab=updates'),
+                    'active' => $active_tab === 'updates',
+                    'disabled' => ! $is_connected,
+                ],
+                [
+                    'label' => '订单',
+                    'url' => admin_url('admin.php?page=shopagg-app-store&tab=orders'),
+                    'active' => $active_tab === 'orders',
+                    'disabled' => ! $is_connected,
+                ],
+                [
+                    'label' => 'API Token',
+                    'url' => shopagg_app_store_get_connect_url(),
+                    'active' => false,
+                ],
+            ],
+            'side_nav' => [
+                [
+                    'title' => '应用市场',
+                    'items' => [
+                        [
+                            'label' => '浏览全部资源',
+                            'url' => admin_url('admin.php?page=shopagg-app-store'),
+                            'active' => $active_tab === 'browse' && $preset_type === 'all',
+                        ],
+                        [
+                            'label' => '插件资源',
+                            'url' => admin_url('admin.php?page=shopagg-app-store&tab=plugins'),
+                            'active' => $active_tab === 'browse' && $preset_type === 'plugin',
+                        ],
+                        [
+                            'label' => '主题资源',
+                            'url' => admin_url('admin.php?page=shopagg-app-store&tab=themes'),
+                            'active' => $active_tab === 'browse' && $preset_type === 'theme',
+                        ],
+                        [
+                            'label' => '可用更新',
+                            'url' => admin_url('admin.php?page=shopagg-app-store&tab=updates'),
+                            'active' => $active_tab === 'updates',
+                            'disabled' => ! $is_connected,
+                        ],
+                    ],
+                ],
+                [
+                    'title' => '业务管理',
+                    'items' => [
+                        [
+                            'label' => '订单历史',
+                            'url' => admin_url('admin.php?page=shopagg-app-store&tab=orders'),
+                            'active' => $active_tab === 'orders',
+                            'disabled' => ! $is_connected,
+                        ],
+                        [
+                            'label' => '许可证',
+                            'url' => admin_url('admin.php?page=shopagg-app-store&tab=licenses'),
+                            'active' => $active_tab === 'licenses',
+                            'disabled' => ! $is_connected,
+                        ],
+                        [
+                            'label' => '连接管理',
+                            'url' => shopagg_app_store_get_connect_url(),
+                            'active' => false,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function render_market_page($tab = 'browse') {
         $state = $this->resolve_market_state($tab);
         $is_connected = shopagg_app_store_is_logged_in();
-        $top_nav = [
-            [
-                'label' => '资源库',
-                'url' => admin_url('admin.php?page=shopagg-app-store'),
-                'active' => $state['tab'] === 'browse',
-            ],
-            [
-                'label' => '更新',
-                'url' => admin_url('admin.php?page=shopagg-app-store&tab=updates'),
-                'active' => $state['tab'] === 'updates',
-                'disabled' => ! $is_connected,
-            ],
-            [
-                'label' => '订单',
-                'url' => admin_url('admin.php?page=shopagg-app-store&tab=orders'),
-                'active' => $state['tab'] === 'orders',
-                'disabled' => ! $is_connected,
-            ],
-            [
-                'label' => 'API Token',
-                'url' => shopagg_app_store_get_connect_url(),
-                'active' => false,
-            ],
-        ];
-        $side_nav = [
-            [
-                'title' => '应用市场',
-                'items' => [
-                    [
-                        'label' => '浏览全部资源',
-                        'url' => admin_url('admin.php?page=shopagg-app-store'),
-                        'active' => $state['tab'] === 'browse' && $state['preset_type'] === 'all',
-                    ],
-                    [
-                        'label' => '插件资源',
-                        'url' => admin_url('admin.php?page=shopagg-app-store&tab=plugins'),
-                        'active' => $state['tab'] === 'browse' && $state['preset_type'] === 'plugin',
-                    ],
-                    [
-                        'label' => '主题资源',
-                        'url' => admin_url('admin.php?page=shopagg-app-store&tab=themes'),
-                        'active' => $state['tab'] === 'browse' && $state['preset_type'] === 'theme',
-                    ],
-                    [
-                        'label' => '可用更新',
-                        'url' => admin_url('admin.php?page=shopagg-app-store&tab=updates'),
-                        'active' => $state['tab'] === 'updates',
-                        'disabled' => ! $is_connected,
-                    ],
-                ],
-            ],
-            [
-                'title' => '业务管理',
-                'items' => [
-                    [
-                        'label' => '订单历史',
-                        'url' => admin_url('admin.php?page=shopagg-app-store&tab=orders'),
-                        'active' => $state['tab'] === 'orders',
-                        'disabled' => ! $is_connected,
-                    ],
-                    [
-                        'label' => '许可证',
-                        'url' => admin_url('admin.php?page=shopagg-app-store&tab=licenses'),
-                        'active' => $state['tab'] === 'licenses',
-                        'disabled' => ! $is_connected,
-                    ],
-                    [
-                        'label' => '连接管理',
-                        'url' => shopagg_app_store_get_connect_url(),
-                        'active' => false,
-                    ],
-                ],
-            ],
-        ];
+        $navigation = $this->build_market_shell_navigation($state['tab'], $state['preset_type']);
         $description = $is_connected
             ? '统一管理资源浏览、购买、授权、更新和订单状态。'
             : '先浏览资源，后续连接 API Token 即可解锁安装、购买和更新能力。';
@@ -114,8 +122,8 @@ class ShopAGG_App_Store_Market {
         shopagg_app_store_render_admin_shell_start([
             'title' => 'SHOPAGG 应用商店',
             'description' => $description,
-            'top_nav' => $top_nav,
-            'side_nav' => $side_nav,
+            'top_nav' => $navigation['top_nav'],
+            'side_nav' => $navigation['side_nav'],
         ]);
         ?>
         <div class="shopagg-summary-bar">
@@ -201,83 +209,13 @@ class ShopAGG_App_Store_Market {
         $screenshots = $this->normalize_resource_screenshots($resource['screenshots'] ?? []);
 
         $status = $this->get_resource_install_state($resource);
-        $top_nav = [
-            [
-                'label' => '资源库',
-                'url' => admin_url('admin.php?page=shopagg-app-store'),
-                'active' => true,
-            ],
-            [
-                'label' => '更新',
-                'url' => admin_url('admin.php?page=shopagg-app-store&tab=updates'),
-                'active' => false,
-                'disabled' => ! shopagg_app_store_is_logged_in(),
-            ],
-            [
-                'label' => '订单',
-                'url' => admin_url('admin.php?page=shopagg-app-store&tab=orders'),
-                'active' => false,
-                'disabled' => ! shopagg_app_store_is_logged_in(),
-            ],
-            [
-                'label' => 'API Token',
-                'url' => shopagg_app_store_get_connect_url(),
-                'active' => false,
-            ],
-        ];
-        $side_nav = [
-            [
-                'title' => '当前资源',
-                'items' => [
-                    [
-                        'label' => '返回资源库',
-                        'url' => admin_url('admin.php?page=shopagg-app-store'),
-                    ],
-                    [
-                        'label' => '资源概览',
-                        'url' => '#shopagg-detail-summary',
-                        'active' => true,
-                    ],
-                    [
-                        'label' => '评级与评论',
-                        'url' => '#shopagg-detail-reviews',
-                    ],
-                    [
-                        'label' => '更新历史',
-                        'url' => '#shopagg-detail-history',
-                    ],
-                    [
-                        'label' => '资源详情',
-                        'url' => '#shopagg-detail-description',
-                    ],
-                    [
-                        'label' => '屏幕截图',
-                        'url' => '#shopagg-detail-screenshots',
-                        'disabled' => empty($screenshots),
-                    ],
-                ],
-            ],
-            [
-                'title' => '相关操作',
-                'items' => [
-                    [
-                        'label' => 'API Token 管理',
-                        'url' => shopagg_app_store_get_connect_url(),
-                    ],
-                    [
-                        'label' => '查看订单历史',
-                        'url' => admin_url('admin.php?page=shopagg-app-store&tab=orders'),
-                        'disabled' => ! shopagg_app_store_is_logged_in(),
-                    ],
-                ],
-            ],
-        ];
+        $navigation = $this->build_market_shell_navigation('browse', $resource['type'] === 'theme' ? 'theme' : 'plugin');
 
         shopagg_app_store_render_admin_shell_start([
             'title' => $resource['name'],
             'description' => $short_description !== '' ? $short_description : '查看当前资源的说明、评价、更新记录和安装状态。',
-            'top_nav' => $top_nav,
-            'side_nav' => $side_nav,
+            'top_nav' => $navigation['top_nav'],
+            'side_nav' => $navigation['side_nav'],
         ]);
         ?>
 
@@ -564,67 +502,13 @@ class ShopAGG_App_Store_Market {
             return;
         }
 
-        $top_nav = [
-            [
-                'label' => '资源库',
-                'url' => admin_url('admin.php?page=shopagg-app-store'),
-                'active' => false,
-            ],
-            [
-                'label' => '更新',
-                'url' => admin_url('admin.php?page=shopagg-app-store&tab=updates'),
-                'active' => false,
-            ],
-            [
-                'label' => '订单',
-                'url' => admin_url('admin.php?page=shopagg-app-store&tab=orders'),
-                'active' => true,
-            ],
-            [
-                'label' => 'API Token',
-                'url' => shopagg_app_store_get_connect_url(),
-                'active' => false,
-            ],
-        ];
-        $side_nav = [
-            [
-                'title' => '结算流程',
-                'items' => [
-                    [
-                        'label' => '订单信息',
-                        'url' => '#shopagg-checkout-summary',
-                        'active' => true,
-                    ],
-                    [
-                        'label' => '支付方式',
-                        'url' => '#shopagg-checkout-payment',
-                    ],
-                    [
-                        'label' => '购买说明',
-                        'url' => '#shopagg-checkout-help',
-                    ],
-                ],
-            ],
-            [
-                'title' => '快捷入口',
-                'items' => [
-                    [
-                        'label' => '返回资源详情',
-                        'url' => $this->get_resource_detail_url($resource_id),
-                    ],
-                    [
-                        'label' => '订单历史',
-                        'url' => admin_url('admin.php?page=shopagg-app-store&tab=orders'),
-                    ],
-                ],
-            ],
-        ];
+        $navigation = $this->build_market_shell_navigation('orders', 'all');
 
         shopagg_app_store_render_admin_shell_start([
             'title' => '资源购买结算',
             'description' => '确认资源信息并选择支付方式，付款成功后即可继续安装。',
-            'top_nav' => $top_nav,
-            'side_nav' => $side_nav,
+            'top_nav' => $navigation['top_nav'],
+            'side_nav' => $navigation['side_nav'],
         ]);
 
         ?>
@@ -667,7 +551,7 @@ class ShopAGG_App_Store_Market {
                             </div>
                         </div>
 
-                        <div class="shopagg-checkout-card shopagg-checkout-card-highlight" id="shopagg-checkout-payment">
+                        <div id="shopagg-checkout-payment">
                             <h2>选择支付方式</h2>
                             <p><?php echo esc_html($existing_order ? '该资源已有未支付订单，请继续完成付款。付款成功后就可以直接回到当前站点安装。' : '订单已创建。请选择一个支付方式完成付款，成功后即可立即安装到当前站点。'); ?></p>
 

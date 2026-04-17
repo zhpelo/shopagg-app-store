@@ -15,6 +15,7 @@
     background: #fff;
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     max-width: 1600px;
+    overflow: hidden;
 }
 
 .shopagg-admin-header {
@@ -30,7 +31,24 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 0 24px;
+    padding: 20px;
+}
+
+.shopagg-admin-sidebar-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    min-height: 38px;
+    margin-left: auto;
+    padding: 0 14px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    color: #111827;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
 }
 
 .shopagg-admin-brand-logo {
@@ -58,17 +76,18 @@
     display: flex;
     justify-content: center;
     gap: 28px;
-    height: 100%;
 }
 
 .shopagg-admin-topnav-link {
     position: relative;
     display: inline-flex;
     align-items: center;
-    height: 72px;
+    justify-content: center;
+    height: 52px;
+    min-width: 60px;
     color: #6b7280;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 500;
 }
 
@@ -456,9 +475,6 @@
     flex-direction: column;
     overflow: hidden;
     border: 1px solid #dde3ea;
-    border-radius: 16px;
-    background: #fff;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .shopagg-resource-card:hover {
@@ -835,11 +851,7 @@
     flex-wrap: wrap;
 }
 
-.shopagg-detail-card[id],
-.shopagg-detail-section[id],
-.shopagg-checkout-card[id] {
-    scroll-margin-top: 24px;
-}
+
 
 .shopagg-detail-cover img {
     width: 100%;
@@ -1499,33 +1511,14 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0;
-    border-top: 1px solid #eceff3;
-    border-bottom: 1px solid #eceff3;
 }
 
-.shopagg-checkout-meta-grid div,
-.shopagg-checkout-card {
-    padding: 18px 20px;
-    border: 1px solid #eceff3;
-    border-radius: 8px;
-    background: #fff;
-}
+
 
 .shopagg-checkout-meta-grid div {
     padding: 14px 16px;
-    border: 0;
-    border-top: 1px solid #eceff3;
+    border: 1px solid #eceff3;
     background: transparent;
-}
-
-.shopagg-checkout-meta-grid div:nth-child(odd) {
-    padding-left: 0;
-}
-
-.shopagg-checkout-meta-grid div:nth-child(even) {
-    padding-right: 0;
-    padding-left: 16px;
-    border-left: 1px solid #eceff3;
 }
 
 .shopagg-checkout-meta-grid span {
@@ -1546,21 +1539,7 @@
     color: #c2410c;
 }
 
-.shopagg-checkout-card h2 {
-    margin: 0;
-    font-size: 20px;
-    color: #0f172a;
-}
 
-.shopagg-checkout-card p {
-    margin: 10px 0 0;
-    color: #64748b;
-    line-height: 1.7;
-}
-
-.shopagg-checkout-card-highlight {
-    background: #fff;
-}
 
 .shopagg-inline-payment-panel-embedded {
     margin-top: 18px;
@@ -2216,17 +2195,24 @@
     .shopagg-admin-header {
         grid-template-columns: 1fr;
         gap: 12px;
-        padding: 16px 0;
+        min-height: 0;
+        padding: 16px 0 0;
     }
 
     .shopagg-admin-topnav {
         justify-content: flex-start;
         padding: 0 24px;
+        gap: 0;
         overflow-x: auto;
+        border-top: 1px solid #eceff3;
+        border-bottom: 1px solid #eceff3;
     }
 
     .shopagg-admin-topnav-link {
-        height: 44px;
+        height: 48px;
+        padding: 0 18px;
+        white-space: nowrap;
+        flex: 0 0 auto;
     }
 
     .shopagg-detail-screenshot-list {
@@ -2235,6 +2221,8 @@
 
     .shopagg-admin-account {
         justify-content: flex-start;
+        padding: 0 24px 16px;
+        flex-wrap: wrap;
     }
 
     .shopagg-admin-body {
@@ -2242,8 +2230,52 @@
     }
 
     .shopagg-admin-sidebar {
+        padding: 16px 24px;
         border-right: 0;
         border-bottom: 1px solid #eceff3;
+        background: #fff;
+    }
+
+    .shopagg-admin-sidebar-links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        padding: 0 12px 12px;
+    }
+
+    .shopagg-admin-sidebar-group {
+        margin-top: 0 !important;
+        border: 1px solid #eceff3;
+        background: #f8fafc;
+    }
+
+    .shopagg-admin-sidebar-group h2 {
+        padding: 12px 14px 10px;
+    }
+
+    .shopagg-admin-sidebar-link {
+        min-height: 44px;
+        padding: 11px 12px;
+        border: 1px solid #e5e7eb;
+        border-left: 1px solid #e5e7eb;
+        background: #fff;
+        box-sizing: border-box;
+    }
+
+    .shopagg-admin-sidebar-link.is-active {
+        border-left-color: #ff3d81;
+        border-color: #fecdd3;
+        background: #fff1f2;
+    }
+
+    .shopagg-admin-sidebar-link.is-disabled {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 11px 12px;
+        border: 1px solid #e5e7eb;
+        background: #f8fafc;
+        box-sizing: border-box;
     }
 
     .shopagg-hero,
@@ -2299,15 +2331,6 @@
         padding: 12px 0;
     }
 
-    .shopagg-storefront-stat:nth-child(even) {
-        padding-left: 0;
-        border-left: 0;
-    }
-
-    .shopagg-checkout-meta-grid div:nth-child(even) {
-        padding-left: 0;
-        border-left: 0;
-    }
 
     .shopagg-inline-payment-methods {
         grid-template-columns: 1fr;
@@ -2337,19 +2360,89 @@
 }
 
 @media (max-width: 782px) {
+    .shopagg-admin-header {
+        gap: 0;
+        padding-top: 12px;
+    }
+
     .shopagg-app-store-wrap {
-        margin-right: 10px;
+        margin: 8px 8px 0 0;
     }
 
     .shopagg-admin-main {
-        padding: 20px;
+        padding: 18px 16px 24px;
     }
 
     .shopagg-admin-brand,
     .shopagg-admin-topnav,
     .shopagg-admin-account {
-        padding-right: 20px;
-        padding-left: 20px;
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .shopagg-admin-brand {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .shopagg-admin-brand strong {
+        font-size: 20px;
+    }
+
+    .shopagg-admin-sidebar-toggle {
+        display: inline-flex;
+        flex: 0 0 auto;
+    }
+
+    .shopagg-admin-topnav {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0;
+        overflow: hidden;
+        padding: 0;
+        background: #f8fafc;
+    }
+
+    .shopagg-admin-topnav-link,
+    .shopagg-admin-topnav-link.is-disabled {
+        justify-content: center;
+        width: 100%;
+        min-width: 0;
+        height: 52px;
+        padding: 0 6px;
+        border-bottom: 2px solid transparent;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .shopagg-admin-topnav-link.is-active::after {
+        display: none;
+    }
+
+    .shopagg-admin-topnav-link.is-active {
+        border-bottom-color: #ff3d81;
+        background: #fff;
+        color: #111827;
+    }
+
+    .shopagg-admin-account {
+        gap: 10px;
+        padding-top: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #eceff3;
+    }
+
+    .shopagg-admin-account-meta {
+        width: 100%;
+    }
+
+    .shopagg-admin-account-meta strong,
+    .shopagg-admin-account-meta span {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
     }
 
     .shopagg-shell {
@@ -2401,10 +2494,63 @@
         padding: 18px;
     }
 
+    .shopagg-admin-sidebar {
+        display: none;
+        padding: 14px 16px;
+        border-bottom: 1px solid #eceff3;
+        background: #f8fafc;
+    }
+
+    .shopagg-admin-layout.is-mobile-sidebar-open .shopagg-admin-sidebar {
+        display: block;
+    }
+
+    .shopagg-admin-sidebar-links {
+        grid-template-columns: 1fr;
+        padding: 0 10px 10px;
+    }
+
+    .shopagg-stat-card,
+    .shopagg-empty-state,
+    .shopagg-license-card,
+    .shopagg-update-card,
+    .shopagg-login-box {
+        border-radius: 14px;
+    }
+
     .shopagg-detail-review-top,
     .shopagg-detail-review-form-head,
     .shopagg-detail-timeline-head {
         flex-direction: column;
         align-items: flex-start;
+    }
+}
+
+@media (max-width: 520px) {
+    .shopagg-admin-brand {
+        flex-wrap: wrap;
+    }
+
+    .shopagg-admin-brand > div {
+        min-width: 0;
+    }
+
+    .shopagg-admin-topnav-link {
+        padding: 0 4px;
+        font-size: 11px;
+    }
+
+    .shopagg-admin-sidebar-group h2 {
+        font-size: 10px;
+    }
+
+    .shopagg-admin-pagehead h1,
+    .shopagg-login-header h1,
+    .shopagg-detail-plugin-copy h1 {
+        font-size: 26px;
+    }
+
+    .shopagg-stat-card {
+        padding: 16px 18px;
     }
 }

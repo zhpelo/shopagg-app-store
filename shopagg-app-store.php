@@ -149,6 +149,12 @@ function shopagg_app_store_render_admin_shell_start($args = []) {
                         <strong><i>SHOPAGG</i></strong>
                         <span>WordPress 应用商店</span>
                     </div>
+                    <button type="button"
+                            class="shopagg-admin-sidebar-toggle"
+                            aria-expanded="false"
+                            aria-controls="shopagg-admin-sidebar-panel">
+                        导航
+                    </button>
                 </div>
 
                 <nav class="shopagg-admin-topnav" aria-label="主导航">
@@ -181,7 +187,7 @@ function shopagg_app_store_render_admin_shell_start($args = []) {
             </header>
 
             <div class="shopagg-admin-body">
-                <aside class="shopagg-admin-sidebar">
+                <aside class="shopagg-admin-sidebar" id="shopagg-admin-sidebar-panel">
                     <?php foreach ($side_nav as $group) : ?>
                         <?php
                         $group_title = isset($group['title']) ? (string) $group['title'] : '';

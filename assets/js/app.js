@@ -14,6 +14,7 @@
         pollTimer: null,
 
         init: function () {
+            this.bindMobileNavigation();
             this.bindTokenForm();
             this.bindLogout();
             this.bindCatalogFilters();
@@ -27,6 +28,41 @@
             this.bindSectionSpy();
         },
 
+
+        bindMobileNavigation: function () {
+            var mobileWidth = 782;
+            var $layout = $('.shopagg-admin-layout');
+            var $toggle = $('.shopagg-admin-sidebar-toggle');
+
+            if (!$layout.length || !$toggle.length) {
+                return;
+            }
+
+            var syncExpandedState = function (expanded) {
+                $layout.toggleClass('is-mobile-sidebar-open', !!expanded);
+                $toggle.attr('aria-expanded', expanded ? 'true' : 'false');
+                $toggle.text(expanded ? '关闭' : '导航');
+            };
+
+            $(document).on('click', '.shopagg-admin-sidebar-toggle', function (e) {
+                e.preventDefault();
+                syncExpandedState(!$layout.hasClass('is-mobile-sidebar-open'));
+            });
+
+            $(document).on('click', '.shopagg-admin-sidebar-link', function () {
+                if (window.innerWidth <= mobileWidth) {
+                    syncExpandedState(false);
+                }
+            });
+
+            $(window).on('resize.shopaggMobileNav', function () {
+                if (window.innerWidth > mobileWidth) {
+                    syncExpandedState(false);
+                }
+            });
+
+            syncExpandedState(false);
+        },
         showMessage: function ($target, type, message) {
             if (!$target || !$target.length) {
                 return;
