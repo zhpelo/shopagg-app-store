@@ -110,13 +110,8 @@ class ShopAGG_App_Store_Auth {
             return '未保存';
         }
 
-        $length = strlen($token);
 
-        if ($length <= 10) {
-            return substr($token, 0, 2) . str_repeat('*', max(4, $length - 2));
-        }
-
-        return substr($token, 0, 6) . str_repeat('*', max(6, $length - 10)) . substr($token, -4);
+        return substr($token, 0, 12) . str_repeat('*', 6) ;
     }
 
     /**
