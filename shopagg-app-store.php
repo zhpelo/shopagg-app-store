@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name: ShopAGG App Store
+ * Plugin Name: SHOPAGG App Store
  * Plugin URI: https://shopagg.com
- * Description: 安装并管理来自 ShopAGG 应用商店的 WordPress 插件和主题。
+ * Description: 安装并管理来自 SHOPAGG 应用商店的 WordPress 插件和主题。
  * Version: 1.0.0
- * Author: ShopAGG
+ * Author: SHOPAGG
  * Author URI: https://shopagg.com
  * Text Domain: shopagg-app-store
  * Domain Path: /languages

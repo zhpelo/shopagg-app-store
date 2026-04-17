@@ -111,7 +111,7 @@ class ShopAGG_App_Store_Auth {
             <div class="shopagg-login-container">
                 <div class="shopagg-login-box">
                     <div class="shopagg-login-header">
-                        <h1>ShopAGG 应用商店</h1>
+                        <h1>SHOPAGG 应用商店</h1>
                         <p>先获取 API 令牌，然后再回来连接。</p>
                     </div>
 
@@ -125,7 +125,7 @@ class ShopAGG_App_Store_Auth {
                                         打开令牌页面
                                     </a>
                                     <a class="button button-secondary" href="<?php echo esc_url($login_url); ?>" target="_blank" rel="noopener noreferrer">
-                                        登录 ShopAGG
+                                        登录 SHOPAGG
                                     </a>
                                 </div>
                             </div>
