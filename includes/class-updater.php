@@ -183,7 +183,8 @@ class ShopAGG_App_Store_Updater {
             'sections' => [],
             'update_history' => [],
             'homepage' => SHOPAGG_APP_STORE_API_DOMAIN,
-            'download_requires_token' => true,
+            'download_requires_token' => false,
+            'download_slug' => SHOPAGG_APP_STORE_CLIENT_PLUGIN_SLUG,
             'update_url' => '',
             'error_message' => '',
         ];
@@ -212,7 +213,7 @@ class ShopAGG_App_Store_Updater {
             'homepage' => ! empty($resource['homepage']) ? (string) $resource['homepage'] : $details['homepage'],
         ]);
 
-        if ($update_available && $details['resource_id'] > 0 && shopagg_app_store_is_logged_in()) {
+        if ($update_available && $details['resource_id'] > 0) {
             $details['update_url'] = $this->build_plugin_update_url($plugin_file);
         }
 
@@ -364,10 +365,6 @@ class ShopAGG_App_Store_Updater {
     }
 
     private function inject_client_plugin_update($transient) {
-        if (! shopagg_app_store_is_logged_in()) {
-            return;
-        }
-
         $client_update = $this->get_client_plugin_update();
         if (empty($client_update['update_available']) || empty($client_update['resource_id'])) {
             return;
@@ -384,7 +381,7 @@ class ShopAGG_App_Store_Updater {
             'slug' => SHOPAGG_APP_STORE_CLIENT_PLUGIN_SLUG,
             'plugin' => $plugin_file,
             'new_version' => $client_update['version'],
-            'package' => admin_url('admin-ajax.php?action=shopagg_app_store_download_update&resource_id=' . absint($client_update['resource_id']) . '&nonce=' . wp_create_nonce('shopagg_app_store_update')),
+            'package' => admin_url('admin-ajax.php?action=shopagg_app_store_download_update&resource_id=' . absint($client_update['resource_id']) . '&slug=' . rawurlencode(SHOPAGG_APP_STORE_CLIENT_PLUGIN_SLUG) . '&nonce=' . wp_create_nonce('shopagg_app_store_update')),
             'url' => ! empty($client_update['homepage']) ? $client_update['homepage'] : '',
         ];
     }
@@ -412,11 +409,19 @@ class ShopAGG_App_Store_Updater {
             return new WP_Error('no_resource', '无效资源。');
         }
 
+        $slug = isset($params['slug']) ? sanitize_key($params['slug']) : '';
+
         // Get download URL from API
         $api = ShopAGG_App_Store_API_Client::instance();
-        $result = $api->get('download/' . $resource_id, [
-            'domain' => shopagg_app_store_get_site_domain(),
-        ]);
+        if ($slug === SHOPAGG_APP_STORE_CLIENT_PLUGIN_SLUG) {
+            $result = $api->get('download/slug/' . $slug, [
+                'domain' => shopagg_app_store_get_site_domain(),
+            ], false);
+        } else {
+            $result = $api->get('download/' . $resource_id, [
+                'domain' => shopagg_app_store_get_site_domain(),
+            ]);
+        }
 
         if (is_wp_error($result)) {
             return $result;
@@ -648,10 +653,18 @@ add_action('wp_ajax_shopagg_app_store_download_update', function () {
         wp_die('Invalid resource.');
     }
 
+    $slug = isset($_GET['slug']) ? sanitize_key(wp_unslash($_GET['slug'])) : '';
+
     $api = ShopAGG_App_Store_API_Client::instance();
-    $result = $api->get('download/' . $resource_id, [
-        'domain' => shopagg_app_store_get_site_domain(),
-    ]);
+    if ($slug === SHOPAGG_APP_STORE_CLIENT_PLUGIN_SLUG) {
+        $result = $api->get('download/slug/' . $slug, [
+            'domain' => shopagg_app_store_get_site_domain(),
+        ], false);
+    } else {
+        $result = $api->get('download/' . $resource_id, [
+            'domain' => shopagg_app_store_get_site_domain(),
+        ]);
+    }
 
     if (is_wp_error($result) || empty($result['download_url'])) {
         wp_die('Failed to get download URL.');

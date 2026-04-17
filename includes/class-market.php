@@ -1224,7 +1224,7 @@ class ShopAGG_App_Store_Market {
                 <?php if ($update_available && $update_url !== '') : ?>
                     <a class="button button-primary" href="<?php echo esc_url($update_url); ?>">立即更新插件</a>
                 <?php elseif ($update_available) : ?>
-                    <a class="button button-secondary" href="<?php echo esc_url(shopagg_app_store_get_connect_url(admin_url('admin.php?page=shopagg-app-store&tab=updates'))); ?>">连接 API Token 后更新</a>
+                    <span class="shopagg-client-update-current">已检测到新版本，但当前站点暂时无法生成更新链接。</span>
                 <?php else : ?>
                     <span class="shopagg-client-update-current">当前安装版本已经是最新版本。</span>
                 <?php endif; ?>
@@ -1464,7 +1464,7 @@ class ShopAGG_App_Store_Market {
         if (! shopagg_app_store_is_logged_in() && (empty($status['installed']) || ! empty($status['update']))) {
             $connect_label = ! empty($status['update'])
                 ? '连接令牌后更新'
-                : ($is_free ? '连接令牌后安装' : '连接令牌后购买');
+                : ($is_free ? '连接 API Token 后安装' : '连接 API Token 后购买');
             ?>
             <a class="button button-primary shopagg-action-button shopagg-action-button-primary shopagg-detail-primary-button" href="<?php echo esc_url($connect_url); ?>">
                 <?php echo esc_html($connect_label); ?>
