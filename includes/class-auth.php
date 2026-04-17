@@ -110,8 +110,13 @@ class ShopAGG_App_Store_Auth {
             return '未保存';
         }
 
+        $length = strlen($token);
 
-        return substr($token, 0, 12) . str_repeat('*', 3) ;
+        if ($length <= 10) {
+            return substr($token, 0, 2) . str_repeat('*', max(4, $length - 2));
+        }
+
+        return substr($token, 0, 6) . str_repeat('*', max(6, $length - 10)) . substr($token, -4);
     }
 
     /**
@@ -129,10 +134,83 @@ class ShopAGG_App_Store_Auth {
         $user = shopagg_app_store_get_user();
         $masked_token = $this->get_masked_token($token);
         $site_domain = shopagg_app_store_get_site_domain();
+        $top_nav = [
+            [
+                'label' => '资源库',
+                'url' => $market_url,
+                'active' => false,
+            ],
+            [
+                'label' => '更新',
+                'url' => $updates_url,
+                'active' => false,
+                'disabled' => ! $is_connected,
+            ],
+            [
+                'label' => '订单',
+                'url' => $orders_url,
+                'active' => false,
+                'disabled' => ! $is_connected,
+            ],
+            [
+                'label' => 'API Token',
+                'url' => shopagg_app_store_get_connect_url(),
+                'active' => true,
+            ],
+        ];
+        $side_nav = [
+            [
+                'title' => '连接管理',
+                'items' => [
+                    [
+                        'label' => $is_connected ? '当前连接' : '连接指南',
+                        'url' => '#shopagg-connect-main',
+                        'active' => true,
+                    ],
+                    [
+                        'label' => 'API Token 页面',
+                        'url' => $token_page_url,
+                        'target' => '_blank',
+                    ],
+                    [
+                        'label' => '登录 ShopAGG',
+                        'url' => $login_url,
+                        'target' => '_blank',
+                    ],
+                ],
+            ],
+            [
+                'title' => '业务入口',
+                'items' => [
+                    [
+                        'label' => '资源库',
+                        'url' => $market_url,
+                    ],
+                    [
+                        'label' => '订单管理',
+                        'url' => $orders_url,
+                        'disabled' => ! $is_connected,
+                    ],
+                    [
+                        'label' => '许可证',
+                        'url' => $licenses_url,
+                        'disabled' => ! $is_connected,
+                    ],
+                ],
+            ],
+        ];
+
+        shopagg_app_store_render_admin_shell_start([
+            'title' => 'API Token 管理',
+            'description' => $is_connected
+                ? '当前站点已经连接 API Token，可以在这里查看连接状态、解除连接或更换 Token。'
+                : '先完成 Token 连接，后续才能在后台直接完成购买、安装、授权和更新。',
+            'top_nav' => $top_nav,
+            'side_nav' => $side_nav,
+        ]);
         ?>
-        <div class="wrap shopagg-app-store-wrap">
-            <div class="shopagg-login-container">
-                <div class="shopagg-login-box">
+        <div class="shopagg-login-container" id="shopagg-connect-main">
+            <div class="shopagg-login-box">
                     <div class="shopagg-login-header">
                         <h1>SHOPAGG 应用商店</h1>
                         <?php if ($is_connected) : ?>
@@ -333,10 +411,9 @@ class ShopAGG_App_Store_Auth {
                                 </div>
                             <?php endif; ?>
                         </div>
-                    </div>
-                </div>
             </div>
         </div>
         <?php
+        shopagg_app_store_render_admin_shell_end();
     }
 }

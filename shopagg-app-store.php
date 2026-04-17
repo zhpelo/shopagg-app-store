@@ -130,6 +130,117 @@ function shopagg_app_store_get_site_domain() {
 }
 
 /**
+ * Render the shared admin layout shell.
+ *
+ * @param array $args Layout config.
+ */
+function shopagg_app_store_render_admin_shell_start($args = []) {
+    $title = isset($args['title']) ? (string) $args['title'] : 'ShopAGG 应用商店';
+    $description = isset($args['description']) ? (string) $args['description'] : '';
+    $top_nav = isset($args['top_nav']) && is_array($args['top_nav']) ? $args['top_nav'] : [];
+    $side_nav = isset($args['side_nav']) && is_array($args['side_nav']) ? $args['side_nav'] : [];
+    $is_connected = shopagg_app_store_is_logged_in();
+    $user = shopagg_app_store_get_user();
+    ?>
+    <div class="wrap shopagg-app-store-wrap">
+        <div class="shopagg-admin-layout">
+            <header class="shopagg-admin-header">
+                <div class="shopagg-admin-brand">
+                    <img src="<?php echo esc_url(SHOPAGG_APP_STORE_PLUGIN_URL . 'assets/images/shopagg.svg'); ?>" alt="ShopAGG" class="shopagg-admin-brand-logo" aria-hidden="true">
+                    <div>
+                        <strong><i>SHOPAGG</i></strong>
+                        <span>WordPress 应用商店</span>
+                    </div>
+                </div>
+
+                <nav class="shopagg-admin-topnav" aria-label="主导航">
+                    <?php foreach ($top_nav as $item) : ?>
+                        <?php
+                        $label = isset($item['label']) ? (string) $item['label'] : '';
+                        $url = isset($item['url']) ? (string) $item['url'] : '';
+                        $active = ! empty($item['active']);
+                        $disabled = ! empty($item['disabled']);
+                        ?>
+                        <?php if ($disabled) : ?>
+                            <span class="shopagg-admin-topnav-link is-disabled"><?php echo esc_html($label); ?></span>
+                        <?php else : ?>
+                            <a class="shopagg-admin-topnav-link <?php echo $active ? 'is-active' : ''; ?>" href="<?php echo esc_url($url); ?>">
+                                <?php echo esc_html($label); ?>
+                            </a>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </nav>
+
+                <div class="shopagg-admin-account">
+                    <span class="shopagg-admin-account-status <?php echo $is_connected ? 'is-connected' : 'is-disconnected'; ?>">
+                        <?php echo $is_connected ? '已连接' : '未连接'; ?>
+                    </span>
+                    <div class="shopagg-admin-account-meta">
+                        <strong><?php echo esc_html($is_connected ? ($user['name'] ?? '当前账号') : '请先连接 API Token'); ?></strong>
+                        <span><?php echo esc_html($is_connected ? ($user['email'] ?? shopagg_app_store_get_site_domain()) : shopagg_app_store_get_site_domain()); ?></span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="shopagg-admin-body">
+                <aside class="shopagg-admin-sidebar">
+                    <?php foreach ($side_nav as $group) : ?>
+                        <?php
+                        $group_title = isset($group['title']) ? (string) $group['title'] : '';
+                        $items = isset($group['items']) && is_array($group['items']) ? $group['items'] : [];
+                        ?>
+                        <section class="shopagg-admin-sidebar-group">
+                            <?php if ($group_title !== '') : ?>
+                                <h2><?php echo esc_html($group_title); ?></h2>
+                            <?php endif; ?>
+
+                            <div class="shopagg-admin-sidebar-links">
+                                <?php foreach ($items as $item) : ?>
+                                    <?php
+                                    $label = isset($item['label']) ? (string) $item['label'] : '';
+                                    $url = isset($item['url']) ? (string) $item['url'] : '';
+                                    $active = ! empty($item['active']);
+                                    $disabled = ! empty($item['disabled']);
+                                    $target = ! empty($item['target']) ? (string) $item['target'] : '';
+                                    ?>
+                                    <?php if ($disabled) : ?>
+                                        <span class="shopagg-admin-sidebar-link is-disabled"><?php echo esc_html($label); ?></span>
+                                    <?php else : ?>
+                                        <a class="shopagg-admin-sidebar-link <?php echo $active ? 'is-active' : ''; ?>"
+                                           href="<?php echo esc_url($url); ?>"
+                                           <?php echo $target !== '' ? 'target="' . esc_attr($target) . '" rel="noopener noreferrer"' : ''; ?>>
+                                            <?php echo esc_html($label); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
+                        </section>
+                    <?php endforeach; ?>
+                </aside>
+
+                <main class="shopagg-admin-main">
+                    <div class="shopagg-admin-pagehead">
+                        <h1><?php echo esc_html($title); ?></h1>
+                        <?php if ($description !== '') : ?>
+                            <p><?php echo esc_html($description); ?></p>
+                        <?php endif; ?>
+                    </div>
+    <?php
+}
+
+/**
+ * Close the shared admin layout shell.
+ */
+function shopagg_app_store_render_admin_shell_end() {
+    ?>
+                </main>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+
+/**
  * Clear cached license check result for a resource.
  */
 function shopagg_app_store_forget_license_cache($resource_id) {
