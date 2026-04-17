@@ -306,6 +306,21 @@
                     }
                 });
             });
+
+            $(document).on('click', '#shopagg-toggle-token-form', function (e) {
+                e.preventDefault();
+
+                var $btn = $(this);
+                var $panel = $('#shopagg-token-replace');
+                var isHidden = $panel.prop('hidden');
+
+                $panel.prop('hidden', !isHidden);
+                $btn.text(isHidden ? ($btn.data('hide-text') || '取消更换') : ($btn.data('show-text') || '更换API Token'));
+
+                if (isHidden) {
+                    $('#shopagg-api-token').trigger('focus');
+                }
+            });
         },
 
         /**

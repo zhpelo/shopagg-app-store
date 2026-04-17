@@ -704,6 +704,40 @@
     margin-top: 18px;
 }
 
+.shopagg-connect-features {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.shopagg-connect-feature {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px 20px;
+    border: 1px solid #dbe3ec;
+    border-radius: 18px;
+    background: #fff;
+    color: #0f172a;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.shopagg-connect-feature:hover {
+    transform: translateY(-2px);
+    border-color: #93c5fd;
+    box-shadow: 0 16px 28px rgba(37, 99, 235, 0.08);
+}
+
+.shopagg-connect-feature strong {
+    font-size: 16px;
+}
+
+.shopagg-connect-feature span {
+    color: #64748b;
+    line-height: 1.7;
+}
+
 .shopagg-guide-steps,
 .shopagg-guide-notes {
     display: grid;
@@ -756,6 +790,85 @@
 
 .shopagg-connect-form-head {
     margin-bottom: 18px;
+}
+
+.shopagg-token-status-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px;
+    border: 1px solid #dbe3ec;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.shopagg-token-status-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.shopagg-token-status-row:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.shopagg-token-status-row span {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.shopagg-token-status-row strong,
+.shopagg-token-status-row code {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.shopagg-token-status-row-token {
+    align-items: flex-start;
+}
+
+.shopagg-token-status-row code {
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: #eff6ff;
+    word-break: break-all;
+}
+
+.shopagg-token-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.shopagg-token-replace {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.shopagg-token-replace[hidden] {
+    display: none;
+}
+
+.shopagg-token-replace-head {
+    margin-bottom: 16px;
+}
+
+.shopagg-token-replace-head h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #0f172a;
+}
+
+.shopagg-token-replace-head p {
+    margin: 8px 0 0;
+    color: #64748b;
+    line-height: 1.7;
 }
 
 .shopagg-field {
@@ -1409,8 +1522,17 @@
         grid-template-columns: 1fr;
     }
 
+    .shopagg-connect-features {
+        grid-template-columns: 1fr;
+    }
+
     .shopagg-connect-form-card {
         position: static;
+    }
+
+    .shopagg-token-status-row {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 

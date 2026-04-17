@@ -983,7 +983,7 @@ class ShopAGG_App_Store_Market {
                             data-resource-type="plugin"
                             data-toggle-action="deactivate"
                             data-target="<?php echo esc_attr($status['target']); ?>">
-                        停用
+                        禁用
                     </button>
                 </div>
                 <?php
@@ -994,7 +994,7 @@ class ShopAGG_App_Store_Market {
                             data-resource-type="plugin"
                             data-toggle-action="activate"
                             data-target="<?php echo esc_attr($status['target']); ?>">
-                        激活
+                        启用
                     </button>
                 </div>
                 <?php
