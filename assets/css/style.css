@@ -1275,7 +1275,6 @@
     grid-template-columns: minmax(0, 1fr) 260px;
     gap: 24px;
     padding: 0 0 16px;
-    border-bottom: 1px solid #dbe3ec;
 }
 
 .shopagg-detail-plugin-main {
@@ -2158,6 +2157,50 @@
     margin-top: 0;
 }
 
+.shopagg-detail-screenshot-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.shopagg-detail-screenshot-item {
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.shopagg-detail-screenshot-link {
+    display: block;
+    text-decoration: none;
+}
+
+.shopagg-detail-screenshot-link img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border: 1px solid #dbe3ec;
+    background: #f8fafc;
+}
+
+.shopagg-detail-screenshot-item figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 0 16px;
+}
+
+.shopagg-detail-screenshot-item figcaption strong {
+    color: #0f172a;
+    font-size: 14px;
+}
+
+.shopagg-detail-screenshot-item figcaption span {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
 @media (max-width: 1080px) {
     .shopagg-admin-header {
         grid-template-columns: 1fr;
@@ -2173,6 +2216,10 @@
 
     .shopagg-admin-topnav-link {
         height: 44px;
+    }
+
+    .shopagg-detail-screenshot-list {
+        grid-template-columns: 1fr;
     }
 
     .shopagg-admin-account {

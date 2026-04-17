@@ -198,6 +198,7 @@ class ShopAGG_App_Store_Market {
         $banner = ! empty($resource['banners']['high'])
             ? $resource['banners']['high']
             : (! empty($resource['banners']['low']) ? $resource['banners']['low'] : $cover);
+        $screenshots = $this->normalize_resource_screenshots($resource['screenshots'] ?? []);
 
         $status = $this->get_resource_install_state($resource);
         $top_nav = [
@@ -248,6 +249,11 @@ class ShopAGG_App_Store_Market {
                     [
                         'label' => '资源详情',
                         'url' => '#shopagg-detail-description',
+                    ],
+                    [
+                        'label' => '屏幕截图',
+                        'url' => '#shopagg-detail-screenshots',
+                        'disabled' => empty($screenshots),
                     ],
                 ],
             ],
@@ -323,6 +329,9 @@ class ShopAGG_App_Store_Market {
                     <div class="shopagg-detail-tabnav-wrap">
                         <nav class="shopagg-detail-tabnav" aria-label="资源详情导航">
                             <a href="#shopagg-detail-description" class="shopagg-detail-tab is-active">详情</a>
+                            <?php if (! empty($screenshots)) : ?>
+                                <a href="#shopagg-detail-screenshots" class="shopagg-detail-tab">截图</a>
+                            <?php endif; ?>
                             <a href="#shopagg-detail-reviews" class="shopagg-detail-tab">评价</a>
                             <a href="#shopagg-detail-installation" class="shopagg-detail-tab">安装</a>
                             <a href="#shopagg-detail-history" class="shopagg-detail-tab">开发进展</a>
@@ -339,6 +348,32 @@ class ShopAGG_App_Store_Market {
                                     <?php echo wp_kses_post($detail_description); ?>
                                 </div>
                             </div>
+
+                            <?php if (! empty($screenshots)) : ?>
+                                <div class="shopagg-detail-section" id="shopagg-detail-screenshots">
+                                    <div class="shopagg-detail-section-head">
+                                        <h2>屏幕截图</h2>
+                                        <p>查看该资源在后台中的实际界面与关键使用场景。</p>
+                                    </div>
+                                    <div class="shopagg-detail-screenshot-list">
+                                        <?php foreach ($screenshots as $index => $screenshot) : ?>
+                                            <figure class="shopagg-detail-screenshot-item">
+                                                <a href="<?php echo esc_url($screenshot['url']); ?>" target="_blank" rel="noopener noreferrer" class="shopagg-detail-screenshot-link">
+                                                    <img src="<?php echo esc_url($screenshot['url']); ?>" alt="<?php echo esc_attr(! empty($screenshot['caption']) ? $screenshot['caption'] : sprintf('截图 %d', $index + 1)); ?>">
+                                                </a>
+                                                <figcaption>
+                                                    <strong><?php echo esc_html(sprintf('截图 %d', $index + 1)); ?></strong>
+                                                    <?php if (! empty($screenshot['caption'])) : ?>
+                                                        <span><?php echo esc_html($screenshot['caption']); ?></span>
+                                                    <?php else : ?>
+                                                        <span>点击可在新窗口查看大图。</span>
+                                                    <?php endif; ?>
+                                                </figcaption>
+                                            </figure>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
 
                             <div class="shopagg-detail-section" id="shopagg-detail-installation">
                                 <div class="shopagg-detail-section-head">
@@ -981,6 +1016,47 @@ class ShopAGG_App_Store_Market {
 
     private function fetch_available_updates() {
         return ShopAGG_App_Store_Updater::instance()->get_available_updates();
+    }
+
+    private function normalize_resource_screenshots($screenshots) {
+        if (! is_array($screenshots)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($screenshots as $screenshot) {
+            if (is_string($screenshot)) {
+                $url = trim($screenshot);
+
+                if ($url !== '') {
+                    $normalized[] = [
+                        'url' => $url,
+                        'caption' => '',
+                    ];
+                }
+
+                continue;
+            }
+
+            if (! is_array($screenshot)) {
+                continue;
+            }
+
+            $url = isset($screenshot['url']) ? trim((string) $screenshot['url']) : '';
+            $caption = isset($screenshot['caption']) ? trim((string) $screenshot['caption']) : '';
+
+            if ($url === '') {
+                continue;
+            }
+
+            $normalized[] = [
+                'url' => $url,
+                'caption' => $caption,
+            ];
+        }
+
+        return $normalized;
     }
 
     private function render_browse_panel($resources, $preset_type) {
