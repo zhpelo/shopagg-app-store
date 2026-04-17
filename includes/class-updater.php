@@ -14,6 +14,7 @@ class ShopAGG_App_Store_Updater {
 
     private static $instance = null;
     private $cached_updates = null;
+    private $cached_client_plugin = null;
 
     public static function instance() {
         if (is_null(self::$instance)) {
@@ -160,6 +161,64 @@ class ShopAGG_App_Store_Updater {
         return $available;
     }
 
+    public function get_client_plugin_update() {
+        $plugin_file = $this->get_client_plugin_file();
+        $installed_version = $this->get_installed_plugin_version($plugin_file);
+
+        if (! $installed_version) {
+            $installed_version = defined('SHOPAGG_APP_STORE_VERSION') ? SHOPAGG_APP_STORE_VERSION : '0.0.0';
+        }
+
+        $details = [
+            'slug' => SHOPAGG_APP_STORE_CLIENT_PLUGIN_SLUG,
+            'name' => 'SHOPAGG App Store',
+            'installed_version' => $installed_version,
+            'version' => $installed_version,
+            'update_available' => false,
+            'resource_id' => 0,
+            'requires' => '',
+            'requires_php' => '',
+            'tested' => '',
+            'last_updated' => '',
+            'sections' => [],
+            'update_history' => [],
+            'homepage' => SHOPAGG_APP_STORE_API_DOMAIN,
+            'download_requires_token' => true,
+            'update_url' => '',
+            'error_message' => '',
+        ];
+
+        $result = $this->fetch_client_plugin_payload();
+        if (is_wp_error($result)) {
+            $details['error_message'] = $result->get_error_message();
+            return $details;
+        }
+
+        $resource = isset($result['resource']) && is_array($result['resource']) ? $result['resource'] : [];
+        $latest_version = ! empty($resource['version']) ? (string) $resource['version'] : $installed_version;
+        $update_available = version_compare($latest_version, $installed_version, '>');
+
+        $details = array_merge($details, [
+            'resource_id' => isset($resource['id']) ? absint($resource['id']) : 0,
+            'name' => ! empty($resource['name']) ? (string) $resource['name'] : $details['name'],
+            'version' => $latest_version,
+            'update_available' => $update_available,
+            'requires' => isset($resource['requires']) ? (string) $resource['requires'] : '',
+            'requires_php' => isset($resource['requires_php']) ? (string) $resource['requires_php'] : '',
+            'tested' => isset($resource['tested']) ? (string) $resource['tested'] : '',
+            'last_updated' => isset($resource['last_updated']) ? (string) $resource['last_updated'] : '',
+            'sections' => isset($resource['sections']) && is_array($resource['sections']) ? $resource['sections'] : [],
+            'update_history' => isset($resource['update_history']) && is_array($resource['update_history']) ? $resource['update_history'] : [],
+            'homepage' => ! empty($resource['homepage']) ? (string) $resource['homepage'] : $details['homepage'],
+        ]);
+
+        if ($update_available && $details['resource_id'] > 0 && shopagg_app_store_is_logged_in()) {
+            $details['update_url'] = $this->build_plugin_update_url($plugin_file);
+        }
+
+        return $details;
+    }
+
     /**
      * Check for plugin updates.
      */
@@ -196,6 +255,8 @@ class ShopAGG_App_Store_Updater {
                 ];
             }
         }
+
+        $this->inject_client_plugin_update($transient);
 
         return $transient;
     }
@@ -248,13 +309,21 @@ class ShopAGG_App_Store_Updater {
         }
 
         $managed = $this->get_managed_slugs();
-        if (! isset($args->slug) || ! isset($managed[$args->slug])) {
+        if (! isset($args->slug)) {
             return $result;
         }
 
-        $resource_id = $managed[$args->slug]['resource_id'];
-        $api = ShopAGG_App_Store_API_Client::instance();
-        $resource_result = $api->get('resources/' . $resource_id);
+        if ($args->slug === SHOPAGG_APP_STORE_CLIENT_PLUGIN_SLUG) {
+            $resource_result = $this->fetch_client_plugin_payload();
+        } else {
+            if (! isset($managed[$args->slug])) {
+                return $result;
+            }
+
+            $resource_id = $managed[$args->slug]['resource_id'];
+            $api = ShopAGG_App_Store_API_Client::instance();
+            $resource_result = $api->get('resources/' . $resource_id);
+        }
 
         if (is_wp_error($resource_result)) {
             return $result;
@@ -280,6 +349,43 @@ class ShopAGG_App_Store_Updater {
                 ],
             'banners' => isset($resource['banners']) && is_array($resource['banners']) ? $resource['banners'] : [],
             'icons' => isset($resource['icons']) && is_array($resource['icons']) ? $resource['icons'] : [],
+        ];
+    }
+
+    private function fetch_client_plugin_payload() {
+        if ($this->cached_client_plugin !== null) {
+            return $this->cached_client_plugin;
+        }
+
+        $api = ShopAGG_App_Store_API_Client::instance();
+        $this->cached_client_plugin = $api->get('resources/slug/' . SHOPAGG_APP_STORE_CLIENT_PLUGIN_SLUG, [], false);
+
+        return $this->cached_client_plugin;
+    }
+
+    private function inject_client_plugin_update($transient) {
+        if (! shopagg_app_store_is_logged_in()) {
+            return;
+        }
+
+        $client_update = $this->get_client_plugin_update();
+        if (empty($client_update['update_available']) || empty($client_update['resource_id'])) {
+            return;
+        }
+
+        $plugin_file = $this->get_client_plugin_file();
+        $installed_version = isset($transient->checked[$plugin_file]) ? $transient->checked[$plugin_file] : ($client_update['installed_version'] ?? '0.0.0');
+
+        if (! version_compare($client_update['version'], $installed_version, '>')) {
+            return;
+        }
+
+        $transient->response[$plugin_file] = (object) [
+            'slug' => SHOPAGG_APP_STORE_CLIENT_PLUGIN_SLUG,
+            'plugin' => $plugin_file,
+            'new_version' => $client_update['version'],
+            'package' => admin_url('admin-ajax.php?action=shopagg_app_store_download_update&resource_id=' . absint($client_update['resource_id']) . '&nonce=' . wp_create_nonce('shopagg_app_store_update')),
+            'url' => ! empty($client_update['homepage']) ? $client_update['homepage'] : '',
         ];
     }
 
@@ -424,6 +530,10 @@ class ShopAGG_App_Store_Updater {
         $data = get_plugin_data($plugin_path, false, false);
 
         return ! empty($data['Version']) ? $data['Version'] : null;
+    }
+
+    private function get_client_plugin_file() {
+        return plugin_basename(SHOPAGG_APP_STORE_PLUGIN_DIR . 'shopagg-app-store.php');
     }
 
     private function get_installed_theme_version($stylesheet) {

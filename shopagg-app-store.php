@@ -3,13 +3,12 @@
  * Plugin Name: SHOPAGG App Store
  * Plugin URI: https://shopagg.com
  * Description: 安装并管理来自 SHOPAGG 应用商店的 WordPress 插件和主题。
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: SHOPAGG
  * Author URI: https://shopagg.com
  * Text Domain: shopagg-app-store
- * Domain Path: /languages
- * Requires at least: 5.8
- * Requires PHP: 7.4
+ * Requires at least: 6.8
+ * Requires PHP: 8.0
  */
 
 

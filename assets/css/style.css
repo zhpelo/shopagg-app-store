@@ -815,6 +815,113 @@
     flex-wrap: wrap;
 }
 
+.shopagg-client-update-card {
+    margin-bottom: 18px;
+    padding: 20px;
+    border: 1px solid #dbe3ec;
+    border-radius: 16px;
+    background: #f8fafc;
+}
+
+.shopagg-client-update-head {
+    margin-bottom: 16px;
+}
+
+.shopagg-client-update-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.shopagg-client-update-version {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.shopagg-client-update-meta {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.shopagg-client-update-meta div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.shopagg-client-update-meta strong {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.shopagg-client-update-meta span {
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.shopagg-client-update-note {
+    margin-bottom: 14px;
+    color: #334155;
+    line-height: 1.7;
+}
+
+.shopagg-client-update-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.shopagg-client-update-current {
+    color: #475569;
+    font-weight: 600;
+}
+
+.shopagg-client-update-history {
+    display: grid;
+    gap: 10px;
+}
+
+.shopagg-client-update-history-item {
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.shopagg-client-update-history-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.shopagg-client-update-history-head strong {
+    color: #0f172a;
+}
+
+.shopagg-client-update-history-head span {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.shopagg-client-update-history-item p {
+    margin: 0;
+    color: #475569;
+    line-height: 1.7;
+}
+
 .shopagg-back-link {
     display: inline-flex;
     align-items: center;
@@ -2296,9 +2403,15 @@
     }
 
     .shopagg-update-card,
-    .shopagg-update-banner {
+    .shopagg-update-banner,
+    .shopagg-client-update-head,
+    .shopagg-client-update-history-head {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .shopagg-client-update-meta {
+        grid-template-columns: 1fr 1fr;
     }
 
     .shopagg-detail-plugin-head,
@@ -2514,8 +2627,13 @@
     .shopagg-empty-state,
     .shopagg-license-card,
     .shopagg-update-card,
-    .shopagg-login-box {
+    .shopagg-login-box,
+    .shopagg-client-update-card {
         border-radius: 14px;
+    }
+
+    .shopagg-client-update-meta {
+        grid-template-columns: 1fr;
     }
 
     .shopagg-detail-review-top,

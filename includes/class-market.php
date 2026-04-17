@@ -44,7 +44,6 @@ class ShopAGG_App_Store_Market {
                     'label' => '更新',
                     'url' => admin_url('admin.php?page=shopagg-app-store&tab=updates'),
                     'active' => $active_tab === 'updates',
-                    'disabled' => ! $is_connected,
                 ],
                 [
                     'label' => '订单',
@@ -81,7 +80,6 @@ class ShopAGG_App_Store_Market {
                             'label' => '可用更新',
                             'url' => admin_url('admin.php?page=shopagg-app-store&tab=updates'),
                             'active' => $active_tab === 'updates',
-                            'disabled' => ! $is_connected,
                         ],
                     ],
                 ],
@@ -117,7 +115,12 @@ class ShopAGG_App_Store_Market {
         $navigation = $this->build_market_shell_navigation($state['tab'], $state['preset_type']);
         $description = $is_connected
             ? '统一管理资源浏览、购买、授权、更新和订单状态。'
-            : '先浏览资源，后续连接 API Token 即可解锁安装、购买和更新能力。';
+            : '先浏览资源，客户端版本记录可直接查看，连接 API Token 后可继续安装和更新资源。';
+
+        $update_count = count($state['updates']);
+        if (! empty($state['client_plugin_update']['update_available'])) {
+            $update_count += 1;
+        }
 
         shopagg_app_store_render_admin_shell_start([
             'title' => 'SHOPAGG 应用商店',
@@ -142,7 +145,7 @@ class ShopAGG_App_Store_Market {
                 </div>
                 <div class="shopagg-stat-card">
                     <span class="shopagg-stat-label">更新</span>
-                    <strong><?php echo esc_html($is_connected ? count($state['updates']) : '-'); ?></strong>
+                    <strong><?php echo esc_html($update_count); ?></strong>
                 </div>
             </div>
         </div>
@@ -152,7 +155,7 @@ class ShopAGG_App_Store_Market {
         <?php elseif ($state['tab'] === 'licenses') : ?>
             <?php $this->render_licenses_panel($state['licenses']); ?>
         <?php elseif ($state['tab'] === 'updates') : ?>
-            <?php $this->render_updates_panel($state['updates']); ?>
+            <?php $this->render_updates_panel($state['updates'], $state['client_plugin_update']); ?>
         <?php else : ?>
             <?php $this->render_browse_panel($state['resources'], $state['preset_type']); ?>
         <?php endif; ?>
@@ -809,7 +812,7 @@ class ShopAGG_App_Store_Market {
 
         $preset_type = isset($legacy_map[$tab]) ? $legacy_map[$tab] : 'all';
         $normalized_tab = in_array($tab, ['browse', 'updates', 'orders', 'licenses'], true) ? $tab : 'browse';
-        if (! $is_connected && $normalized_tab !== 'browse') {
+        if (! $is_connected && in_array($normalized_tab, ['orders', 'licenses'], true)) {
             $normalized_tab = 'browse';
         }
 
@@ -820,6 +823,7 @@ class ShopAGG_App_Store_Market {
             'orders' => $this->fetch_orders(),
             'licenses' => $this->fetch_licenses(),
             'updates' => $this->fetch_available_updates(),
+            'client_plugin_update' => $this->fetch_client_plugin_update(),
         ];
     }
 
@@ -900,6 +904,10 @@ class ShopAGG_App_Store_Market {
 
     private function fetch_available_updates() {
         return ShopAGG_App_Store_Updater::instance()->get_available_updates();
+    }
+
+    private function fetch_client_plugin_update() {
+        return ShopAGG_App_Store_Updater::instance()->get_client_plugin_update();
     }
 
     private function normalize_resource_screenshots($screenshots) {
@@ -1110,7 +1118,7 @@ class ShopAGG_App_Store_Market {
         <?php
     }
 
-    private function render_updates_panel($updates) {
+    private function render_updates_panel($updates, $client_plugin_update) {
         ?>
         <div class="shopagg-panel">
             <div class="shopagg-panel-head">
@@ -1127,6 +1135,8 @@ class ShopAGG_App_Store_Market {
                     <span class="shopagg-panel-toolbar-text">建议优先处理安全修复和版本跨度较大的更新。</span>
                 </div>
             </div>
+
+            <?php $this->render_client_plugin_update_panel($client_plugin_update); ?>
 
             <?php if (empty($updates)) : ?>
                 <div class="shopagg-empty-state">
@@ -1164,6 +1174,73 @@ class ShopAGG_App_Store_Market {
                                     查看详情
                                 </a>
                             </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+
+    private function render_client_plugin_update_panel($client_plugin_update) {
+        $installed_version = isset($client_plugin_update['installed_version']) ? (string) $client_plugin_update['installed_version'] : '0.0.0';
+        $latest_version = isset($client_plugin_update['version']) ? (string) $client_plugin_update['version'] : $installed_version;
+        $update_available = ! empty($client_plugin_update['update_available']);
+        $update_url = isset($client_plugin_update['update_url']) ? (string) $client_plugin_update['update_url'] : '';
+        $update_history = isset($client_plugin_update['update_history']) && is_array($client_plugin_update['update_history'])
+            ? array_slice($client_plugin_update['update_history'], 0, 6)
+            : [];
+        $changelog = isset($client_plugin_update['sections']['changelog']) ? (string) $client_plugin_update['sections']['changelog'] : '';
+        ?>
+        <div class="shopagg-client-update-card">
+            <div class="shopagg-panel-head shopagg-client-update-head">
+                <div>
+                    <div class="shopagg-panel-kicker">客户端插件</div>
+                    <h2>SHOPAGG App Store</h2>
+                    <p>当前站点安装的应用商店客户端版本、Laravel 端最新版本和更新记录会在这里单独显示。</p>
+                </div>
+                <div class="shopagg-client-update-summary">
+                    <span class="shopagg-panel-pill <?php echo $update_available ? 'is-warn' : 'is-success'; ?>">
+                        <?php echo esc_html($update_available ? '发现新版本' : '当前已最新'); ?>
+                    </span>
+                    <span class="shopagg-client-update-version">本地 v<?php echo esc_html($installed_version); ?> / 最新 v<?php echo esc_html($latest_version); ?></span>
+                </div>
+            </div>
+
+            <div class="shopagg-client-update-meta">
+                <div><strong>最近发布</strong><span><?php echo esc_html(! empty($client_plugin_update['last_updated']) ? $this->format_storefront_date($client_plugin_update['last_updated']) : '-'); ?></span></div>
+                <div><strong>要求 WordPress</strong><span><?php echo esc_html(! empty($client_plugin_update['requires']) ? $client_plugin_update['requires'] : '-'); ?></span></div>
+                <div><strong>要求 PHP</strong><span><?php echo esc_html(! empty($client_plugin_update['requires_php']) ? $client_plugin_update['requires_php'] : '-'); ?></span></div>
+                <div><strong>测试到</strong><span><?php echo esc_html(! empty($client_plugin_update['tested']) ? $client_plugin_update['tested'] : '-'); ?></span></div>
+            </div>
+
+            <?php if (! empty($client_plugin_update['error_message'])) : ?>
+                <div class="shopagg-panel-message error"><p><?php echo esc_html($client_plugin_update['error_message']); ?></p></div>
+            <?php elseif ($changelog !== '') : ?>
+                <div class="shopagg-client-update-note"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($changelog), 40)); ?></div>
+            <?php endif; ?>
+
+            <div class="shopagg-client-update-actions">
+                <?php if ($update_available && $update_url !== '') : ?>
+                    <a class="button button-primary" href="<?php echo esc_url($update_url); ?>">立即更新插件</a>
+                <?php elseif ($update_available) : ?>
+                    <a class="button button-secondary" href="<?php echo esc_url(shopagg_app_store_get_connect_url(admin_url('admin.php?page=shopagg-app-store&tab=updates'))); ?>">连接 API Token 后更新</a>
+                <?php else : ?>
+                    <span class="shopagg-client-update-current">当前安装版本已经是最新版本。</span>
+                <?php endif; ?>
+            </div>
+
+            <?php if (! empty($update_history)) : ?>
+                <div class="shopagg-client-update-history">
+                    <?php foreach ($update_history as $history) : ?>
+                        <div class="shopagg-client-update-history-item">
+                            <div class="shopagg-client-update-history-head">
+                                <strong>v<?php echo esc_html($history['version'] ?? '-'); ?></strong>
+                                <span><?php echo esc_html(! empty($history['released_at']) ? $this->format_storefront_date($history['released_at']) : '-'); ?></span>
+                            </div>
+                            <?php if (! empty($history['changelog'])) : ?>
+                                <p><?php echo esc_html(wp_trim_words(wp_strip_all_tags((string) $history['changelog']), 36)); ?></p>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 </div>
