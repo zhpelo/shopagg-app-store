@@ -400,7 +400,7 @@ class ShopAGG_App_Store_Market {
             </div>
 
             <?php if (! $is_connected) : ?>
-                <a class="button button-secondary shopagg-review-connect-btn" href="<?php echo esc_url(shopagg_app_store_get_connect_url($this->get_resource_detail_url($resource['id']))); ?>">
+                <a class="button button-secondary shopagg-review-connect-btn" href="<?php echo esc_url( shopagg_app_store_get_connect_url() ); ?>">
                     <?php esc_html_e('Connect Token to Review', 'shopagg-app-store'); ?>
                 </a>
             <?php elseif (! $is_installed) : ?>
@@ -886,8 +886,7 @@ class ShopAGG_App_Store_Market {
     }
 
     private function render_detail_action_buttons($resource, $status, $has_license, $is_free) {
-        $detail_url = $this->get_resource_detail_url($resource['id']);
-        $connect_url = shopagg_app_store_get_connect_url($detail_url);
+        $connect_url = shopagg_app_store_get_connect_url();
         ?>
         <div class="shopagg-action-stack">
         <?php

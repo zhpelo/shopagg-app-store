@@ -204,7 +204,7 @@
 }
 
 .shopagg-resource-cover {
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
     background: #e2e8f0;
 }

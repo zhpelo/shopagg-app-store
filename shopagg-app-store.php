@@ -93,16 +93,11 @@ function shopagg_app_store_get_dashboard_url() {
  * @param string $redirect_to Optional admin URL to return to after connecting.
  * @return string
  */
-function shopagg_app_store_get_connect_url($redirect_to = '') {
+function shopagg_app_store_get_connect_url() {
     $args = [
         'page' => 'shopagg-app-store',
         'action' => 'connect',
     ];
-
-    if (! empty($redirect_to)) {
-        $args['redirect_to'] = $redirect_to;
-    }
-
     return add_query_arg($args, admin_url('admin.php'));
 }
 
