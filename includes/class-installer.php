@@ -5,6 +5,7 @@
  * Handles installation of plugins and themes from ShopAGG App Store.
  */
 
+
 if (! defined('ABSPATH')) {
     exit;
 }
@@ -28,7 +29,7 @@ class ShopAGG_App_Store_Installer {
      */
     public function install($resource_id) {
         if (! shopagg_app_store_is_logged_in()) {
-            return new WP_Error('not_logged_in', __('You must be logged in to install resources.', 'shopagg-app-store'));
+            return new WP_Error('not_logged_in', '您必须登录后才能安装资源。');
         }
 
         $api = ShopAGG_App_Store_API_Client::instance();
@@ -42,7 +43,7 @@ class ShopAGG_App_Store_Installer {
         $resource = $resource_info['resource'];
 
         if (shopagg_app_store_is_client_resource($resource)) {
-            return new WP_Error('managed_separately', __('The ShopAGG App Store plugin is updated through its own standalone channel and cannot be installed from inside the marketplace.', 'shopagg-app-store'));
+            return new WP_Error('managed_separately', 'ShopAGG 应用商店插件通过独立渠道更新，不能在市场内部安装。');
         }
 
         $type = $resource['type'];
@@ -57,7 +58,7 @@ class ShopAGG_App_Store_Installer {
         }
 
         if (empty($result['download_url'])) {
-            return new WP_Error('no_download_url', __('Failed to get download URL.', 'shopagg-app-store'));
+            return new WP_Error('no_download_url', '获取下载 URL 失败。');
         }
 
         // Download the package file ourselves using wp_remote_get()
@@ -74,7 +75,7 @@ class ShopAGG_App_Store_Installer {
             $install_result = $this->install_from_file($tmp_file, 'theme');
         } else {
             @unlink($tmp_file);
-            return new WP_Error('invalid_type', __('Invalid resource type.', 'shopagg-app-store'));
+            return new WP_Error('invalid_type', '资源类型无效。');
         }
 
         // Register for auto-updates tracking
@@ -99,8 +100,8 @@ class ShopAGG_App_Store_Installer {
                 'type'            => $resource['type'],
                 'activate_url'    => $this->get_activate_url($resource['type'], $resource['slug']),
                 'activate_label'  => $resource['type'] === 'plugin'
-                    ? __('Activate Plugin', 'shopagg-app-store')
-                    : __('Activate Theme', 'shopagg-app-store'),
+                    ? '激活插件'
+                    : '激活主题',
             ];
         }
 
@@ -197,7 +198,7 @@ class ShopAGG_App_Store_Installer {
 
         $tmp_file = wp_tempnam($url);
         if (! $tmp_file) {
-            return new WP_Error('tmp_file_error', __('Could not create temporary file.', 'shopagg-app-store'));
+            return new WP_Error('tmp_file_error', '无法创建临时文件。');
         }
 
         $response = wp_remote_get($url, [
@@ -216,14 +217,14 @@ class ShopAGG_App_Store_Installer {
             @unlink($tmp_file);
             return new WP_Error(
                 'download_failed',
-                sprintf(__('Download failed with HTTP status %d.', 'shopagg-app-store'), $code)
+                sprintf('下载失败，HTTP 状态为 %d。', $code)
             );
         }
 
         $filesize = filesize($tmp_file);
         if ($filesize === 0) {
             @unlink($tmp_file);
-            return new WP_Error('download_empty', __('Downloaded file is empty.', 'shopagg-app-store'));
+            return new WP_Error('download_empty', '下载的文件为空。');
         }
 
         return $tmp_file;
@@ -278,8 +279,8 @@ class ShopAGG_App_Store_Installer {
             }
             return new WP_Error('install_failed',
                 $type === 'plugin'
-                    ? __('Plugin installation failed.', 'shopagg-app-store')
-                    : __('Theme installation failed.', 'shopagg-app-store')
+                    ? '插件安装失败。'
+                    : '主题安装失败。'
             );
         }
 

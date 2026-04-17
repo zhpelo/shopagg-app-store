@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ShopAGG App Store
  * Plugin URI: https://shopagg.com
- * Description: Install and manage WordPress plugins and themes from ShopAGG App Store.
+ * Description: 安装并管理来自 ShopAGG 应用商店的 WordPress 插件和主题。
  * Version: 1.0.0
  * Author: ShopAGG
  * Author URI: https://shopagg.com
@@ -11,6 +11,7 @@
  * Requires at least: 5.8
  * Requires PHP: 7.4
  */
+
 
 if (! defined('ABSPATH')) {
     exit;
@@ -152,8 +153,8 @@ add_action('plugins_loaded', 'shopagg_app_store_init');
  */
 function shopagg_app_store_admin_menu() {
     add_menu_page(
-        __('ShopAGG App Store', 'shopagg-app-store'),
-        __('App Store', 'shopagg-app-store'),
+        'ShopAGG 应用商店',
+        '应用商店',
         'manage_options',
         'shopagg-app-store',
         'shopagg_app_store_render_page',
@@ -220,28 +221,28 @@ function shopagg_app_store_admin_enqueue($hook) {
         'ajaxUrl' => admin_url('admin-ajax.php'),
         'nonce'   => wp_create_nonce('shopagg_app_store_nonce'),
         'i18n'    => [
-            'existingOrderIntro' => __('An unpaid order already exists for this resource. Please complete the payment to continue.', 'shopagg-app-store'),
-            'orderCreatedIntro' => __('Your order has been created. Please choose a payment method to continue.', 'shopagg-app-store'),
-            'choosePaymentMethod' => __('Please choose a payment method.', 'shopagg-app-store'),
-            'startingPayment' => __('Starting payment...', 'shopagg-app-store'),
-            'completeAlipayInWindow' => __('Please complete the Alipay payment in the new window.', 'shopagg-app-store'),
-            'popupBlocked' => __('The browser blocked the popup window. Please allow popups and try again.', 'shopagg-app-store'),
-            'scanWechat' => __('Please scan the QR code with WeChat to complete the payment.', 'shopagg-app-store'),
-            'paymentSuccessInstall' => __('Payment successful. You can now install ', 'shopagg-app-store'),
-            'connecting' => __('Connecting...', 'shopagg-app-store'),
-            'connect' => __('Connect', 'shopagg-app-store'),
-            'connectionFailed' => __('Connection failed. Please try again.', 'shopagg-app-store'),
-            'installing' => __('Installing...', 'shopagg-app-store'),
-            'install' => __('Install', 'shopagg-app-store'),
-            'processing' => __('Processing...', 'shopagg-app-store'),
-            'retry' => __('Retry', 'shopagg-app-store'),
-            'creatingOrder' => __('Creating order...', 'shopagg-app-store'),
-            'purchase' => __('Purchase', 'shopagg-app-store'),
-            'savingReview' => __('Saving Review...', 'shopagg-app-store'),
-            'publishReview' => __('Publish Review', 'shopagg-app-store'),
-            'updateReview' => __('Update Review', 'shopagg-app-store'),
-            'reviewSaved' => __('Your review has been saved.', 'shopagg-app-store'),
-            'reviewSaveFailed' => __('Failed to save your review. Please try again.', 'shopagg-app-store'),
+            'existingOrderIntro' => '此资源已有未付款订单。请完成付款以继续。',
+            'orderCreatedIntro' => '您的订单已生成。请选择一种付款方式继续。',
+            'choosePaymentMethod' => '请选择付款方式。',
+            'startingPayment' => '正在发起支付...',
+            'completeAlipayInWindow' => '请在新窗口中完成支付宝付款。',
+            'popupBlocked' => '浏览器阻止了弹出窗口。请允许弹出窗口并重试。',
+            'scanWechat' => '请用微信扫描二维码完成支付。',
+            'paymentSuccessInstall' => '付款成功。您现在可以安装',
+            'connecting' => '连接中...',
+            'connect' => '连接',
+            'connectionFailed' => '连接失败。请重试。',
+            'installing' => '正在安装...',
+            'install' => '安装',
+            'processing' => '处理中...',
+            'retry' => '重试',
+            'creatingOrder' => '正在创建订单...',
+            'purchase' => '购买',
+            'savingReview' => '正在保存评价...',
+            'publishReview' => '发布评价',
+            'updateReview' => '更新评价',
+            'reviewSaved' => '你的评价已保存。',
+            'reviewSaveFailed' => '保存评价失败，请重试。',
         ],
     ]);
 }

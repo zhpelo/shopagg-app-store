@@ -95,10 +95,10 @@
 
             $('#shopagg-inline-payment-panel').remove();
 
-            var resourceName = options.resourceName || 'this resource';
+            var resourceName = options.resourceName || '当前资源';
             var introText = options.existingOrder
-                ? t('existingOrderIntro', 'An unpaid order already exists for this resource. Please complete the payment to continue.')
-                : t('orderCreatedIntro', 'Your order has been created. Please choose a payment method to continue.');
+                ? t('existingOrderIntro', '此资源已有未付款订单，请完成支付后继续。')
+                : t('orderCreatedIntro', '订单已创建，请选择支付方式继续。');
 
             var $panel = $('<div/>', {
                 id: 'shopagg-inline-payment-panel',
@@ -118,7 +118,7 @@
             $panel.append(
                 $('<p/>', {
                     'class': 'shopagg-inline-payment-amount',
-                    html: 'Amount: <strong>¥' + this.escapeHtml(options.amount) + '</strong>'
+                    html: '金额：<strong>¥' + this.escapeHtml(options.amount) + '</strong>'
                 })
             );
 
@@ -133,7 +133,7 @@
                 'data-order-id': options.orderId,
                 'data-resource-id': options.resourceId,
                 'data-resource-name': resourceName,
-                text: 'Alipay'
+                text: '支付宝'
             }));
 
             $actions.append($('<button/>', {
@@ -143,7 +143,7 @@
                 'data-order-id': options.orderId,
                 'data-resource-id': options.resourceId,
                 'data-resource-name': resourceName,
-                text: 'WeChat Pay'
+                text: '微信支付'
             }));
 
             $panel.append($actions);
@@ -155,7 +155,7 @@
             }).hide());
             $panel.append($('<p/>', {
                 'class': 'shopagg-inline-payment-status',
-                text: t('choosePaymentMethod', 'Please choose a payment method.')
+                text: t('choosePaymentMethod', '请选择支付方式。')
             }));
 
             $msg.after($panel);
@@ -172,12 +172,12 @@
                 var method = $btn.data('method');
                 var orderId = $btn.data('order-id');
                 var resourceId = $btn.data('resource-id');
-                var resourceName = $btn.data('resource-name') || 'this resource';
+                var resourceName = $btn.data('resource-name') || '当前资源';
 
                 $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', true);
                 $panel.find('.shopagg-inline-payment-install').hide().empty();
                 $panel.find('.shopagg-inline-payment-qr').hide().empty();
-                $panel.find('.shopagg-inline-payment-status').text(t('startingPayment', 'Starting payment...'));
+                $panel.find('.shopagg-inline-payment-status').text(t('startingPayment', '正在发起支付...'));
 
                 $.ajax({
                     url: shopaggAppStore.ajaxUrl,
@@ -190,7 +190,7 @@
                     },
                     success: function (response) {
                         if (!response.success) {
-                            $panel.find('.shopagg-inline-payment-status').text(response.data.message || 'Payment failed.');
+                            $panel.find('.shopagg-inline-payment-status').text(response.data.message || '支付失败。');
                             $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', false);
                             return;
                         }
@@ -200,9 +200,9 @@
                             if (payWin) {
                                 payWin.document.write(response.data.form_html);
                                 payWin.document.close();
-                                $panel.find('.shopagg-inline-payment-status').text(t('completeAlipayInWindow', 'Please complete the Alipay payment in the new window.'));
+                                $panel.find('.shopagg-inline-payment-status').text(t('completeAlipayInWindow', '请在新窗口中完成支付宝支付。'));
                             } else {
-                                $panel.find('.shopagg-inline-payment-status').text(t('popupBlocked', 'The browser blocked the popup window. Please allow popups and try again.'));
+                                $panel.find('.shopagg-inline-payment-status').text(t('popupBlocked', '浏览器拦截了弹窗，请允许弹窗后重试。'));
                                 $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', false);
                                 return;
                             }
@@ -211,9 +211,9 @@
                             $panel.find('.shopagg-inline-payment-qr')
                                 .html('<img src="' + qrUrl + '" alt="WeChat Pay QR Code" width="200" height="200" />')
                                 .show();
-                            $panel.find('.shopagg-inline-payment-status').text(t('scanWechat', 'Please scan the QR code with WeChat to complete the payment.'));
+                            $panel.find('.shopagg-inline-payment-status').text(t('scanWechat', '请使用微信扫码完成支付。'));
                         } else {
-                            $panel.find('.shopagg-inline-payment-status').text('Unknown payment response.');
+                            $panel.find('.shopagg-inline-payment-status').text('未知的支付响应。');
                             $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', false);
                             return;
                         }
@@ -232,7 +232,7 @@
                         }, 3000);
                     },
                     error: function () {
-                        $panel.find('.shopagg-inline-payment-status').text('Network error. Please try again.');
+                        $panel.find('.shopagg-inline-payment-status').text('网络错误，请重试。');
                         $panel.find('.shopagg-inline-pay-method-btn').prop('disabled', false);
                     }
                 });
@@ -245,7 +245,7 @@
                 var resourceId = $btn.data('resource-id');
                 var $panel = $btn.closest('.shopagg-inline-payment-panel');
 
-                $btn.prop('disabled', true).text('Installing...');
+                $btn.prop('disabled', true).text('正在安装...');
                 self.installPurchasedResource(resourceId, $panel, $btn, true);
             });
 
@@ -255,15 +255,15 @@
         },
 
         renderInlineInstallActions: function ($panel, payload) {
-            var resourceName = payload.resourceName || 'this resource';
+            var resourceName = payload.resourceName || '当前资源';
             var resourceId = payload.resourceId;
 
             $panel.find('.shopagg-inline-payment-qr').hide().empty();
-            $panel.find('.shopagg-inline-payment-status').html('<span style="color:green;font-size:16px;">&#10004; ' + this.escapeHtml(t('paymentSuccessInstall', 'Payment successful. You can now install ')) + this.escapeHtml(resourceName) + '</span>');
+            $panel.find('.shopagg-inline-payment-status').html('<span style="color:green;font-size:16px;">&#10004; ' + this.escapeHtml(t('paymentSuccessInstall', '付款成功。您现在可以安装')) + this.escapeHtml(resourceName) + '</span>');
             $panel.find('.shopagg-inline-payment-install')
                 .html(
-                    '<button type="button" class="button button-primary shopagg-inline-install-btn" data-resource-id="' + this.escapeHtml(resourceId) + '">Install Now</button>' +
-                    '<button type="button" class="button shopagg-inline-refresh-btn">Refresh Page</button>'
+                    '<button type="button" class="button button-primary shopagg-inline-install-btn" data-resource-id="' + this.escapeHtml(resourceId) + '">立即安装</button>' +
+                    '<button type="button" class="button shopagg-inline-refresh-btn">刷新页面</button>'
                 )
                 .show();
         },
@@ -278,7 +278,7 @@
                 var $btn = $('#shopagg-connect-btn');
                 var $msg = $('#shopagg-token-message');
 
-                ShopAGGAppStore.setButtonState($btn, t('connecting', 'Connecting...'), true);
+                ShopAGGAppStore.setButtonState($btn, t('connecting', '连接中...'), true);
                 ShopAGGAppStore.resetMessage($msg);
 
                 $.ajax({
@@ -297,12 +297,12 @@
                             }, 500);
                         } else {
                             ShopAGGAppStore.showMessage($msg, 'error', response.data.message);
-                            ShopAGGAppStore.setButtonState($btn, t('connect', 'Connect'), false);
+                            ShopAGGAppStore.setButtonState($btn, t('connect', '连接'), false);
                         }
                     },
                     error: function () {
-                        ShopAGGAppStore.showMessage($msg, 'error', t('connectionFailed', 'Connection failed. Please try again.'));
-                        ShopAGGAppStore.setButtonState($btn, t('connect', 'Connect'), false);
+                        ShopAGGAppStore.showMessage($msg, 'error', t('connectionFailed', '连接失败。请重试。'));
+                        ShopAGGAppStore.setButtonState($btn, t('connect', '连接'), false);
                     }
                 });
             });
@@ -340,11 +340,11 @@
                 var $msg = $('#detail-message');
                 var isDetailPage = $btn.closest('.shopagg-detail-actions').length > 0;
 
-                if (isDetailPage && !confirm('Are you sure you want to install this resource?')) {
+                if (isDetailPage && !confirm('确定要安装这个资源吗？')) {
                     return;
                 }
 
-                ShopAGGAppStore.setButtonState($btn, t('installing', 'Installing...'), true);
+                ShopAGGAppStore.setButtonState($btn, t('installing', '正在安装...'), true);
                 ShopAGGAppStore.resetMessage($msg);
 
                 $.ajax({
@@ -358,18 +358,18 @@
                     success: function (response) {
                         if (response.success) {
                             ShopAGGAppStore.showMessage($msg, 'success', response.data.message);
-                            ShopAGGAppStore.setButtonState($btn, 'Installed', true);
+                            ShopAGGAppStore.setButtonState($btn, '已安装', true);
                             setTimeout(function () {
                                 window.location.reload();
                             }, 900);
                         } else {
                             ShopAGGAppStore.showMessage($msg, 'error', response.data.message);
-                            ShopAGGAppStore.setButtonState($btn, t('install', 'Install'), false);
+                            ShopAGGAppStore.setButtonState($btn, t('install', '安装'), false);
                         }
                     },
                     error: function () {
-                        ShopAGGAppStore.showMessage($msg, 'error', 'Installation failed. Please try again.');
-                        ShopAGGAppStore.setButtonState($btn, t('install', 'Install'), false);
+                        ShopAGGAppStore.showMessage($msg, 'error', '安装失败，请重试。');
+                        ShopAGGAppStore.setButtonState($btn, t('install', '安装'), false);
                     }
                 });
             });
@@ -382,7 +382,7 @@
                 var $btn = $(this);
                 var $msg = $('#detail-message');
 
-                ShopAGGAppStore.setButtonState($btn, t('processing', 'Processing...'), true);
+                ShopAGGAppStore.setButtonState($btn, t('processing', '处理中...'), true);
                 ShopAGGAppStore.resetMessage($msg);
 
                 $.ajax({
@@ -397,19 +397,19 @@
                     },
                     success: function (response) {
                         if (!response.success) {
-                            ShopAGGAppStore.showMessage($msg, 'error', response.data.message || 'Operation failed.');
-                            ShopAGGAppStore.setButtonState($btn, t('retry', 'Retry'), false);
+                            ShopAGGAppStore.showMessage($msg, 'error', response.data.message || '操作失败。');
+                            ShopAGGAppStore.setButtonState($btn, t('retry', '重试'), false);
                             return;
                         }
 
-                        ShopAGGAppStore.showMessage($msg, 'success', response.data.message || 'Done.');
+                        ShopAGGAppStore.showMessage($msg, 'success', response.data.message || '已完成。');
                         setTimeout(function () {
                             window.location.reload();
                         }, 700);
                     },
                     error: function () {
-                        ShopAGGAppStore.showMessage($msg, 'error', 'Operation failed. Please try again.');
-                        ShopAGGAppStore.setButtonState($btn, t('retry', 'Retry'), false);
+                        ShopAGGAppStore.showMessage($msg, 'error', '操作失败，请重试。');
+                        ShopAGGAppStore.setButtonState($btn, t('retry', '重试'), false);
                     }
                 });
             });
@@ -427,7 +427,7 @@
                 var resourceId = $btn.data('resource-id');
                 var $msg = $('#detail-message');
 
-                self.setButtonState($btn, t('creatingOrder', 'Creating order...'), true);
+                self.setButtonState($btn, t('creatingOrder', '正在创建订单...'), true);
                 self.resetMessage($msg);
 
                 $.ajax({
@@ -440,17 +440,17 @@
                     },
                     success: function (response) {
                         if (response.success) {
-                            self.setButtonState($btn, t('purchase', 'Purchase'), false);
+                            self.setButtonState($btn, t('purchase', '购买'), false);
 
                             if (response.data.owned) {
-                                self.showMessage($msg, 'success', response.data.message || 'You already own this resource.');
+                                self.showMessage($msg, 'success', response.data.message || '你已经拥有这个资源。');
                                 setTimeout(function () {
                                     window.location.reload();
                                 }, 700);
                                 return;
                             }
 
-                            self.showMessage($msg, 'success', response.data.message || 'Order ready. Please choose a payment method below.');
+                            self.showMessage($msg, 'success', response.data.message || '订单已就绪，请在下方选择支付方式。');
                             self.renderInlinePaymentPanel($msg, {
                                 orderId: response.data.order_id,
                                 amount: response.data.amount,
@@ -461,12 +461,12 @@
                             });
                         } else {
                             self.showMessage($msg, 'error', response.data.message);
-                            self.setButtonState($btn, t('purchase', 'Purchase'), false);
+                            self.setButtonState($btn, t('purchase', '购买'), false);
                         }
                     },
                     error: function () {
-                        self.showMessage($msg, 'error', 'Failed to create order. Please try again.');
-                        self.setButtonState($btn, t('purchase', 'Purchase'), false);
+                        self.showMessage($msg, 'error', '创建订单失败，请重试。');
+                        self.setButtonState($btn, t('purchase', '购买'), false);
                     }
                 });
             });
@@ -480,13 +480,13 @@
             var orderId = options.orderId;
             var amount = options.amount;
             var resourceId = options.resourceId;
-            var resourceName = options.resourceName || 'this resource';
+            var resourceName = options.resourceName || '当前资源';
             var introText = options.existingOrder
-                ? 'An unpaid order already exists for ' + resourceName + '. Continue with payment below.'
-                : 'Complete the payment for ' + resourceName + ' and you can install it immediately.';
+                ? '资源“' + resourceName + '”已有未支付订单，请在下方继续完成支付。'
+                : '完成“' + resourceName + '”的支付后即可立即安装。';
 
             if (!orderId) {
-                window.alert('Order was created, but no order ID was returned. Please refresh and try again.');
+                window.alert('订单已创建，但没有返回订单号，请刷新后重试。');
                 return;
             }
 
@@ -512,7 +512,7 @@
                 'class': 'shopagg-payment-status'
             }).hide();
 
-            $header.append($('<h3/>').text('Complete Purchase'));
+            $header.append($('<h3/>').text('完成购买'));
             $header.append($('<button/>', {
                 'class': 'shopagg-modal-close',
                 type: 'button',
@@ -526,7 +526,7 @@
             $body.append(
                 $('<p/>', {
                     'class': 'shopagg-payment-amount',
-                    html: 'Amount: <strong>¥' + self.escapeHtml(amount) + '</strong>'
+                    html: '金额：<strong>¥' + self.escapeHtml(amount) + '</strong>'
                 })
             );
 
@@ -534,13 +534,13 @@
                 type: 'button',
                 'class': 'button button-primary shopagg-pay-method-btn',
                 'data-method': 'alipay',
-                text: 'Alipay'
+                text: '支付宝'
             }));
             $methods.append($('<button/>', {
                 type: 'button',
                 'class': 'button button-primary shopagg-pay-method-btn',
                 'data-method': 'wechat',
-                text: 'WeChat Pay'
+                text: '微信支付'
             }));
 
             $status.append($('<div/>', {
@@ -551,7 +551,7 @@
             }).hide());
             $status.append($('<p/>', {
                 'class': 'shopagg-status-text',
-                text: 'Waiting for payment...'
+                text: '等待支付中...'
             }));
 
             $body.append($methods);
@@ -562,7 +562,7 @@
             $('body').append($modal);
 
             if (!$('#shopagg-payment-modal').length) {
-                window.alert('Payment dialog could not be opened. Please refresh the page and try again.');
+                window.alert('无法打开支付弹窗，请刷新页面后重试。');
                 return;
             }
 
@@ -581,8 +581,8 @@
                 $modal.find('.shopagg-payment-status').show();
                 $modal.find('.shopagg-payment-actions').hide().empty();
                 $modal.find('.shopagg-qr-container').hide().empty();
-                $modal.find('.shopagg-status-text').text('Initiating payment...');
-                $modal.find('.shopagg-payment-intro').text('Order #' + orderId + ' is being prepared for payment.');
+                $modal.find('.shopagg-status-text').text('正在发起支付...');
+                $modal.find('.shopagg-payment-intro').text('订单 #' + orderId + ' 正在准备支付。');
                 $methodBtn.prop('disabled', true);
 
                 $.ajax({
@@ -596,7 +596,7 @@
                     },
                     success: function (response) {
                         if (!response.success) {
-                            $modal.find('.shopagg-status-text').text(response.data.message || 'Payment failed.');
+                            $modal.find('.shopagg-status-text').text(response.data.message || '支付失败。');
                             $modal.find('.shopagg-payment-methods').show();
                             $modal.find('.shopagg-payment-status').hide();
                             $methodBtn.prop('disabled', false);
@@ -609,21 +609,21 @@
                                 payWin.document.write(response.data.form_html);
                                 payWin.document.close();
                             } else {
-                                $modal.find('.shopagg-status-text').text('Pop-up blocked. Please allow pop-ups and try again.');
+                                $modal.find('.shopagg-status-text').text('弹窗被浏览器拦截，请允许弹窗后重试。');
                                 $modal.find('.shopagg-payment-methods').show();
                                 $modal.find('.shopagg-payment-status').hide();
                                 $methodBtn.prop('disabled', false);
                                 return;
                             }
-                            $modal.find('.shopagg-status-text').text('Please complete payment in the new window...');
+                            $modal.find('.shopagg-status-text').text('请在新窗口完成支付...');
                         } else if (method === 'wechat' && response.data.code_url) {
                             var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(response.data.code_url);
                             $modal.find('.shopagg-qr-container')
                                 .html('<img src="' + qrUrl + '" alt="WeChat Pay QR Code" width="200" height="200" />')
                                 .show();
-                            $modal.find('.shopagg-status-text').text('Please scan the QR code with WeChat to pay');
+                            $modal.find('.shopagg-status-text').text('请使用微信扫码支付。');
                         } else {
-                            $modal.find('.shopagg-status-text').text('Unknown payment response.');
+                            $modal.find('.shopagg-status-text').text('未知的支付响应。');
                             $modal.find('.shopagg-payment-methods').show();
                             $modal.find('.shopagg-payment-status').hide();
                             $methodBtn.prop('disabled', false);
@@ -644,7 +644,7 @@
                         }, 3000);
                     },
                     error: function () {
-                        $modal.find('.shopagg-status-text').text('Network error. Please try again.');
+                        $modal.find('.shopagg-status-text').text('网络错误，请重试。');
                         $modal.find('.shopagg-payment-methods').show();
                         $modal.find('.shopagg-payment-status').hide();
                         $methodBtn.prop('disabled', false);
@@ -656,22 +656,22 @@
         renderPaymentSuccess: function ($modal, payload) {
             var self = this;
             var resourceId = payload.resourceId;
-            var resourceName = payload.resourceName || 'this resource';
+            var resourceName = payload.resourceName || '当前资源';
 
             $modal.find('.shopagg-qr-container').hide().empty();
-            $modal.find('.shopagg-payment-intro').text(resourceName + ' has been purchased successfully.');
-            $modal.find('.shopagg-status-text').html('<span style="color:green;font-size:18px;">&#10004; Payment successful!</span>');
+            $modal.find('.shopagg-payment-intro').text('资源“' + resourceName + '”已购买成功。');
+            $modal.find('.shopagg-status-text').html('<span style="color:green;font-size:18px;">&#10004; 支付成功！</span>');
             $modal.find('.shopagg-payment-actions')
                 .html(
-                    '<button type="button" class="button button-primary shopagg-install-after-pay">Install Now</button>' +
-                    '<button type="button" class="button shopagg-refresh-after-pay">Refresh Page</button>'
+                    '<button type="button" class="button button-primary shopagg-install-after-pay">立即安装</button>' +
+                    '<button type="button" class="button shopagg-refresh-after-pay">刷新页面</button>'
                 )
                 .show();
 
             $modal.off('click', '.shopagg-install-after-pay');
             $modal.on('click', '.shopagg-install-after-pay', function () {
                 var $btn = $(this);
-                $btn.prop('disabled', true).text('Installing...');
+                $btn.prop('disabled', true).text('正在安装...');
                 self.installPurchasedResource(resourceId, $modal, $btn);
             });
 
@@ -693,35 +693,35 @@
                 success: function (response) {
                     if (!response.success) {
                         if (isInline) {
-                            $container.find('.shopagg-inline-payment-status').text(response.data.message || 'Installation failed.');
+                            $container.find('.shopagg-inline-payment-status').text(response.data.message || '安装失败。');
                         } else {
-                            $container.find('.shopagg-status-text').text(response.data.message || 'Installation failed.');
+                            $container.find('.shopagg-status-text').text(response.data.message || '安装失败。');
                         }
-                        $btn.prop('disabled', false).text('Install Now');
+                        $btn.prop('disabled', false).text('立即安装');
                         return;
                     }
 
                     if (isInline) {
                         $container.find('.shopagg-inline-payment-install').html(
-                            '<button type="button" class="button button-primary shopagg-inline-refresh-btn">Installed, Refresh</button>'
+                            '<button type="button" class="button button-primary shopagg-inline-refresh-btn">已安装，刷新页面</button>'
                         );
-                        $container.find('.shopagg-inline-payment-status').html('<span style="color:green;font-size:16px;">&#10004; Installation successful!</span>');
+                        $container.find('.shopagg-inline-payment-status').html('<span style="color:green;font-size:16px;">&#10004; 安装成功！</span>');
                         return;
                     }
 
                     $container.find('.shopagg-payment-actions').html(
-                        '<button type="button" class="button button-primary shopagg-refresh-after-pay">Installed, Refresh</button>'
+                        '<button type="button" class="button button-primary shopagg-refresh-after-pay">已安装，刷新页面</button>'
                     );
 
-                    $container.find('.shopagg-status-text').html('<span style="color:green;font-size:18px;">&#10004; Installation successful!</span>');
+                    $container.find('.shopagg-status-text').html('<span style="color:green;font-size:18px;">&#10004; 安装成功！</span>');
                 },
                 error: function () {
                     if (isInline) {
-                        $container.find('.shopagg-inline-payment-status').text('Installation failed. Please try again.');
+                        $container.find('.shopagg-inline-payment-status').text('安装失败，请重试。');
                     } else {
-                        $container.find('.shopagg-status-text').text('Installation failed. Please try again.');
+                        $container.find('.shopagg-status-text').text('安装失败，请重试。');
                     }
-                    $btn.prop('disabled', false).text('Install Now');
+                    $btn.prop('disabled', false).text('立即安装');
                 }
             });
         },
@@ -758,7 +758,7 @@
                     return;
                 }
 
-                if (!confirm('Are you sure you want to delete this resource?')) {
+                if (!confirm('确定要删除这个资源吗？')) {
                     e.preventDefault();
                 }
             });
@@ -771,9 +771,9 @@
                 var $form = $(this);
                 var $btn = $form.find('.shopagg-review-submit-btn');
                 var $msg = $form.find('.shopagg-review-message');
-                var defaultText = $btn.data('default-text') || t('publishReview', 'Publish Review');
+                var defaultText = $btn.data('default-text') || t('publishReview', '发布评价');
 
-                ShopAGGAppStore.setButtonState($btn, t('savingReview', 'Saving Review...'), true);
+                ShopAGGAppStore.setButtonState($btn, t('savingReview', '正在保存评价...'), true);
                 ShopAGGAppStore.resetMessage($msg);
 
                 $.ajax({
@@ -789,18 +789,18 @@
                     },
                     success: function (response) {
                         if (!response.success) {
-                            ShopAGGAppStore.showMessage($msg, 'error', response.data.message || t('reviewSaveFailed', 'Failed to save your review. Please try again.'));
+                            ShopAGGAppStore.showMessage($msg, 'error', response.data.message || t('reviewSaveFailed', '保存评价失败，请重试。'));
                             ShopAGGAppStore.setButtonState($btn, defaultText, false);
                             return;
                         }
 
-                        ShopAGGAppStore.showMessage($msg, 'success', response.data.message || t('reviewSaved', 'Your review has been saved.'));
+                        ShopAGGAppStore.showMessage($msg, 'success', response.data.message || t('reviewSaved', '你的评价已保存。'));
                         setTimeout(function () {
                             window.location.reload();
                         }, 900);
                     },
                     error: function () {
-                        ShopAGGAppStore.showMessage($msg, 'error', t('reviewSaveFailed', 'Failed to save your review. Please try again.'));
+                        ShopAGGAppStore.showMessage($msg, 'error', t('reviewSaveFailed', '保存评价失败，请重试。'));
                         ShopAGGAppStore.setButtonState($btn, defaultText, false);
                     }
                 });

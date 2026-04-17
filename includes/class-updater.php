@@ -5,6 +5,7 @@
  * Hooks into WordPress update system to provide updates for installed resources.
  */
 
+
 if (! defined('ABSPATH')) {
     exit;
 }
@@ -298,11 +299,11 @@ class ShopAGG_App_Store_Updater {
         $nonce = isset($params['nonce']) ? $params['nonce'] : '';
 
         if (! wp_verify_nonce($nonce, 'shopagg_app_store_update')) {
-            return new WP_Error('invalid_nonce', __('Security check failed.', 'shopagg-app-store'));
+            return new WP_Error('invalid_nonce', '安全检查失败。');
         }
 
         if (! $resource_id) {
-            return new WP_Error('no_resource', __('Invalid resource.', 'shopagg-app-store'));
+            return new WP_Error('no_resource', '无效资源。');
         }
 
         // Get download URL from API
@@ -316,7 +317,7 @@ class ShopAGG_App_Store_Updater {
         }
 
         if (empty($result['download_url'])) {
-            return new WP_Error('no_url', __('Failed to get download URL.', 'shopagg-app-store'));
+            return new WP_Error('no_url', '获取下载 URL 失败。');
         }
 
         // Download the file ourselves so local/private addresses work during updates too.
@@ -492,7 +493,7 @@ class ShopAGG_App_Store_Updater {
 
         $tmp_file = wp_tempnam($url);
         if (! $tmp_file) {
-            return new WP_Error('tmp_file_error', __('Could not create temporary file.', 'shopagg-app-store'));
+            return new WP_Error('tmp_file_error', '无法创建临时文件。');
         }
 
         $response = wp_remote_get($url, [
@@ -511,13 +512,13 @@ class ShopAGG_App_Store_Updater {
             @unlink($tmp_file);
             return new WP_Error(
                 'download_failed',
-                sprintf(__('Download failed with HTTP status %d.', 'shopagg-app-store'), $code)
+                sprintf('下载失败，HTTP 状态为 %d。', $code)
             );
         }
 
         if (! file_exists($tmp_file) || filesize($tmp_file) === 0) {
             @unlink($tmp_file);
-            return new WP_Error('download_empty', __('Downloaded file is empty.', 'shopagg-app-store'));
+            return new WP_Error('download_empty', '下载的文件为空。');
         }
 
         return $tmp_file;

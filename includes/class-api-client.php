@@ -3,6 +3,7 @@
  * ShopAGG App Store API Client
  */
 
+
 if (! defined('ABSPATH')) {
     exit;
 }
@@ -36,7 +37,7 @@ class ShopAGG_App_Store_API_Client {
         if ($requires_auth) {
             $token = shopagg_app_store_get_token();
             if (empty($token)) {
-                return new WP_Error('not_logged_in', __('You must connect your API Token first.', 'shopagg-app-store'));
+                return new WP_Error('not_logged_in', '您必须先连接 API 令牌。');
             }
             $args['headers']['Authorization'] = 'Bearer ' . $token;
         }
@@ -60,17 +61,17 @@ class ShopAGG_App_Store_API_Client {
         $body = $raw_body !== '' ? json_decode($raw_body, true) : [];
 
         if ($raw_body !== '' && json_last_error() !== JSON_ERROR_NONE) {
-            return new WP_Error('invalid_json', __('API returned an invalid JSON response.', 'shopagg-app-store'));
+            return new WP_Error('invalid_json', 'API 返回了无效的 JSON 响应。');
         }
 
         if ($code === 401) {
             delete_option('shopagg_app_store_access_token');
             delete_option('shopagg_app_store_user');
-            return new WP_Error('token_invalid', __('API Token is invalid or expired. Please reconnect.', 'shopagg-app-store'));
+            return new WP_Error('token_invalid', 'API 令牌无效或过期。请重新连接。');
         }
 
         if ($code >= 400) {
-            $message = isset($body['message']) ? $body['message'] : __('API request failed.', 'shopagg-app-store');
+            $message = isset($body['message']) ? $body['message'] : 'API 请求失败。';
             return new WP_Error('api_error', $message, ['status' => $code]);
         }
 

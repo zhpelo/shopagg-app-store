@@ -3,6 +3,7 @@
  * ShopAGG App Store Authentication - API Token
  */
 
+
 if (! defined('ABSPATH')) {
     exit;
 }
@@ -44,12 +45,12 @@ class ShopAGG_App_Store_Auth {
 
         $code = wp_remote_retrieve_response_code($response);
         if ($code !== 200) {
-            return new WP_Error('invalid_token', __('Invalid API Token. Please check and try again.', 'shopagg-app-store'));
+            return new WP_Error('invalid_token', 'API 令牌无效。请检查并重试。');
         }
 
         $body = json_decode(wp_remote_retrieve_body($response), true);
         if (empty($body['id'])) {
-            return new WP_Error('invalid_response', __('Unexpected API response.', 'shopagg-app-store'));
+            return new WP_Error('invalid_response', '意外的 API 响应。');
         }
 
         return $body;
@@ -62,13 +63,13 @@ class ShopAGG_App_Store_Auth {
         check_ajax_referer('shopagg_app_store_nonce', 'nonce');
 
         if (! current_user_can('manage_options')) {
-            wp_send_json_error(['message' => __('Permission denied.', 'shopagg-app-store')]);
+            wp_send_json_error(['message' => '权限不足。']);
         }
 
         $token = isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : '';
 
         if (empty($token)) {
-            wp_send_json_error(['message' => __('Please enter your API Token.', 'shopagg-app-store')]);
+            wp_send_json_error(['message' => '请输入 API 令牌。']);
         }
 
         $result = $this->verify_token($token);
@@ -84,7 +85,7 @@ class ShopAGG_App_Store_Auth {
             'email' => sanitize_email($result['email'] ?? ''),
         ]);
 
-        wp_send_json_success(['message' => __('Connected successfully!', 'shopagg-app-store')]);
+        wp_send_json_success(['message' => '连接成功！']);
     }
 
     /**
@@ -96,7 +97,7 @@ class ShopAGG_App_Store_Auth {
         delete_option('shopagg_app_store_access_token');
         delete_option('shopagg_app_store_user');
 
-        wp_send_json_success(['message' => __('Disconnected.', 'shopagg-app-store')]);
+        wp_send_json_success(['message' => '已断开连接。']);
     }
 
     /**
@@ -110,21 +111,21 @@ class ShopAGG_App_Store_Auth {
             <div class="shopagg-login-container">
                 <div class="shopagg-login-box">
                     <div class="shopagg-login-header">
-                        <h1><?php esc_html_e('ShopAGG App Store', 'shopagg-app-store'); ?></h1>
-                        <p><?php esc_html_e('Get your API Token first, then come back here to connect it.', 'shopagg-app-store'); ?></p>
+                        <h1><?php echo esc_html('ShopAGG 应用商店'); ?></h1>
+                        <p><?php echo esc_html('先获取 API 令牌，然后再回来连接。'); ?></p>
                     </div>
 
                     <div class="shopagg-connect-layout">
                         <div class="shopagg-connect-guide">
                             <div class="shopagg-guide-card shopagg-guide-card-accent">
-                                <h2><?php esc_html_e('Getting a token is easy', 'shopagg-app-store'); ?></h2>
-                                <p><?php esc_html_e('Just follow the three steps below. It is best to open the token page in a new tab, generate the token, and copy it right away.', 'shopagg-app-store'); ?></p>
+                                <h2><?php echo esc_html('获取令牌很容易'); ?></h2>
+                                <p><?php echo esc_html('只需按照以下三个步骤操作即可。最好在新标签页中打开令牌页面，生成令牌并立即复制。'); ?></p>
                                 <div class="shopagg-guide-actions">
                                     <a class="button button-primary button-large" href="<?php echo esc_url($token_page_url); ?>" target="_blank" rel="noopener noreferrer">
-                                        <?php esc_html_e('Open Token Page', 'shopagg-app-store'); ?>
+                                        <?php echo esc_html('打开令牌页面'); ?>
                                     </a>
                                     <a class="button button-secondary" href="<?php echo esc_url($login_url); ?>" target="_blank" rel="noopener noreferrer">
-                                        <?php esc_html_e('Sign In to ShopAGG', 'shopagg-app-store'); ?>
+                                        <?php echo esc_html('登录 ShopAGG'); ?>
                                     </a>
                                 </div>
                             </div>
@@ -133,62 +134,62 @@ class ShopAGG_App_Store_Auth {
                                 <div class="shopagg-guide-step">
                                     <span class="shopagg-guide-step-num">1</span>
                                     <div>
-                                        <strong><?php esc_html_e('Open the token page', 'shopagg-app-store'); ?></strong>
-                                        <p><?php esc_html_e('Click "Open Token Page" above. If you are asked to sign in, sign in to your ShopAGG account first.', 'shopagg-app-store'); ?></p>
+                                        <strong><?php echo esc_html('打开令牌页面'); ?></strong>
+                                        <p><?php echo esc_html('点击上面的 "打开令牌页面"。如果要求您登录，请先登录您的 ShopAGG 账户。'); ?></p>
                                     </div>
                                 </div>
                                 <div class="shopagg-guide-step">
                                     <span class="shopagg-guide-step-num">2</span>
                                     <div>
-                                        <strong><?php esc_html_e('Generate and copy the token', 'shopagg-app-store'); ?></strong>
-                                        <p><?php esc_html_e('Once the page opens, click "Generate New Token". A long token string will appear. Copy it immediately because the full token will not be shown again after the page is closed.', 'shopagg-app-store'); ?></p>
+                                        <strong><?php echo esc_html('生成并复制令牌'); ?></strong>
+                                        <p><?php echo esc_html('页面打开后，点击 "生成新令牌"。这时会出现一个较长的令牌字符串。请立即复制，因为页面关闭后，将不会再显示完整的令牌。'); ?></p>
                                     </div>
                                 </div>
                                 <div class="shopagg-guide-step">
                                     <span class="shopagg-guide-step-num">3</span>
                                     <div>
-                                        <strong><?php esc_html_e('Paste it here and connect', 'shopagg-app-store'); ?></strong>
-                                        <p><?php esc_html_e('Come back to this page, paste the token into the field on the right, and click "Connect" to start using the app store.', 'shopagg-app-store'); ?></p>
+                                        <strong><?php echo esc_html('粘贴到此处并连接'); ?></strong>
+                                        <p><?php echo esc_html('回到此页面，将令牌粘贴到右侧字段，然后点击 "连接"，即可开始使用应用程序商店。'); ?></p>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="shopagg-guide-notes">
                                 <div class="shopagg-guide-note">
-                                    <strong><?php esc_html_e('Helpful tip', 'shopagg-app-store'); ?></strong>
-                                    <p><?php esc_html_e('We recommend using one token for one WordPress site. If you manage multiple sites, generate a separate token for each one.', 'shopagg-app-store'); ?></p>
+                                    <strong><?php echo esc_html('有用的提示'); ?></strong>
+                                    <p><?php echo esc_html('我们建议一个 WordPress 网站使用一个令牌。如果您管理多个网站，请为每个网站生成一个单独的令牌。'); ?></p>
                                 </div>
                                 <div class="shopagg-guide-note">
-                                    <strong><?php esc_html_e('If you cannot find the entry', 'shopagg-app-store'); ?></strong>
-                                    <p><?php esc_html_e('After opening the token page, go to the "API Token" section and click "Generate New Token".', 'shopagg-app-store'); ?></p>
+                                    <strong><?php echo esc_html('如果找不到条目'); ?></strong>
+                                    <p><?php echo esc_html('打开令牌页面后，进入“API 令牌”区域，点击“生成新令牌”。'); ?></p>
                                 </div>
                             </div>
                         </div>
 
                         <div class="shopagg-connect-form-card">
                             <div class="shopagg-connect-form-head">
-                                <h2><?php esc_html_e('Paste your token and connect', 'shopagg-app-store'); ?></h2>
-                                <p><?php esc_html_e('Paste the token you just copied here. After a successful connection, you can browse, install, and update app store resources.', 'shopagg-app-store'); ?></p>
+                                <h2><?php echo esc_html('粘贴令牌并连接'); ?></h2>
+                                <p><?php echo esc_html('在此处粘贴刚才复制的令牌。连接成功后，即可浏览、安装和更新应用商店资源。'); ?></p>
                             </div>
 
                             <form id="shopagg-app-store-token-form">
                                 <div class="shopagg-field">
-                                    <label for="shopagg-api-token"><?php esc_html_e('API Token', 'shopagg-app-store'); ?></label>
-                                    <input type="password" id="shopagg-api-token" name="token" placeholder="<?php esc_attr_e('Paste your API Token here', 'shopagg-app-store'); ?>" required autocomplete="off">
+                                    <label for="shopagg-api-token"><?php echo esc_html('API 令牌'); ?></label>
+                                    <input type="password" id="shopagg-api-token" name="token" placeholder="<?php echo esc_attr('在此处粘贴你的 API 令牌'); ?>" required autocomplete="off">
                                 </div>
                                 <div class="shopagg-field">
                                     <button type="submit" class="button button-primary button-large" id="shopagg-connect-btn">
-                                        <?php esc_html_e('Connect', 'shopagg-app-store'); ?>
+                                        <?php echo esc_html('连接'); ?>
                                     </button>
                                 </div>
                                 <div class="shopagg-message" id="shopagg-token-message"></div>
                             </form>
 
                             <div class="shopagg-token-help">
-                                <p><?php esc_html_e('Not sure where to get the token? Click "Open Token Page" on the left, generate a new token there, copy it, and paste it here.', 'shopagg-app-store'); ?></p>
+                                <p><?php echo esc_html('不知道从哪里获取令牌？点击左侧的 "打开令牌页面"，在那里生成一个新令牌，复制并粘贴到这里。'); ?></p>
                                 <p>
                                     <a href="<?php echo esc_url($token_page_url); ?>" target="_blank" rel="noopener noreferrer">
-                                        <?php esc_html_e('Open Token Page Again', 'shopagg-app-store'); ?>
+                                        <?php echo esc_html('再次打开令牌页面'); ?>
                                     </a>
                                 </p>
                             </div>
