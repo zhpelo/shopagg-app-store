@@ -824,16 +824,23 @@
         },
 
         bindSectionSpy: function () {
-            var $anchorLinks = $('.shopagg-admin-sidebar-link[href^="#"]');
+            var $anchorLinks = $('.shopagg-admin-sidebar-link[href^="#"], .shopagg-detail-tab[href^="#"]');
             var sections = [];
             var observer = null;
             var updateActiveLink = function (sectionId) {
+                var $matchedLinks;
+
                 if (!sectionId) {
                     return;
                 }
 
                 $anchorLinks.removeClass('is-active');
-                $anchorLinks.filter('[href="#' + sectionId + '"]').addClass('is-active');
+                $matchedLinks = $anchorLinks.filter('[href="#' + sectionId + '"]');
+                $matchedLinks.addClass('is-active');
+
+                if (!$matchedLinks.length && sectionId === 'shopagg-detail-summary') {
+                    $('.shopagg-detail-tab[href="#shopagg-detail-description"]').addClass('is-active');
+                }
             };
 
             if (!$anchorLinks.length) {

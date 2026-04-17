@@ -135,8 +135,6 @@ function shopagg_app_store_get_site_domain() {
  * @param array $args Layout config.
  */
 function shopagg_app_store_render_admin_shell_start($args = []) {
-    $title = isset($args['title']) ? (string) $args['title'] : 'ShopAGG 应用商店';
-    $description = isset($args['description']) ? (string) $args['description'] : '';
     $top_nav = isset($args['top_nav']) && is_array($args['top_nav']) ? $args['top_nav'] : [];
     $side_nav = isset($args['side_nav']) && is_array($args['side_nav']) ? $args['side_nav'] : [];
     $is_connected = shopagg_app_store_is_logged_in();
@@ -219,12 +217,6 @@ function shopagg_app_store_render_admin_shell_start($args = []) {
                 </aside>
 
                 <main class="shopagg-admin-main">
-                    <div class="shopagg-admin-pagehead">
-                        <h1><?php echo esc_html($title); ?></h1>
-                        <?php if ($description !== '') : ?>
-                            <p><?php echo esc_html($description); ?></p>
-                        <?php endif; ?>
-                    </div>
     <?php
 }
 
