@@ -850,10 +850,13 @@ class ShopAGG_App_Store_Market {
         $cover = ! empty($resource['cover_image']) ? $resource['cover_image'] : SHOPAGG_APP_STORE_PLUGIN_URL . 'assets/images/placeholder.png';
         $search_text = strtolower(trim(($resource['name'] ?? '') . ' ' . ($resource['slug'] ?? '') . ' ' . wp_strip_all_tags($resource['description'] ?? '')));
         ?>
+        
         <article class="shopagg-resource-card <?php echo ! empty($status['update']) ? 'has-update' : ''; ?>"
                  data-type="<?php echo esc_attr($resource['type']); ?>"
                  data-price="<?php echo esc_attr($is_free ? 'free' : 'paid'); ?>"
                  data-search="<?php echo esc_attr($search_text); ?>">
+
+                 <a  href="<?php echo esc_url($detail_url); ?>">
             <div class="shopagg-resource-cover">
                 <img src="<?php echo esc_url($cover); ?>" alt="<?php echo esc_attr($resource['name']); ?>">
             </div>
@@ -878,11 +881,10 @@ class ShopAGG_App_Store_Market {
                         <?php endif; ?>
                     </div>
                 </div>
-                <a class="button button-primary shopagg-card-btn" href="<?php echo esc_url($detail_url); ?>">
-                    查看详情
-                </a>
             </div>
+            </a>
         </article>
+         
         <?php
     }
 
