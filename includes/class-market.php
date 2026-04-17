@@ -369,6 +369,172 @@ class ShopAGG_App_Store_Market {
         <?php
     }
 
+    public function render_checkout_page($resource_id) {
+        $resource_id = absint($resource_id);
+
+        if (! shopagg_app_store_is_logged_in()) {
+            wp_safe_redirect(shopagg_app_store_get_connect_url($this->get_resource_checkout_url($resource_id)));
+            exit;
+        }
+
+        $api = ShopAGG_App_Store_API_Client::instance();
+        $result = $api->get('resources/' . $resource_id);
+
+        if (is_wp_error($result) || empty($result['resource'])) {
+            echo '<div class="wrap shopagg-app-store-wrap"><div class="shopagg-panel-message error"><p>' . esc_html(is_wp_error($result) ? $result->get_error_message() : '资源不存在。') . '</p></div></div>';
+            return;
+        }
+
+        $resource = $result['resource'];
+
+        if (shopagg_app_store_is_client_resource($resource)) {
+            echo '<div class="wrap shopagg-app-store-wrap"><div class="shopagg-panel-message error"><p>该资源不能在 ShopAGG 应用商店插件内部购买。</p></div></div>';
+            return;
+        }
+
+        $status = $this->get_resource_install_state($resource);
+        $has_license = ! empty($result['has_license']);
+        $is_free = (float) ($resource['price'] ?? 0) === 0.0;
+
+        if ($is_free || $has_license || ! empty($status['installed'])) {
+            wp_safe_redirect($this->get_resource_detail_url($resource_id));
+            exit;
+        }
+
+        $order_result = $api->post('orders', ['resource_id' => $resource_id]);
+
+        if (is_wp_error($order_result)) {
+            echo '<div class="wrap shopagg-app-store-wrap"><div class="shopagg-panel-message error"><p>' . esc_html($order_result->get_error_message()) . '</p></div></div>';
+            return;
+        }
+
+        if (! empty($order_result['owned'])) {
+            shopagg_app_store_forget_license_cache($resource_id);
+            wp_safe_redirect($this->get_resource_detail_url($resource_id));
+            exit;
+        }
+
+        $price_label = '¥' . number_format((float) $resource['price'], 2);
+        $cover = ! empty($resource['cover_image']) ? $resource['cover_image'] : SHOPAGG_APP_STORE_PLUGIN_URL . 'assets/images/placeholder.png';
+        $short_description = ! empty($resource['short_description'])
+            ? $resource['short_description']
+            : wp_trim_words(wp_strip_all_tags($resource['description'] ?? ''), 28);
+        $order_id = isset($order_result['order']['id']) ? (string) $order_result['order']['id'] : '';
+        $amount = isset($order_result['order']['amount']) ? (string) $order_result['order']['amount'] : (string) $resource['price'];
+        $existing_order = ! empty($order_result['existing_order']);
+        $user = shopagg_app_store_get_user();
+
+        if ($order_id === '') {
+            echo '<div class="wrap shopagg-app-store-wrap"><div class="shopagg-panel-message error"><p>订单创建成功，但未返回订单号，请返回详情页后重试。</p></div></div>';
+            return;
+        }
+
+        ?>
+        <div class="wrap shopagg-app-store-wrap">
+            <div class="shopagg-shell">
+                <a href="<?php echo esc_url($this->get_resource_detail_url($resource_id)); ?>" class="shopagg-back-link">
+                    &larr; 返回资源详情
+                </a>
+
+                <div class="shopagg-detail-card shopagg-checkout-layout">
+                    <div class="shopagg-checkout-main">
+                        <div class="shopagg-checkout-hero">
+                            <div class="shopagg-checkout-cover">
+                                <img src="<?php echo esc_url($cover); ?>" alt="<?php echo esc_attr($resource['name']); ?>">
+                            </div>
+                            <div class="shopagg-checkout-content">
+                                <div class="shopagg-detail-heading-top">
+                                    <span class="shopagg-chip"><?php echo esc_html($resource['type'] === 'theme' ? '主题' : '插件'); ?></span>
+                                    <span class="shopagg-chip">v<?php echo esc_html($resource['version'] ?? '-'); ?></span>
+                                    <span class="shopagg-chip update"><?php echo $existing_order ? '未支付订单' : '待支付'; ?></span>
+                                </div>
+                                <h1><?php echo esc_html($resource['name']); ?></h1>
+                                <?php if ($short_description !== '') : ?>
+                                    <p class="shopagg-detail-tagline"><?php echo esc_html($short_description); ?></p>
+                                <?php endif; ?>
+
+                                <div class="shopagg-checkout-meta-grid">
+                                    <div>
+                                        <span>订单号</span>
+                                        <strong>#<?php echo esc_html($order_id !== '' ? $order_id : '-'); ?></strong>
+                                    </div>
+                                    <div>
+                                        <span>支付金额</span>
+                                        <strong class="paid"><?php echo esc_html($price_label); ?></strong>
+                                    </div>
+                                    <div>
+                                        <span>购买账号</span>
+                                        <strong><?php echo esc_html($user['email'] ?? ($user['name'] ?? '当前账号')); ?></strong>
+                                    </div>
+                                    <div>
+                                        <span>站点域名</span>
+                                        <strong><?php echo esc_html(shopagg_app_store_get_site_domain()); ?></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="shopagg-checkout-card shopagg-checkout-card-highlight">
+                            <h2>选择支付方式</h2>
+                            <p><?php echo esc_html($existing_order ? '该资源已有未支付订单，请继续完成付款。付款成功后就可以直接回到当前站点安装。' : '订单已创建。请选择一个支付方式完成付款，成功后即可立即安装到当前站点。'); ?></p>
+
+                            <div class="shopagg-inline-payment-panel shopagg-inline-payment-panel-embedded" id="shopagg-checkout-payment-panel">
+                                <p class="shopagg-inline-payment-title"><?php echo esc_html($resource['name']); ?></p>
+                                <p class="shopagg-inline-payment-desc"><?php echo esc_html($existing_order ? '继续完成这笔未支付订单。' : '支付完成后将自动解锁安装。'); ?></p>
+                                <p class="shopagg-inline-payment-amount">金额：<strong>¥<?php echo esc_html(number_format((float) $amount, 2)); ?></strong></p>
+
+                                <div class="shopagg-inline-payment-methods">
+                                    <button type="button"
+                                            class="button button-primary shopagg-inline-pay-method-btn"
+                                            data-method="alipay"
+                                            data-order-id="<?php echo esc_attr($order_id); ?>"
+                                            data-resource-id="<?php echo esc_attr($resource_id); ?>"
+                                            data-resource-name="<?php echo esc_attr($resource['name']); ?>">
+                                        支付宝
+                                    </button>
+                                    <button type="button"
+                                            class="button button-primary shopagg-inline-pay-method-btn"
+                                            data-method="wechat"
+                                            data-order-id="<?php echo esc_attr($order_id); ?>"
+                                            data-resource-id="<?php echo esc_attr($resource_id); ?>"
+                                            data-resource-name="<?php echo esc_attr($resource['name']); ?>">
+                                        微信支付
+                                    </button>
+                                </div>
+
+                                <div class="shopagg-inline-payment-qr" style="display:none;"></div>
+                                <div class="shopagg-inline-payment-install" style="display:none;"></div>
+                                <p class="shopagg-inline-payment-status">请选择付款方式。</p>
+                            </div>
+
+                            <div class="shopagg-message" id="detail-message"></div>
+                        </div>
+                    </div>
+
+                    <aside class="shopagg-checkout-sidebar">
+                        <div class="shopagg-checkout-card">
+                            <h2>购买说明</h2>
+                            <ul class="shopagg-checkout-points">
+                                <li>付款成功后，页面会自动显示安装入口。</li>
+                                <li>如果浏览器拦截支付宝新窗口，请允许弹窗后重试。</li>
+                                <li>微信支付会在当前页面显示二维码，扫码后自动轮询支付状态。</li>
+                            </ul>
+                        </div>
+
+                        <div class="shopagg-checkout-card">
+                            <h2>后续操作</h2>
+                            <div class="shopagg-checkout-links">
+                                <a class="button button-secondary" href="<?php echo esc_url($this->get_resource_detail_url($resource_id)); ?>">返回资源详情</a>
+                                <a class="button button-secondary" href="<?php echo esc_url(admin_url('admin.php?page=shopagg-app-store&tab=orders')); ?>">查看订单历史</a>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+
     private function render_review_form($resource, $status, $user_review) {
         $is_connected = shopagg_app_store_is_logged_in();
         $is_installed = ! empty($status['installed']);
@@ -958,10 +1124,10 @@ class ShopAGG_App_Store_Market {
             );
             ?>
             <div class="shopagg-action-primary">
-                <button class="button button-primary shopagg-action-button shopagg-action-button-primary shopagg-purchase-btn"
-                        data-resource-id="<?php echo esc_attr($resource['id']); ?>">
-                    <?php printf(esc_html('购买 %s'), esc_html($is_free ? '免费' : '¥' . number_format((float) $resource['price'], 2))); ?>
-                </button>
+                <a class="button button-primary shopagg-action-button shopagg-action-button-primary"
+                   href="<?php echo esc_url($this->get_resource_checkout_url($resource['id'])); ?>">
+                    购买 <?php echo esc_html($is_free ? '免费' : '¥' . number_format((float) $resource['price'], 2)); ?>
+                </a>
             </div>
             </div>
             <?php
@@ -1224,6 +1390,10 @@ class ShopAGG_App_Store_Market {
 
     private function get_resource_detail_url($resource_id) {
         return admin_url('admin.php?page=shopagg-app-store&action=detail&resource_id=' . absint($resource_id));
+    }
+
+    private function get_resource_checkout_url($resource_id) {
+        return admin_url('admin.php?page=shopagg-app-store&action=checkout&resource_id=' . absint($resource_id));
     }
 
     public function ajax_install() {

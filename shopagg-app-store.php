@@ -94,11 +94,16 @@ function shopagg_app_store_get_dashboard_url() {
  * @param string $redirect_to Optional admin URL to return to after connecting.
  * @return string
  */
-function shopagg_app_store_get_connect_url() {
+function shopagg_app_store_get_connect_url($redirect_to = '') {
     $args = [
         'page' => 'shopagg-app-store',
         'action' => 'connect',
     ];
+
+    if ($redirect_to !== '') {
+        $args['redirect_to'] = $redirect_to;
+    }
+
     return add_query_arg($args, admin_url('admin.php'));
 }
 
@@ -180,6 +185,11 @@ function shopagg_app_store_render_page() {
         }
 
         ShopAGG_App_Store_Auth::instance()->render_login_page();
+        return;
+    }
+
+    if ($action === 'checkout' && $resource_id > 0) {
+        ShopAGG_App_Store_Market::instance()->render_checkout_page($resource_id);
         return;
     }
 

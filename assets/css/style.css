@@ -915,6 +915,110 @@
     gap: 24px;
 }
 
+.shopagg-checkout-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) 320px;
+    gap: 24px;
+    align-items: start;
+}
+
+.shopagg-checkout-main,
+.shopagg-checkout-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.shopagg-checkout-hero {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.shopagg-checkout-cover img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 28px;
+    box-shadow: 0 18px 38px rgba(15, 23, 42, 0.14);
+}
+
+.shopagg-checkout-content {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.shopagg-checkout-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.shopagg-checkout-meta-grid div,
+.shopagg-checkout-card {
+    padding: 18px 20px;
+    border: 1px solid #dbe3ec;
+    border-radius: 18px;
+    background: #fff;
+}
+
+.shopagg-checkout-meta-grid span {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.shopagg-checkout-meta-grid strong {
+    color: #0f172a;
+    font-size: 18px;
+}
+
+.shopagg-checkout-meta-grid strong.paid {
+    color: #c2410c;
+}
+
+.shopagg-checkout-card h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #0f172a;
+}
+
+.shopagg-checkout-card p {
+    margin: 10px 0 0;
+    color: #64748b;
+    line-height: 1.7;
+}
+
+.shopagg-checkout-card-highlight {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.shopagg-inline-payment-panel-embedded {
+    margin-top: 18px;
+}
+
+.shopagg-checkout-points {
+    margin: 14px 0 0;
+    padding-left: 18px;
+    color: #475569;
+}
+
+.shopagg-checkout-points li {
+    margin-bottom: 10px;
+    line-height: 1.7;
+}
+
+.shopagg-checkout-links {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+
 .shopagg-detail-top {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
@@ -1506,6 +1610,9 @@
 
     .shopagg-detail-top,
     .shopagg-detail-app,
+    .shopagg-checkout-layout,
+    .shopagg-checkout-hero,
+    .shopagg-checkout-meta-grid,
     .shopagg-detail-guidance-grid,
     .shopagg-detail-reviews-layout,
     .shopagg-review-form-grid,
