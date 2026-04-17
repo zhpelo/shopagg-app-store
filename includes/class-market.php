@@ -40,26 +40,26 @@ class ShopAGG_App_Store_Market {
                 <div class="shopagg-hero">
                     <div>
                         <p class="shopagg-eyebrow">ShopAGG 应用市场</p>
-                        <h1><?php echo esc_html('ShopAGG 应用商店'); ?></h1>
-                        <p class="shopagg-hero-text"><?php echo esc_html('从一个地方浏览、购买、安装和管理 WordPress 插件和主题。'); ?></p>
+                        <h1>ShopAGG 应用商店</h1>
+                        <p class="shopagg-hero-text">从一个地方浏览、购买、安装和管理 WordPress 插件和主题。</p>
                     </div>
                     <div class="shopagg-hero-user">
                         <div class="shopagg-hero-user-card">
                             <?php if ($is_connected) : ?>
-                                <span class="shopagg-hero-user-label"><?php echo esc_html('当前账号'); ?></span>
+                                <span class="shopagg-hero-user-label">当前账号</span>
                                 <strong><?php echo esc_html($user['name'] ?? ''); ?></strong>
                                 <span><?php echo esc_html($user['email'] ?? ''); ?></span>
                             <?php else : ?>
-                                <span class="shopagg-hero-user-label"><?php echo esc_html('未连接令牌'); ?></span>
-                                <strong><?php echo esc_html('现已提供浏览和搜索功能'); ?></strong>
-                                <span><?php echo esc_html('只有在要安装或更新时才连接 API 令牌。'); ?></span>
+                                <span class="shopagg-hero-user-label">未连接令牌</span>
+                                <strong>现已提供浏览和搜索功能</strong>
+                                <span>只有在要安装或更新时才连接 API 令牌。</span>
                             <?php endif; ?>
                         </div>
                         <?php if ($is_connected) : ?>
-                            <button id="shopagg-logout" class="button button-secondary"><?php echo esc_html('注销'); ?></button>
+                            <button id="shopagg-logout" class="button button-secondary">注销</button>
                         <?php else : ?>
                             <a class="button button-primary" href="<?php echo esc_url(shopagg_app_store_get_connect_url()); ?>">
-                                <?php echo esc_html('连接'); ?>
+                                连接
                             </a>
                         <?php endif; ?>
                     </div>
@@ -67,19 +67,19 @@ class ShopAGG_App_Store_Market {
 
                 <div class="shopagg-overview">
                     <div class="shopagg-stat-card">
-                        <span class="shopagg-stat-label"><?php echo esc_html('资源'); ?></span>
+                        <span class="shopagg-stat-label">资源</span>
                         <strong><?php echo esc_html(count($state['resources'])); ?></strong>
                     </div>
                     <div class="shopagg-stat-card">
-                        <span class="shopagg-stat-label"><?php echo esc_html('订单'); ?></span>
+                        <span class="shopagg-stat-label">订单</span>
                         <strong><?php echo esc_html($is_connected ? count($state['orders']) : '-'); ?></strong>
                     </div>
                     <div class="shopagg-stat-card">
-                        <span class="shopagg-stat-label"><?php echo esc_html('许可证'); ?></span>
+                        <span class="shopagg-stat-label">许可证</span>
                         <strong><?php echo esc_html($is_connected ? count($state['licenses']) : '-'); ?></strong>
                     </div>
                     <div class="shopagg-stat-card">
-                        <span class="shopagg-stat-label"><?php echo esc_html('更新'); ?></span>
+                        <span class="shopagg-stat-label">更新</span>
                         <strong><?php echo esc_html($is_connected ? count($state['updates']) : '-'); ?></strong>
                     </div>
                 </div>
@@ -151,7 +151,7 @@ class ShopAGG_App_Store_Market {
         <div class="wrap shopagg-app-store-wrap">
             <div class="shopagg-shell">
                 <a href="<?php echo esc_url(admin_url('admin.php?page=shopagg-app-store')); ?>" class="shopagg-back-link">
-                    &larr; <?php echo esc_html('返回商店'); ?>
+                    &larr; 返回商店
                 </a>
 
                 <div class="shopagg-detail-card shopagg-detail-storefront">
@@ -166,7 +166,7 @@ class ShopAGG_App_Store_Market {
                                         <span class="shopagg-chip"><?php echo esc_html($resource['type'] === 'theme' ? '主题' : '插件'); ?></span>
                                         <span class="shopagg-chip">v<?php echo esc_html($resource['version']); ?></span>
                                         <?php if ($has_license && ! $is_free) : ?>
-                                            <span class="shopagg-chip owned"><?php echo esc_html('已授权'); ?></span>
+                                            <span class="shopagg-chip owned">已授权</span>
                                         <?php endif; ?>
                                         <?php if (! empty($status['update'])) : ?>
                                             <span class="shopagg-chip update"><?php echo esc_html(sprintf('新 v%s', $status['update']['version'])); ?></span>
@@ -180,24 +180,24 @@ class ShopAGG_App_Store_Market {
 
                                 <div class="shopagg-storefront-stats">
                                     <div class="shopagg-storefront-stat">
-                                        <span class="shopagg-storefront-stat-label"><?php echo esc_html('价格'); ?></span>
+                                        <span class="shopagg-storefront-stat-label">价格</span>
                                         <strong class="<?php echo esc_attr($is_free ? 'free' : 'paid'); ?>"><?php echo esc_html($price_label); ?></strong>
                                     </div>
                                     <div class="shopagg-storefront-stat">
-                                        <span class="shopagg-storefront-stat-label"><?php echo esc_html('安装量'); ?></span>
+                                        <span class="shopagg-storefront-stat-label">安装量</span>
                                         <strong><?php echo esc_html($this->format_storefront_install_count($installs_count)); ?></strong>
                                     </div>
                                     <div class="shopagg-storefront-stat">
-                                        <span class="shopagg-storefront-stat-label"><?php echo esc_html('评级'); ?></span>
+                                        <span class="shopagg-storefront-stat-label">评级</span>
                                         <strong><?php echo esc_html($rating_average !== null ? number_format($rating_average, 1) : '新'); ?></strong>
                                         <span class="shopagg-storefront-stars"><?php echo wp_kses_post($this->render_rating_stars($rating_average)); ?></span>
                                     </div>
                                     <div class="shopagg-storefront-stat">
-                                        <span class="shopagg-storefront-stat-label"><?php echo esc_html('评论'); ?></span>
+                                        <span class="shopagg-storefront-stat-label">评论</span>
                                         <strong><?php echo esc_html($rating_count > 0 ? number_format_i18n($rating_count) : '很快'); ?></strong>
                                     </div>
                                     <div class="shopagg-storefront-stat">
-                                        <span class="shopagg-storefront-stat-label"><?php echo esc_html('最近更新'); ?></span>
+                                        <span class="shopagg-storefront-stat-label">最近更新</span>
                                         <strong><?php echo esc_html($latest_update); ?></strong>
                                     </div>
                                 </div>
@@ -206,7 +206,7 @@ class ShopAGG_App_Store_Market {
 
                         <div class="shopagg-detail-cta-card">
                             <div class="shopagg-detail-cta-price">
-                                <span><?php echo esc_html('获取此资源'); ?></span>
+                                <span>获取此资源</span>
                                 <strong class="<?php echo esc_attr($is_free ? 'free' : 'paid'); ?>"><?php echo esc_html($price_label); ?></strong>
                             </div>
 
@@ -221,47 +221,47 @@ class ShopAGG_App_Store_Market {
 
                     <div class="shopagg-detail-guidance-grid">
                         <div class="shopagg-detail-guide-card">
-                            <h2><?php echo esc_html('如何获取'); ?></h2>
+                            <h2>如何获取</h2>
                             <div class="shopagg-detail-guide-steps">
                                 <div class="shopagg-detail-guide-step">
                                     <span class="shopagg-detail-guide-num">1</span>
                                     <div>
-                                        <strong><?php echo esc_html('阅读概述'); ?></strong>
-                                        <p><?php echo esc_html('从上面的评级、安装次数和更新详情开始，确认该插件或主题是否适合您。'); ?></p>
+                                        <strong>阅读概述</strong>
+                                        <p>从上面的评级、安装次数和更新详情开始，确认该插件或主题是否适合您。</p>
                                     </div>
                                 </div>
                                 <div class="shopagg-detail-guide-step">
                                     <span class="shopagg-detail-guide-num">2</span>
                                     <div>
-                                        <strong><?php echo esc_html('点击主按钮'); ?></strong>
+                                        <strong>点击主按钮</strong>
                                         <p><?php echo esc_html($this->get_detail_install_step_text($status, $has_license, $is_free)); ?></p>
                                     </div>
                                 </div>
                                 <div class="shopagg-detail-guide-step">
                                     <span class="shopagg-detail-guide-num">3</span>
                                     <div>
-                                        <strong><?php echo esc_html('完成 WordPress 中的设置'); ?></strong>
-                                        <p><?php echo esc_html('安装后，您可以在此页面上激活、停用、切换主题或更新。'); ?></p>
+                                        <strong>完成 WordPress 中的设置</strong>
+                                        <p>安装后，您可以在此页面上激活、停用、切换主题或更新。</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="shopagg-detail-guide-card">
-                            <h2><?php echo esc_html('兼容性'); ?></h2>
+                            <h2>兼容性</h2>
                             <div class="shopagg-detail-meta-grid shopagg-detail-meta-grid-compact">
-                                <div><span><?php echo esc_html('需要 WordPress'); ?></span><strong><?php echo esc_html($resource['requires'] ?: '-'); ?></strong></div>
-                                <div><span><?php echo esc_html('需要 PHP'); ?></span><strong><?php echo esc_html($resource['requires_php'] ?: '-'); ?></strong></div>
-                                <div><span><?php echo esc_html('测试达'); ?></span><strong><?php echo esc_html($resource['tested'] ?: '-'); ?></strong></div>
-                                <div><span><?php echo esc_html('绑定域'); ?></span><strong><?php echo esc_html($resource['bound_domain'] ?? '-'); ?></strong></div>
+                                <div><span>需要 WordPress</span><strong><?php echo esc_html($resource['requires'] ?: '-'); ?></strong></div>
+                                <div><span>需要 PHP</span><strong><?php echo esc_html($resource['requires_php'] ?: '-'); ?></strong></div>
+                                <div><span>测试达</span><strong><?php echo esc_html($resource['tested'] ?: '-'); ?></strong></div>
+                                <div><span>绑定域</span><strong><?php echo esc_html($resource['bound_domain'] ?? '-'); ?></strong></div>
                             </div>
                         </div>
 
                         <div class="shopagg-detail-guide-card">
-                            <h2><?php echo esc_html('最新更新'); ?></h2>
+                            <h2>最新更新</h2>
                             <?php if (! empty($status['update'])) : ?>
                                 <div class="shopagg-update-banner">
-                                    <strong><?php echo esc_html('可更新'); ?></strong>
+                                    <strong>可更新</strong>
                                     <span>
                                         <?php
                                         echo esc_html(
@@ -280,7 +280,7 @@ class ShopAGG_App_Store_Market {
                                 <?php if (! empty($latest_changelog)) : ?>
                                     <p><?php echo esc_html(wp_trim_words(wp_strip_all_tags($latest_changelog), 36)); ?></p>
                                 <?php else : ?>
-                                    <p><?php echo esc_html('最新版本已可安装。每次更新后，这里都会出现发布说明。'); ?></p>
+                                    <p>最新版本已可安装。每次更新后，这里都会出现发布说明。</p>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -288,8 +288,8 @@ class ShopAGG_App_Store_Market {
 
                     <div class="shopagg-detail-section">
                         <div class="shopagg-detail-section-head">
-                            <h2><?php echo esc_html('评级与评论'); ?></h2>
-                            <p><?php echo esc_html('通过评分和客户反馈，快速判断该资源是否适合您的网站。'); ?></p>
+                            <h2>评级与评论</h2>
+                            <p>通过评分和客户反馈，快速判断该资源是否适合您的网站。</p>
                         </div>
                         <div class="shopagg-detail-reviews-layout">
                             <div class="shopagg-detail-rating-summary">
@@ -314,8 +314,8 @@ class ShopAGG_App_Store_Market {
                                     <?php endforeach; ?>
                                 <?php else : ?>
                                     <div class="shopagg-empty-state">
-                                        <h3><?php echo esc_html('尚无评论。'); ?></h3>
-                                        <p><?php echo esc_html('先安装，稍后再查看更多客户反馈。'); ?></p>
+                                        <h3>尚无评论。</h3>
+                                        <p>先安装，稍后再查看更多客户反馈。</p>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -324,8 +324,8 @@ class ShopAGG_App_Store_Market {
 
                     <div class="shopagg-detail-section">
                         <div class="shopagg-detail-section-head">
-                            <h2><?php echo esc_html('更新历史'); ?></h2>
-                            <p><?php echo esc_html('像查看 App Store 的更新日志一样查看每个版本，这样就能快速了解有哪些变化。'); ?></p>
+                            <h2>更新历史</h2>
+                            <p>像查看 App Store 的更新日志一样查看每个版本，这样就能快速了解有哪些变化。</p>
                         </div>
                         <?php if (! empty($update_history)) : ?>
                             <div class="shopagg-detail-timeline">
@@ -339,25 +339,25 @@ class ShopAGG_App_Store_Market {
                                             <p><?php echo esc_html(wp_trim_words(wp_strip_all_tags($entry['changelog']), 60)); ?></p>
                                         <?php endif; ?>
                                         <div class="shopagg-detail-timeline-meta">
-                                            <span><?php echo esc_html('WP'); ?> <?php echo esc_html($entry['requires_wp'] ?: '-'); ?></span>
-                                            <span><?php echo esc_html('PHP'); ?> <?php echo esc_html($entry['requires_php'] ?: '-'); ?></span>
-                                            <span><?php echo esc_html('已测试'); ?> <?php echo esc_html($entry['tested_wp'] ?: '-'); ?></span>
+                                            <span>WP <?php echo esc_html($entry['requires_wp'] ?: '-'); ?></span>
+                                            <span>PHP <?php echo esc_html($entry['requires_php'] ?: '-'); ?></span>
+                                            <span>已测试 <?php echo esc_html($entry['tested_wp'] ?: '-'); ?></span>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
                         <?php else : ?>
                             <div class="shopagg-empty-state">
-                                <h3><?php echo esc_html('尚无更新记录。'); ?></h3>
-                                <p><?php echo esc_html('新版本发布后，这里将自动显示更新历史。'); ?></p>
+                                <h3>尚无更新记录。</h3>
+                                <p>新版本发布后，这里将自动显示更新历史。</p>
                             </div>
                         <?php endif; ?>
                     </div>
 
                     <div class="shopagg-detail-section">
                         <div class="shopagg-detail-section-head">
-                            <h2><?php echo esc_html('资源详情'); ?></h2>
-                            <p><?php echo esc_html('下面是完整的产品说明，如果您在阅读完上面的摘要后还想深入了解，这将是您的理想选择。'); ?></p>
+                            <h2>资源详情</h2>
+                            <p>下面是完整的产品说明，如果您在阅读完上面的摘要后还想深入了解，这将是您的理想选择。</p>
                         </div>
                         <div class="shopagg-detail-description shopagg-detail-description-bottom">
                             <?php echo wp_kses_post($detail_description); ?>
@@ -381,36 +381,36 @@ class ShopAGG_App_Store_Market {
             <div class="shopagg-detail-review-form-head">
                 <div>
                     <strong>
-                        <?php echo esc_html($user_review ? '更新你的评价' : '分享你的使用体验'); ?>
+                        <?php echo $user_review ? '更新你的评价' : '分享你的使用体验'; ?>
                     </strong>
                     <span>
                         <?php
                         if (! $is_connected) {
-                            echo esc_html('请先连接 API 令牌，然后才能在这个站点发布评分和评价。');
+                            ?>请先连接 API 令牌，然后才能在这个站点发布评分和评价。<?php
                         } elseif (! $is_installed) {
-                            echo esc_html('请先在你的站点安装这个资源，安装后才可以在这里发表评分和评价。');
+                            ?>请先在你的站点安装这个资源，安装后才可以在这里发表评分和评价。<?php
                         } else {
-                            echo esc_html('你的评价会关联到 ShopAGG 账号，之后可以随时回来修改。');
+                            ?>你的评价会关联到 ShopAGG 账号，之后可以随时回来修改。<?php
                         }
                         ?>
                     </span>
                 </div>
                 <?php if ($is_hidden) : ?>
-                    <em class="shopagg-review-status-badge"><?php echo esc_html('当前已隐藏'); ?></em>
+                    <em class="shopagg-review-status-badge">当前已隐藏</em>
                 <?php endif; ?>
             </div>
 
             <?php if (! $is_connected) : ?>
                 <a class="button button-secondary shopagg-review-connect-btn" href="<?php echo esc_url( shopagg_app_store_get_connect_url() ); ?>">
-                    <?php echo esc_html('连接令牌后评价'); ?>
+                    连接令牌后评价
                 </a>
             <?php elseif (! $is_installed) : ?>
                 <div class="shopagg-review-install-note">
-                    <?php echo esc_html('当前 WordPress 站点安装此插件或主题后，评价功能会自动开放。'); ?>
+                    当前 WordPress 站点安装此插件或主题后，评价功能会自动开放。
                 </div>
             <?php else : ?>
                 <form class="shopagg-review-form" data-resource-id="<?php echo esc_attr($resource['id']); ?>">
-                    <div class="shopagg-review-stars-field" role="radiogroup" aria-label="<?php echo esc_attr('评级'); ?>">
+                    <div class="shopagg-review-stars-field" role="radiogroup" aria-label="评级">
                         <?php for ($star = 5; $star >= 1; $star--) : ?>
                             <input type="radio"
                                    id="shopagg-review-rating-<?php echo esc_attr($resource['id'] . '-' . $star); ?>"
@@ -423,15 +423,15 @@ class ShopAGG_App_Store_Market {
 
                     <div class="shopagg-review-form-grid">
                         <div>
-                            <label for="shopagg-review-title-<?php echo esc_attr($resource['id']); ?>"><?php echo esc_html('评价标题'); ?></label>
+                            <label for="shopagg-review-title-<?php echo esc_attr($resource['id']); ?>">评价标题</label>
                             <input type="text"
                                    id="shopagg-review-title-<?php echo esc_attr($resource['id']); ?>"
                                    name="review_title"
                                    value="<?php echo esc_attr($title); ?>"
-                                   placeholder="<?php echo esc_attr('用一句话概括你的使用体验'); ?>">
+                                placeholder="用一句话概括你的使用体验">
                         </div>
                         <div>
-                            <label for="shopagg-review-version-<?php echo esc_attr($resource['id']); ?>"><?php echo esc_html('已安装版本'); ?></label>
+                            <label for="shopagg-review-version-<?php echo esc_attr($resource['id']); ?>">已安装版本</label>
                             <input type="text"
                                    id="shopagg-review-version-<?php echo esc_attr($resource['id']); ?>"
                                    value="<?php echo esc_attr($status['installed_version'] ?: ($resource['version'] ?? '')); ?>"
@@ -440,21 +440,21 @@ class ShopAGG_App_Store_Market {
                     </div>
 
                     <div>
-                        <label for="shopagg-review-content-<?php echo esc_attr($resource['id']); ?>"><?php echo esc_html('你的评价'); ?></label>
+                        <label for="shopagg-review-content-<?php echo esc_attr($resource['id']); ?>">你的评价</label>
                         <textarea id="shopagg-review-content-<?php echo esc_attr($resource['id']); ?>"
                                   name="review_content"
                                   rows="4"
-                                  placeholder="<?php echo esc_attr('说说你喜欢它的地方，以及它在你站点上的使用情况'); ?>"><?php echo esc_textarea($content); ?></textarea>
+                                  placeholder="说说你喜欢它的地方，以及它在你站点上的使用情况"><?php echo esc_textarea($content); ?></textarea>
                     </div>
 
                     <div class="shopagg-review-form-actions">
                         <button type="submit"
                                 class="button button-primary shopagg-review-submit-btn"
                                 data-default-text="<?php echo esc_attr($user_review ? '更新评价' : '发布评价'); ?>">
-                            <?php echo esc_html($user_review ? '更新评价' : '发布评价'); ?>
+                            <?php echo $user_review ? '更新评价' : '发布评价'; ?>
                         </button>
                         <?php if ($is_hidden) : ?>
-                            <span class="shopagg-review-form-note"><?php echo esc_html('管理员已隐藏你上一次提交的评价，更新后会继续保留，等待再次审核。'); ?></span>
+                            <span class="shopagg-review-form-note">管理员已隐藏你上一次提交的评价，更新后会继续保留，等待再次审核。</span>
                         <?php endif; ?>
                     </div>
                     <div class="shopagg-message shopagg-review-message"></div>
@@ -665,23 +665,23 @@ class ShopAGG_App_Store_Market {
         <div class="shopagg-panel">
             <div class="shopagg-panel-head">
                 <div>
-                    <h2><?php echo esc_html('资源库'); ?></h2>
-                    <p><?php echo esc_html('筛选并管理所需的插件和主题。'); ?></p>
+                    <h2>资源库</h2>
+                    <p>筛选并管理所需的插件和主题。</p>
                     <?php if (! shopagg_app_store_is_logged_in()) : ?>
-                        <p><a href="<?php echo esc_url(shopagg_app_store_get_connect_url()); ?>"><?php echo esc_html('连接 API 令牌'); ?></a> <?php echo esc_html('以安装或更新资源。'); ?></p>
+                        <p><a href="<?php echo esc_url(shopagg_app_store_get_connect_url()); ?>">连接 API 令牌</a> 以安装或更新资源。</p>
                     <?php endif; ?>
                 </div>
                 <div class="shopagg-filter-bar">
-                    <input type="search" id="shopagg-market-search" class="shopagg-filter-input" placeholder="<?php echo esc_attr('按名称或标题搜索...'); ?>">
+                    <input type="search" id="shopagg-market-search" class="shopagg-filter-input" placeholder="按名称或标题搜索...">
                     <select id="shopagg-market-type" class="shopagg-filter-select">
-                        <option value="all"><?php echo esc_html('所有类型'); ?></option>
-                        <option value="plugin" <?php selected($preset_type, 'plugin'); ?>><?php echo esc_html('插件'); ?></option>
-                        <option value="theme" <?php selected($preset_type, 'theme'); ?>><?php echo esc_html('主题'); ?></option>
+                        <option value="all">所有类型</option>
+                        <option value="plugin" <?php selected($preset_type, 'plugin'); ?>>插件</option>
+                        <option value="theme" <?php selected($preset_type, 'theme'); ?>>主题</option>
                     </select>
                     <select id="shopagg-market-price" class="shopagg-filter-select">
-                        <option value="all"><?php echo esc_html('所有价格'); ?></option>
-                        <option value="free"><?php echo esc_html('免费'); ?></option>
-                        <option value="paid"><?php echo esc_html('付费'); ?></option>
+                        <option value="all">所有价格</option>
+                        <option value="free">免费</option>
+                        <option value="paid">付费</option>
                     </select>
                 </div>
             </div>
@@ -689,7 +689,7 @@ class ShopAGG_App_Store_Market {
             <div class="shopagg-resource-grid" id="shopagg-resource-grid">
                 <?php if (empty($resources)) : ?>
                     <div class="shopagg-empty-state">
-                        <h3><?php echo esc_html('未找到资源。'); ?></h3>
+                        <h3>未找到资源。</h3>
                     </div>
                 <?php else : ?>
                     <?php foreach ($resources as $resource) : ?>
@@ -699,8 +699,8 @@ class ShopAGG_App_Store_Market {
             </div>
 
             <div class="shopagg-empty-state shopagg-filter-empty" id="shopagg-filter-empty" style="display:none;">
-                <h3><?php echo esc_html('没有符合当前筛选条件的资源。'); ?></h3>
-                <p><?php echo esc_html('尝试更改类型、价格或搜索关键词。'); ?></p>
+                <h3>没有符合当前筛选条件的资源。</h3>
+                <p>尝试更改类型、价格或搜索关键词。</p>
             </div>
         </div>
         <?php
@@ -711,22 +711,22 @@ class ShopAGG_App_Store_Market {
         <div class="shopagg-panel">
             <div class="shopagg-panel-head">
                 <div>
-                    <h2><?php echo esc_html('订单历史'); ?></h2>
-                    <p><?php echo esc_html('查看应用程序商店订单和付款记录的状态。'); ?></p>
+                    <h2>订单历史</h2>
+                    <p>查看应用程序商店订单和付款记录的状态。</p>
                 </div>
             </div>
 
             <?php if (empty($orders)) : ?>
                 <div class="shopagg-empty-state">
-                    <h3><?php echo esc_html('还没有订单。'); ?></h3>
+                    <h3>还没有订单。</h3>
                 </div>
             <?php else : ?>
                 <div class="shopagg-table">
                     <div class="shopagg-table-head">
-                        <span><?php echo esc_html('资源'); ?></span>
-                        <span><?php echo esc_html('金额'); ?></span>
-                        <span><?php echo esc_html('状态'); ?></span>
-                        <span><?php echo esc_html('创建'); ?></span>
+                        <span>资源</span>
+                        <span>金额</span>
+                        <span>状态</span>
+                        <span>创建</span>
                     </div>
                     <?php foreach ($orders as $order) : ?>
                         <?php
@@ -754,14 +754,14 @@ class ShopAGG_App_Store_Market {
         <div class="shopagg-panel">
             <div class="shopagg-panel-head">
                 <div>
-                    <h2><?php echo esc_html('许可证记录'); ?></h2>
-                    <p><?php echo esc_html('查看您的许可资源和当前链接到本网站的域。'); ?></p>
+                    <h2>许可证记录</h2>
+                    <p>查看您的许可资源和当前链接到本网站的域。</p>
                 </div>
             </div>
 
             <?php if (empty($licenses)) : ?>
                 <div class="shopagg-empty-state">
-                    <h3><?php echo esc_html('还没有许可证。'); ?></h3>
+                    <h3>还没有许可证。</h3>
                 </div>
             <?php else : ?>
                 <div class="shopagg-license-list">
@@ -773,8 +773,8 @@ class ShopAGG_App_Store_Market {
                                 <p><?php echo esc_html($resource['type'] === 'theme' ? '主题' : '插件'); ?> · v<?php echo esc_html($resource['version'] ?? '-'); ?></p>
                             </div>
                             <div class="shopagg-license-meta">
-                                <span><strong><?php echo esc_html('域名'); ?>:</strong> <?php echo esc_html(! empty($license['domain']) ? $license['domain'] : '未绑定'); ?></span>
-                                <span><strong><?php echo esc_html('授权时间'); ?>:</strong> <?php echo esc_html($this->format_datetime(isset($license['created_at']) ? $license['created_at'] : '')); ?></span>
+                                <span><strong>域名:</strong> <?php echo esc_html(! empty($license['domain']) ? $license['domain'] : '未绑定'); ?></span>
+                                <span><strong>授权时间:</strong> <?php echo esc_html($this->format_datetime(isset($license['created_at']) ? $license['created_at'] : '')); ?></span>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -789,14 +789,14 @@ class ShopAGG_App_Store_Market {
         <div class="shopagg-panel">
             <div class="shopagg-panel-head">
                 <div>
-                    <h2><?php echo esc_html('可用更新'); ?></h2>
-                    <p><?php echo esc_html('在一个地方查看和更新通过 ShopAGG 安装的插件和主题。'); ?></p>
+                    <h2>可用更新</h2>
+                    <p>在一个地方查看和更新通过 ShopAGG 安装的插件和主题。</p>
                 </div>
             </div>
 
             <?php if (empty($updates)) : ?>
                 <div class="shopagg-empty-state">
-                    <h3><?php echo esc_html('一切都是最新的。'); ?></h3>
+                    <h3>一切都是最新的。</h3>
                 </div>
             <?php else : ?>
                 <div class="shopagg-update-list">
@@ -824,10 +824,10 @@ class ShopAGG_App_Store_Market {
                             </div>
                             <div class="shopagg-update-actions">
                                 <a class="button button-primary" href="<?php echo esc_url($update['update_url']); ?>">
-                                    <?php echo esc_html('立即更新'); ?>
+                                    立即更新
                                 </a>
                                 <a class="button button-secondary" href="<?php echo esc_url(admin_url('admin.php?page=shopagg-app-store&action=detail&resource_id=' . absint($update['id']))); ?>">
-                                    <?php echo esc_html('查看详情'); ?>
+                                    查看详情
                                 </a>
                             </div>
                         </div>
@@ -868,7 +868,7 @@ class ShopAGG_App_Store_Market {
                     <span class="shopagg-resource-price <?php echo $is_free ? 'free' : 'paid'; ?>"><?php echo esc_html($price_label); ?></span>
                     <div class="shopagg-resource-flags">
                         <?php if (! empty($resource['has_license'])) : ?>
-                            <span class="shopagg-flag owned"><?php echo esc_html('已拥有'); ?></span>
+                            <span class="shopagg-flag owned">已拥有</span>
                         <?php endif; ?>
                         <?php if (! empty($status['installed'])) : ?>
                             <span class="shopagg-flag installed"><?php echo esc_html(! empty($status['active']) ? '已启用' : '已安装'); ?></span>
@@ -879,7 +879,7 @@ class ShopAGG_App_Store_Market {
                     </div>
                 </div>
                 <a class="button button-primary shopagg-card-btn" href="<?php echo esc_url($detail_url); ?>">
-                    <?php echo esc_html('查看详情'); ?>
+                    查看详情
                 </a>
             </div>
         </article>
@@ -904,7 +904,7 @@ class ShopAGG_App_Store_Market {
             ?>
             <div class="shopagg-action-primary">
                 <a class="button button-primary shopagg-action-button shopagg-action-button-primary" href="<?php echo esc_url($connect_url); ?>">
-                    <?php echo esc_html($connect_label); ?>
+                    <?php echo $connect_label; ?>
                 </a>
             </div>
             </div>
@@ -941,7 +941,7 @@ class ShopAGG_App_Store_Market {
                 <button class="button button-primary shopagg-action-button shopagg-action-button-primary shopagg-install-btn"
                         data-resource-id="<?php echo esc_attr($resource['id']); ?>"
                         data-type="<?php echo esc_attr($resource['type']); ?>">
-                    <?php echo esc_html('安装'); ?>
+                    安装
                 </button>
             </div>
             </div>
@@ -981,7 +981,7 @@ class ShopAGG_App_Store_Market {
                             data-resource-type="plugin"
                             data-toggle-action="deactivate"
                             data-target="<?php echo esc_attr($status['target']); ?>">
-                        <?php echo esc_html('停用'); ?>
+                        停用
                     </button>
                 </div>
                 <?php
@@ -992,7 +992,7 @@ class ShopAGG_App_Store_Market {
                             data-resource-type="plugin"
                             data-toggle-action="activate"
                             data-target="<?php echo esc_attr($status['target']); ?>">
-                        <?php echo esc_html('激活'); ?>
+                        激活
                     </button>
                 </div>
                 <?php
@@ -1001,7 +1001,7 @@ class ShopAGG_App_Store_Market {
             ?>
             <div class="shopagg-action-secondary">
                 <a class="button button-secondary shopagg-action-button shopagg-action-button-danger" href="<?php echo esc_url($this->get_plugin_delete_url($status['target'])); ?>">
-                    <?php echo esc_html('删除'); ?>
+                    删除
                 </a>
             </div>
             </div>
@@ -1018,7 +1018,7 @@ class ShopAGG_App_Store_Market {
             ?>
             <div class="shopagg-action-primary">
                 <button class="button button-secondary shopagg-action-button shopagg-action-button-muted" disabled>
-                    <?php echo esc_html('当前主题'); ?>
+                    当前主题
                 </button>
             </div>
             </div>
@@ -1036,12 +1036,12 @@ class ShopAGG_App_Store_Market {
                     data-resource-type="theme"
                     data-toggle-action="activate"
                     data-target="<?php echo esc_attr($status['target']); ?>">
-                <?php echo esc_html('激活主题'); ?>
+                激活主题
             </button>
         </div>
         <div class="shopagg-action-secondary">
             <a class="button button-secondary shopagg-action-button shopagg-action-button-danger" href="<?php echo esc_url($this->get_theme_delete_url($status['target'])); ?>">
-                <?php echo esc_html('删除'); ?>
+                删除
             </a>
         </div>
         </div>
