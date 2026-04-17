@@ -1331,21 +1331,23 @@
 
 .shopagg-detail-tabnav {
     display: flex;
-    gap: 0;
+    gap: 6px;
     align-items: center;
-    overflow-x: auto;
 }
 
 .shopagg-detail-tab {
     display: inline-flex;
     align-items: center;
-    min-height: 44px;
-    padding: 0 16px;
-    border-bottom: 2px solid transparent;
+    min-height: 48px;
+    margin-bottom: -1px;
+    padding: 0 22px;
+    border: 1px solid transparent;
+    border-bottom: 0;
+    background: transparent;
     color: #374151;
     text-decoration: none;
     white-space: nowrap;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .shopagg-detail-tab:hover {
@@ -1354,7 +1356,8 @@
 }
 
 .shopagg-detail-tab.is-active {
-    border-bottom-color: #2563eb;
+    border-color: #dbe3ec;
+    background: #fff;
     color: #111827;
     font-weight: 600;
 }
@@ -2151,6 +2154,14 @@
 
 .shopagg-detail-storefront .shopagg-detail-section + .shopagg-detail-section {
     margin-top: -4px;
+}
+
+.shopagg-detail-storefront [data-detail-panel="true"][hidden] {
+    display: none !important;
+}
+
+.shopagg-detail-storefront [data-detail-panel="true"].is-active {
+    display: block;
 }
 
 .shopagg-detail-description-bottom {

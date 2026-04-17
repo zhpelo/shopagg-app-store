@@ -340,7 +340,7 @@ class ShopAGG_App_Store_Market {
 
                     <div class="shopagg-detail-content-layout">
                         <div class="shopagg-detail-content-main">
-                            <div class="shopagg-detail-section" id="shopagg-detail-description">
+                            <div class="shopagg-detail-section" id="shopagg-detail-description" data-detail-panel="true">
                                 <div class="shopagg-detail-section-head">
                                     <h2>描述</h2>
                                 </div>
@@ -350,7 +350,7 @@ class ShopAGG_App_Store_Market {
                             </div>
 
                             <?php if (! empty($screenshots)) : ?>
-                                <div class="shopagg-detail-section" id="shopagg-detail-screenshots">
+                                <div class="shopagg-detail-section" id="shopagg-detail-screenshots" data-detail-panel="true">
                                     <div class="shopagg-detail-section-head">
                                         <h2>屏幕截图</h2>
                                         <p>查看该资源在后台中的实际界面与关键使用场景。</p>
@@ -375,7 +375,7 @@ class ShopAGG_App_Store_Market {
                                 </div>
                             <?php endif; ?>
 
-                            <div class="shopagg-detail-section" id="shopagg-detail-installation">
+                            <div class="shopagg-detail-section" id="shopagg-detail-installation" data-detail-panel="true">
                                 <div class="shopagg-detail-section-head">
                                     <h2>安装</h2>
                                 </div>
@@ -401,7 +401,7 @@ class ShopAGG_App_Store_Market {
                                 <?php endif; ?>
                             </div>
 
-                            <div class="shopagg-detail-section" id="shopagg-detail-reviews">
+                            <div class="shopagg-detail-section" id="shopagg-detail-reviews" data-detail-panel="true">
                         <div class="shopagg-detail-section-head">
                             <h2>评级与评论</h2>
                             <p>通过评分和客户反馈，快速判断该资源是否适合您的网站。</p>
@@ -432,7 +432,7 @@ class ShopAGG_App_Store_Market {
                         </div>
                             </div>
 
-                            <div class="shopagg-detail-section" id="shopagg-detail-history">
+                            <div class="shopagg-detail-section" id="shopagg-detail-history" data-detail-panel="true">
                         <div class="shopagg-detail-section-head">
                             <h2>更新历史</h2>
                             <p>像查看 App Store 的更新日志一样查看每个版本，这样就能快速了解有哪些变化。</p>

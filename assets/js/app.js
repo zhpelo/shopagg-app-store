@@ -23,6 +23,7 @@
             this.bindInlinePayment();
             this.bindReviewForm();
             this.bindDeleteConfirm();
+            this.bindDetailTabs();
             this.bindSectionSpy();
         },
 
@@ -823,8 +824,116 @@
             });
         },
 
+        bindDetailTabs: function () {
+            var $detailTabs = $('.shopagg-detail-tab[href^="#shopagg-detail-"]');
+            var $detailSidebarLinks = $('.shopagg-admin-sidebar-link[href^="#shopagg-detail-"]');
+            var $detailPanels = $('.shopagg-detail-storefront [data-detail-panel="true"]');
+            var $detailSummaryLinks = $('.shopagg-admin-sidebar-link[href="#shopagg-detail-summary"]');
+            var $detailTabNav = $('.shopagg-detail-tabnav-wrap');
+            var activateTab = function (targetId, options) {
+                var settings = $.extend({
+                    updateHash: true,
+                    scrollToTabs: false
+                }, options || {});
+                var $targetPanel = $detailPanels.filter('#' + targetId);
+
+                if (!$targetPanel.length) {
+                    return;
+                }
+
+                $detailTabs.removeClass('is-active');
+                $detailSidebarLinks.removeClass('is-active');
+                $detailSummaryLinks.removeClass('is-active');
+                $detailPanels.removeClass('is-active').prop('hidden', true);
+
+                $detailTabs.filter('[href="#' + targetId + '"]').addClass('is-active');
+                $detailSidebarLinks.filter('[href="#' + targetId + '"]').addClass('is-active');
+                $targetPanel.addClass('is-active').prop('hidden', false);
+
+                if (settings.updateHash && window.history && window.history.replaceState) {
+                    window.history.replaceState(null, '', '#' + targetId);
+                }
+
+                if (settings.scrollToTabs && $detailTabNav.length) {
+                    window.scrollTo({
+                        top: Math.max($detailTabNav.offset().top - 96, 0),
+                        behavior: 'smooth'
+                    });
+                }
+            };
+
+            if (!$detailTabs.length || !$detailPanels.length) {
+                return;
+            }
+
+            $(document).on('click', '.shopagg-detail-tab[href^="#shopagg-detail-"]', function (e) {
+                var targetId = (($(this).attr('href') || '').replace('#', ''));
+
+                if (!targetId) {
+                    return;
+                }
+
+                e.preventDefault();
+                activateTab(targetId, {
+                    updateHash: true,
+                    scrollToTabs: false
+                });
+            });
+
+            $(document).on('click', '.shopagg-admin-sidebar-link[href^="#shopagg-detail-"]', function (e) {
+                var targetId = (($(this).attr('href') || '').replace('#', ''));
+
+                if (!targetId) {
+                    return;
+                }
+
+                e.preventDefault();
+
+                if (targetId === 'shopagg-detail-summary') {
+                    activateTab('shopagg-detail-description', {
+                        updateHash: true,
+                        scrollToTabs: true
+                    });
+                    $detailSidebarLinks.removeClass('is-active');
+                    $detailSummaryLinks.addClass('is-active');
+                    return;
+                }
+
+                activateTab(targetId, {
+                    updateHash: true,
+                    scrollToTabs: true
+                });
+            });
+
+            if (window.location.hash) {
+                var initialTargetId = window.location.hash.replace('#', '');
+
+                if (initialTargetId === 'shopagg-detail-summary') {
+                    activateTab('shopagg-detail-description', {
+                        updateHash: false,
+                        scrollToTabs: false
+                    });
+                    $detailSummaryLinks.addClass('is-active');
+                    return;
+                }
+
+                if ($detailPanels.filter('#' + initialTargetId).length) {
+                    activateTab(initialTargetId, {
+                        updateHash: false,
+                        scrollToTabs: false
+                    });
+                    return;
+                }
+            }
+
+            activateTab($detailPanels.first().attr('id'), {
+                updateHash: false,
+                scrollToTabs: false
+            });
+        },
+
         bindSectionSpy: function () {
-            var $anchorLinks = $('.shopagg-admin-sidebar-link[href^="#"], .shopagg-detail-tab[href^="#"]');
+            var $anchorLinks = $('.shopagg-admin-sidebar-link[href^="#"]:not([href^="#shopagg-detail-"])');
             var sections = [];
             var observer = null;
             var updateActiveLink = function (sectionId) {
@@ -837,10 +946,6 @@
                 $anchorLinks.removeClass('is-active');
                 $matchedLinks = $anchorLinks.filter('[href="#' + sectionId + '"]');
                 $matchedLinks.addClass('is-active');
-
-                if (!$matchedLinks.length && sectionId === 'shopagg-detail-summary') {
-                    $('.shopagg-detail-tab[href="#shopagg-detail-description"]').addClass('is-active');
-                }
             };
 
             if (!$anchorLinks.length) {
